@@ -97,4 +97,7 @@ DEBUG=1 npm run sweep -- ...       # print full stack traces from adapter failur
 - **The Playwright MCP browser runs at 80% browser zoom**: use `fullPage: true` screenshots with a scaled `clip`.
 - Logos: company `domain` feeds the favicon. Add verified domains to `config/company-domains.ts` and run
   `npx tsx scripts/logos.ts apply`. Never guess a domain unchecked.
+- **Demo mode is read-only** (`lib/demo.ts`): a new server action must start with `if (DEMO) return DEMO_READ_ONLY;`.
+  The hosted demo (`npm run demo:build`, `vercel.json`) seeds its DB in /tmp on each cold start (`instrumentation.ts`,
+  `demo/seed.ts`); anything the seed reads must be in `outputFileTracingIncludes` (`next.config.ts`).
 - Dry-run criteria changes against the real kept list before applying; every false positive found is a regression test.
