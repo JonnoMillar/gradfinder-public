@@ -12,7 +12,11 @@ Every fact on screen is traceable to a URL. Anything the sources did not say rea
 Built by Jonno Millar for his own 2027 search, with Claude Code. This is the public copy: the demo below uses real
 public postings and a fictional graduate, Alex Morgan.
 
-## Try the demo (2 minutes)
+## Try the demo
+
+**Live: https://gradfinder-demo.vercel.app** (read-only; a fictional graduate, Alex Morgan, on real public postings).
+
+Or run it locally (2 minutes):
 
 Needs **Node 24**.
 
