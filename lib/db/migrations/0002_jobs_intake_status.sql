@@ -1,0 +1,1 @@
+ALTER TABLE `jobs` ADD `intake_status` text;

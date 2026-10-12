@@ -1,0 +1,2683 @@
+<script>
+    
+
+    handleClearSessionStorage = (event, redirectLink) => {
+        event.preventDefault();
+        Object.keys(window.sessionStorage).forEach((key) => {
+            if (key.includes('saved')) {
+                window.sessionStorage.removeItem(key);
+            }
+        });
+        document.dispatchEvent(new CustomEvent('job-applied-modal:check-if-job-applied', {
+            // hasUserApplied is used in the job applied modal to determine whether to show the modal or not after redirecting to the job application link
+            // Cannot pass boolean directly in the custom event detail because of blade rendering.
+            detail: {
+                hasUserAppliedForJob: false
+            }
+        }));
+        // Open a new tab and redirect to the job application link
+        const newTab = window.open(redirectLink, '_blank');
+        if (newTab) newTab.focus();
+
+    }
+</script>
+
+<!doctype html>
+<html class="no-js" lang="en-GB" dir="ltr">
+<head>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="3GFnGsoCwynpNcw3lCk9S7pmbArykOmhLTCVTQRb">
+
+    
+    <link rel="preload" href="https://use.typekit.net/cmy5aen.css" as="style" onload="this.rel='stylesheet'">
+    <link rel="preconnect" href="https://cdn-production.higherin.com/" >
+    <link rel="preconnect" href="https://imagekit-production.higherin.com/prod-higherin/" >
+    <link rel="preconnect" href="https://www.googletagmanager.com"  />
+    
+
+    <link rel="preload" as="style" href="https://higherin.com/build/assets/app-C_Z_-3eC.css" /><link rel="preload" as="style" href="https://higherin.com/build/assets/app-D57ieE8B.css" /><link rel="modulepreload" as="script" href="https://higherin.com/build/assets/app-UennacJW.js" /><link rel="stylesheet" href="https://higherin.com/build/assets/app-C_Z_-3eC.css" /><link rel="stylesheet" href="https://higherin.com/build/assets/app-D57ieE8B.css" /><script type="module" src="https://higherin.com/build/assets/app-UennacJW.js"></script>
+    
+        <title>Graduate Power System Engineer 2027 at National Energy System Operator (NESO) | Higherin</title>
+<meta name="description" content="View job details & apply online for Graduate Power System Engineer 2027 at National Energy System Operator (NESO) on Higherin.">
+<link rel="canonical" href="https://higherin.com/jobs/44465/national-energy-system-operator-neso/graduate-power-system-engineer-2027"/>
+<meta property="og:image" content="https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png" />
+
+<meta property="og:title" content="Graduate Power System Engineer 2027 at National Energy System Operator (NESO) | Higherin" />
+
+<meta property="og:description" content="View job details & apply online for Graduate Power System Engineer 2027 at National Energy System Operator (NESO) on Higherin." />
+
+<meta property="og:url" content="https://higherin.com/jobs/44465/national-energy-system-operator-neso/graduate-power-system-engineer-2027" />
+
+<meta property="og:site_name" content="Higherin" />
+
+<meta property="og:locale" content="en-GB" />
+
+<meta property="og:type" content="website" />
+
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"JobPosting","title":"Graduate Power System Engineer 2027","description":"\u003Cp\u003EOur 18-month Graduate Programme is designed to help you build the technical knowledge, confidence and connections to make a real impact. Through three six-month placements across different teams, you’ll gain a broad view of how we plan, operate and transform the electricity system — from real-time control through to future system planning and strategy.\u003C/p\u003E\n\u003Ch3\u003E\u003Cstrong\u003EWhat You’ll Be Doing\u003C/strong\u003E\u003C/h3\u003E\n\u003Cp\u003EAs a Graduate Power System Engineer, you’ll join the team working towards Clean Power by 2030. You’ll contribute to the big picture whilst learning fast on the job.\u003C/p\u003E\n\u003Cp\u003EYou could be:\u003C/p\u003E\n\u003Cul\u003E\n\u003Cli\u003ERunning power system analysis to explore risks and identify smarter network solutions\u003C/li\u003E\n\u003Cli\u003EHelping develop new strategies for balancing the grid with more renewables\u003C/li\u003E\n\u003Cli\u003ECollaborating with Transmission Owners to improve simulation models\u003C/li\u003E\n\u003Cli\u003ESupporting strategic energy planning and whole-system thinking\u003C/li\u003E\n\u003Cli\u003EBuilding technical publications used by government and industry\u003C/li\u003E\n\u003Cli\u003EEngaging with regulators, stakeholders, and industry partners\u003C/li\u003E\n\u003Cli\u003ESupporting new demand and generation connections\u003C/li\u003E\n\u003Cli\u003EContributing to the development of the Grid Code and operability tools\u003C/li\u003E\n\u003Cli\u003EDeveloping and maintaining power system network models used for operational and future network studies\u003C/li\u003E\n\u003Cli\u003EHelping model emerging technologies such as battery energy storage, offshore wind, HVDC links, hydrogen integration and flexible demand\u003C/li\u003E\n\u003C/ul\u003E\n\u003Ch3\u003E\u003Cstrong\u003EWhat We’re Looking For\u003C/strong\u003E\u003C/h3\u003E\n\u003Cp\u003E\u003Cstrong\u003EDegree Requirements:\u003C/strong\u003E You’ll need a minimum 2:2 degree in:\u003C/p\u003E\n\u003Cul\u003E\n\u003Cli\u003EElectrical, Electronic or Mechanical Engineering\u003C/li\u003E\n\u003Cli\u003EPhysics\u003C/li\u003E\n\u003Cli\u003EMaths\u003C/li\u003E\n\u003C/ul\u003E\n\u003Cp\u003E\u003Cstrong\u003ESkills & Attributes:\u003C/strong\u003E\u003C/p\u003E\n\u003Cul\u003E\n\u003Cli\u003EAn understanding of how energy systems work (or curiosity to learn fast)\u003C/li\u003E\n\u003Cli\u003EProgramming skills or a keen interest in data-driven analysis\u003C/li\u003E\n\u003Cli\u003EConfidence writing reports, presenting ideas, and solving problems\u003C/li\u003E\n\u003Cli\u003EA collaborative mindset and strong communication skills\u003C/li\u003E\n\u003Cli\u003E\u003Cstrong\u003EBonus:\u003C/strong\u003E A full UK driving licence is desirable.\u003C/li\u003E\n\u003C/ul\u003E\n\u003Cp\u003E\u003Cem\u003EWe actively welcome applications from women and those from underrepresented backgrounds in tech. If you’re looking for a place that supports you to grow, we’re here for it.\u003C/em\u003E\u003C/p\u003E\n\u003Ch3\u003E\u003Cstrong\u003EWhat You’ll Get\u003C/strong\u003E\u003C/h3\u003E\n\u003Cul\u003E\n\u003Cli\u003E£35,000 salary + £2,000 welcome payment\u003C/li\u003E\n\u003Cli\u003EPerformance bonus\u003C/li\u003E\n\u003Cli\u003E26 days annual leave plus UK public holidays\u003C/li\u003E\n\u003Cli\u003EBirthday day off – enjoy your birthday as a paid day off!\u003C/li\u003E\n\u003Cli\u003EStructured training, mentorship and career development\u003C/li\u003E\n\u003Cli\u003EAccess to professional networks, learning pathways and volunteering opportunities\u003C/li\u003E\n\u003Cli\u003EWork that aligns with your values – and drives impact for everyone\u003C/li\u003E\n\u003C/ul\u003E\n\u003Ch3\u003E\u003Cstrong\u003EWhy NESO?\u003C/strong\u003E\u003C/h3\u003E\n\u003Cp\u003EWe’re building a future where everyone has access to reliable, clean, and affordable energy.\u003C/p\u003E\n\u003Cp\u003EAt NESO, you’ll join a team that’s:\u003C/p\u003E\n\u003Cul\u003E\n\u003Cli\u003ECurious and visionary\u003C/li\u003E\n\u003Cli\u003EPurpose-driven and inclusive\u003C/li\u003E\n\u003Cli\u003ETechnically brilliant and always improving\u003C/li\u003E\n\u003Cli\u003ECollaborative, diverse and human\u003C/li\u003E\n\u003C/ul\u003E\n\u003Cp\u003EDiversity, equity and inclusion are at the heart of what we do. We encourage applications from all backgrounds and are happy to discuss any reasonable adjustments you may need.\u003C/p\u003E\n\u003Ch3\u003E\u003Cstrong\u003EHow to apply\u003C/strong\u003E\u003C/h3\u003E\n\u003Cp\u003ETo apply for this role and to find out more, please click on the apply button. Please note that applications may close before the application deadline, so apply early to avoid disappointment.\u003C/p\u003E","datePosted":"2026-09-17","validThrough":"2036-01-01","employmentType":["FULL_TIME"],"hiringOrganization":{"@type":"Organization","name":"National Energy System Operator (NESO)","sameAs":"https://www.neso.energy/careers","logo":{"@type":"ImageObject","url":"https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png","alternateName":"company logo"},"description":"About National Energy System Operator (NESO)\nWe are the National Energy System Operator for Great Britain, making sure that Great Britain has the essential energy it needs by ensuring supply meets demand every second of every day.\nWe sit at the heart of the energy system, harnessing our engineering and commercial expertise to balance supply and demand in real-time. Every second, we ensure that electricity flows seamlessly to where it’s needed. With the British Government’s commitment to achieving net zero carbon emissions by 2050, the energy industry is uniting to build a cleaner energy future.\nAt NESO, we play a vital role in this journey, continuously innovating to shape the future of energy, and working tirelessly to operate a more sustainable energy system. Together, we’re energising a greener Britain.","url":"https://higherin.com/company-profile/3323/national-energy-system-operator-neso"},"baseSalary":{"@type":"MonetaryAmount","currency":"GBP","value":{"@type":"QuantitativeValue","unitText":"YEAR","value":35000}},"jobLocation":[{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"Warwick","addressLocality":"Warwick","addressRegion":"Warwickshire","addressCountry":"United Kingdom","postalCode":"CV34 6DA"}},{"@type":"Place","address":{"@type":"PostalAddress","streetAddress":"RG41 5BN","addressLocality":"Wokingham","addressRegion":"Berkshire","addressCountry":"United Kingdom","postalCode":"RG41 5BN"}}]}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"EmployerAggregateRating","ratingValue":4.6,"ratingCount":41,"bestRating":5,"reviewCount":41,"worstRating":0,"itemReviewed":{"@type":"Organization","name":"National Energy System Operator (NESO)","sameAs":"https://www.neso.energy/careers","logo":{"@type":"ImageObject","url":"https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png","alternateName":"company logo"},"description":"About National Energy System Operator (NESO)\nWe are the National Energy System Operator for Great Britain, making sure that Great Britain has the essential energy it needs by ensuring supply meets demand every second of every day.\nWe sit at the heart of the energy system, harnessing our engineering and commercial expertise to balance supply and demand in real-time. Every second, we ensure that electricity flows seamlessly to where it’s needed. With the British Government’s commitment to achieving net zero carbon emissions by 2050, the energy industry is uniting to build a cleaner energy future.\nAt NESO, we play a vital role in this journey, continuously innovating to shape the future of energy, and working tirelessly to operate a more sustainable energy system. Together, we’re energising a greener Britain.","url":"https://higherin.com/company-profile/3323/national-energy-system-operator-neso"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Higherin","url":"https://higherin.com"}</script>
+
+    
+
+    
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Higherin" />
+    <link rel="manifest" href="/favicon/manifest.json" />
+    
+
+    <script>
+  window.__RMP_FLASH_MESSAGES__ = null</script>
+
+    <!-- Google Tag Manager -->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MG8CPWPQ' );
+</script>
+<!-- Google Tag Manager -->
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MG8CPWPQ" height="0"
+            width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div id="transition-message" data-banner="dismiss-transition-message" class="bg-grey-nero">
+    <div class="container mx-auto flex flex-row items-center justify-between px-4 py-4 min-h-[74px]">
+        <a href="/ratemyplacement-and-ratemyapprenticeship-have-rebranded-to-higherin" class="block text-[14px] md:text-[20px] group">
+            <p class="italic uppercase font-extrabold text-white ">
+                RateMyPlacement and RateMyApprenticeship are now <span class="text-lime">Higherin:</span>
+                <span class="underline group-hover:text-white/80 transition-colors duration-50 ease-in">
+                    Learn More
+                </span>
+            </p>
+        </a>
+        <div>
+            <span id="transition-message-close-action" data-banner-dismiss class="ml-2 fas fa-times text-white px-2 py-2 text-[22px] cursor-pointer hover:text-white/80 transition-colors duration-100 ease-in"></span>
+        </div>
+    </div>
+</div>
+<!-- <div id="bday-message" data-banner="dismiss-bday-message" class="bg-grey-nero">
+  <div class="container mx-auto flex flex-row items-center justify-between px-4 py-4 min-h-[74px]">
+    <a href="https://form.typeform.eu/to/BX7wrp8j" class="block text-[14px] md:text-[20px] group">
+            <p class="italic uppercase font-extrabold text-white">
+                It's our <span class="text-lime">1st Birthday!</span> Win paid work experience with us this autumn. <span class="text-lime underline">Enter Now.</span>
+            </p>
+        </a>
+         <div>
+            <span id="bday-message-close-action" data-banner-dismiss class="ml-2 fas fa-times text-white px-2 py-2 text-[22px] cursor-pointer hover:text-white/80 transition-colors duration-100 ease-in"></span>
+        </div>
+  </div>
+</div>
+ -->
+ <!-- <div id="results-day-banner" data-banner="dismiss-results-day" class="bg-red">
+    <div class="container mx-auto flex flex-row items-center justify-between px-4 py-4 min-h-[74px]">
+      <div class="flex items-center text-[14px] md:text-[20px] group overflow-hidden">
+        <p class="italic uppercase font-extrabold text-white">
+          RESULTS DAY IS HERE! FIGURE OUT YOUR NEXT STEP <a class="font-bold underline" href="/results-day">THIS WAY.</a>
+        </p>
+        </div>
+      <div>
+        <span id="results-day-banner-close-action" data-banner-dismiss class="ml-2 fas fa-times text-white px-2 py-2 text-[22px] cursor-pointer hover:text-white/80 transition-colors duration-100 ease-in"></span>
+      </div>
+    </div>
+  </div>
+   -->
+ <!-- <div id="naw-banner" data-banner="dismiss-naw-marquee" data-banner-marquee="0.2" class="bg-red">
+    <div class="mx-auto flex flex-row items-center justify-between px-4 py-4 min-h-[74px]">
+      <a id="naw-banner-text" data-banner-marquee-text href="/search-jobs/apprenticeships" data-click-target="naw26_banner" class="flex items-center text-[14px] md:text-[20px] group overflow-hidden">
+        <p class="italic uppercase font-extrabold text-white whitespace-nowrap">
+          NATIONAL APPRENTICESHIP WEEK IS HERE - FIND ROLES YOU’LL LOVE, GO BEHIND-THE-SCENES AND START EXPLORING <span class="fa fa-angles-right"></span>
+          <span class="mx-6 font-extrabold text-white">|</span>
+        </p>
+      </a>
+      <div>
+        <span id="dismiss-naw-marquee-close-action" data-banner-dismiss class="ml-2 fas fa-times text-white px-2 py-2 text-[22px] cursor-pointer hover:text-white/80 transition-colors duration-100 ease-in"></span>
+      </div>
+    </div>
+  </div>
+ -->
+
+<header class="relative bg-lime ">
+    <nav class="container mx-auto px-4 h-[70px] flex flex-row items-center">
+        <button type="button" class="mr-auto rounded-md  py-0 px-2 bg-black text-white ml-2 lg:hidden js-navigation-mobile-burger">
+            <span class="sr-only">Open menu</span>
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+
+        <a href="https://higherin.com" class="lg:ml-0 h-[70px]">
+            <img
+                src="https://imagekit-production.higherin.com/prod-higherin/logos/higherin-logo.svg"
+                width="125"
+                height="70"
+                alt="Higherin"
+                class="h-full"
+            />
+        </a>
+
+        <ul class="hidden lg:flex flex-row gap-4  ml-16">
+                <li class="group py-4">
+    <a href="/search-jobs"
+       class="font-extrabold italic uppercase text-xl  group-hover:bg-lime-reef rounded-lg block js-navigation-item py-2 px-4 transition-colors relative"
+       style="transform: skew(-10deg)"
+    >
+        <span style="transform: skew(10deg)" class="block mt-[2px]">
+            Jobs
+        </span>
+    </a>
+            <div class="absolute top-[63px] left-0 w-full hidden group-hover:flex z-50 pointer-events-none">
+            <div class="py-[30px] px-[28px] border-2 border-grey-very-light-grey bg-white rounded-2xl shadow-[0_0_16px_0_rgba(0,0,0,0.16)] mx-auto pointer-events-auto max-w-full">
+                <div class="flex flex-row gap-[22px]">
+                                            <div class="lg:w-[220px]">
+    <a href="/search-jobs" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/25944c2fcd/menu_search_jobs_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="Search All Jobs">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Search all jobs <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Search and apply for internships, placements, graduate jobs, insights and apprenticeships</p>
+    </a>
+</div>
+                                            <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                            <div class="" style="max-width: 215px;">
+        <h2 class="font-extrabold uppercase italic mb-2">University Students</h2>
+        <ul>
+            <li>
+    <a href="/search-jobs/internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Internships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/placements" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Placements
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/graduates" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Graduate Jobs and Schemes
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/insights" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Insights &amp; Vacation Schemes
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/brand-ambassadors" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Brand Ambassadors
+    </a>
+</li>
+        </ul>
+</div>
+                                            <div class="" style="max-width: 215px;">
+        <h2 class="font-extrabold uppercase italic mb-2">School Leavers</h2>
+        <ul>
+            <li>
+    <a href="/search-jobs/apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/degree-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Degree Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/level-2-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 2 Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/level-3-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 3 Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/higher-level-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 4/5 Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/school-leaver-programme" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        School Leaver Programmes
+    </a>
+</li>
+        </ul>
+</div>
+                                            <div class="" style="max-width: 215px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Popular Searches</h2>
+        <ul>
+            <li>
+    <a href="/search-jobs/placements/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Placements in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/internships/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Internships in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/graduates/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Graduate Jobs in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/graduates/engineering-manufacturing" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Engineering Graduate Schemes
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/placements/business" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Business Placements
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/internships/financial" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Finance Internships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/placements/marketing-parent" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Marketing Placements
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Apprenticeships in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/business" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Business Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/financial" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Finance Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/technology" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Tech Apprenticeships
+    </a>
+</li>
+        </ul>
+</div>
+                                    </div>
+            </div>
+        </div>
+    </li>
+
+            <li class="group py-4">
+    <a href="/search-reviews"
+       class="font-extrabold italic uppercase text-xl  group-hover:bg-lime-reef rounded-lg block js-navigation-item py-2 px-4 transition-colors relative"
+       style="transform: skew(-10deg)"
+    >
+        <span style="transform: skew(10deg)" class="block mt-[2px]">
+            Reviews
+        </span>
+    </a>
+            <div class="absolute top-[63px] left-0 w-full hidden group-hover:flex z-50 pointer-events-none">
+            <div class="py-[30px] px-[28px] border-2 border-grey-very-light-grey bg-white rounded-2xl shadow-[0_0_16px_0_rgba(0,0,0,0.16)] mx-auto pointer-events-auto max-w-full">
+                <div class="flex flex-row gap-[22px]">
+                                            <div class="lg:w-[220px]">
+    <a href="/write-a-review" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/7abf92c5e4/menu_new_review_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Write A Review <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Share your experience of your apprenticeship, internship or placement to help future applicants make informed career decisions</p>
+    </a>
+</div>
+                                            <div class="lg:w-[220px]">
+    <a href="/search-reviews" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/5b8b7de31e/menu_all_reviews_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Read All Reviews <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">What’s it like to work at your dream company? Written by university students and school leavers, read our job reviews to find out</p>
+    </a>
+</div>
+                                            <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                            <div class="" style="max-width: 282px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Reviews by Scheme</h2>
+        <ul>
+            <li>
+    <a href="/search-reviews/internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Internship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/placements" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Placement Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/graduates" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Graduate Job Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/insights" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Insight &amp; Vacation Scheme Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/degree-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Degree Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/level-2-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 2 Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/level-3-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 3 Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/higher-level-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 4/5 Apprenticeship Reviews
+    </a>
+</li>
+        </ul>
+</div>
+                                    </div>
+            </div>
+        </div>
+    </li>
+
+            <li class="group py-4">
+    <a href="/search-companies"
+       class="font-extrabold italic uppercase text-xl  group-hover:bg-lime-reef rounded-lg block js-navigation-item py-2 px-4 transition-colors relative"
+       style="transform: skew(-10deg)"
+    >
+        <span style="transform: skew(10deg)" class="block mt-[2px]">
+            Companies
+        </span>
+    </a>
+            <div class="absolute top-[63px] left-0 w-full hidden group-hover:flex z-50 pointer-events-none">
+            <div class="py-[30px] px-[28px] border-2 border-grey-very-light-grey bg-white rounded-2xl shadow-[0_0_16px_0_rgba(0,0,0,0.16)] mx-auto pointer-events-auto max-w-full">
+                <div class="flex flex-row gap-[22px]">
+                                            <div class="lg:w-[220px]">
+    <a href="/search-companies" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/0bb6d76615/menu_search_companies_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">All Companies <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Search for companies to learn more about their culture, read job reviews written by students, and discover the latest job opportunities they have to offer</p>
+    </a>
+</div>
+                                            <div class="lg:w-[220px]">
+    <a href="/top-employers" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/899c29a825/menu_topemployers_pink_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Top Employers <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Each year, we rank the employers leading the way in apprenticeship, undergraduate and graduate schemes - voted for entirely by your student job reviews</p>
+    </a>
+</div>
+                                    </div>
+            </div>
+        </div>
+    </li>
+
+            <li class="group py-4">
+    <a href="/careers-advice"
+       class="font-extrabold italic uppercase text-xl  group-hover:bg-lime-reef rounded-lg block js-navigation-item py-2 px-4 transition-colors relative"
+       style="transform: skew(-10deg)"
+    >
+        <span style="transform: skew(10deg)" class="block mt-[2px]">
+            Advice
+        </span>
+    </a>
+            <div class="absolute top-[63px] left-0 w-full hidden group-hover:flex z-50 pointer-events-none">
+            <div class="py-[30px] px-[28px] border-2 border-grey-very-light-grey bg-white rounded-2xl shadow-[0_0_16px_0_rgba(0,0,0,0.16)] mx-auto pointer-events-auto max-w-full">
+                <div class="flex flex-row gap-[22px]">
+                                            <div class="" style="max-width: 282px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Explore Industries</h2>
+        <ul>
+            <li>
+    <a href="/career-guides/accounting" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Accounting Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/banking" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Banking Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/business" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Business Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/engineering" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Engineering Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/finance" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Finance Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/it" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        IT &amp; Technology Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/legal-law" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Legal &amp; Law Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/marketing" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Marketing Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/public-sector" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Public Sector Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/retail-fmcg" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Retail &amp; FMCG Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/science-research" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Science &amp; Research Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        View all Industries »
+    </a>
+</li>
+        </ul>
+</div>
+                                            <div class="" style="max-width: 282px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Explore Schemes</h2>
+        <ul>
+            <li>
+    <a href="/schemes/internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Internship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/placements" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Placement?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/graduate-jobs" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Graduate Job?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/graduate-schemes" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Graduate Scheme?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/insights-spring-weeks" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Insight Scheme?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/off-cycle-internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Off-Cycle Internship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/degree-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Degree Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/level-2-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Level 2 Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/level-3-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Level 3 Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/higher-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Level 4 or 5 Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        View all Schemes »
+    </a>
+</li>
+        </ul>
+</div>
+                                            <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                            <ul class="lg:w-[310px] lg:min-w-[310px] flex flex-col gap-6">
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/350x350/f5992149ce/careers-advice.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="careers advice">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">All Careers Advice <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Educate yourself on your future career decisions </p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/exploring-options">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/339x338/d92ad68ab0/exploring-options.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="exploring options">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Exploring Options <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Discover career paths that match your interests and strengths</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/application-tips">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/344x345/70d5d822f0/application-tips.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="application tips">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Application Tips <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Stand out with our CVs and application hacks</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/interview-tips">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/341x341/9be8ca2c4a/interview-tips.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="interview tips">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Interview Tips <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Turn nerves into confidence and impress employers</p>
+    </div>
+</a>
+    </li>
+    </ul>
+                                            <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                            <ul class="lg:w-[310px] lg:min-w-[310px] flex flex-col gap-6">
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/student-life">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/348x348/2b5975eadb/student-life.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="student life">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Student Life <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Make the most of your university or school experience</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/working-life">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/348x348/acc517ad90/working-life.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="working life">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Working Life <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Navigate your first job with ease</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/hubs/universities">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/350x350/84d1861673/uni-hub.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="university hub">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">University Hub <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Resources for university careers advisors and their students</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/hubs/schools">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/348x348/f4d7b8d30a/school-hub.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="schools hub">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Schools Hub <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Supporting your students with post-16 options</p>
+    </div>
+</a>
+    </li>
+    </ul>
+                                    </div>
+            </div>
+        </div>
+    </li>
+
+        </ul>
+
+
+
+
+        <nav class="flex flex-row ml-auto py-4 group/account-menu" aria-label="Account Menu">
+            <div class="js-noauth-buttons flex-row   hidden lg:flex ">
+                <a href="https://employers.higherin.com"
+                   class="btn-secondary btn-grey mr-4">
+                   For Employers
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </a>
+
+                <a href="https://higherin.com/login"
+                   class="btn-secondary btn-purple">
+                    Sign In
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </a>
+            </div>
+
+            <div class="js-authed-buttons   lg:hidden  ">
+                <div class="relative  ">
+                    <a href="https://higherin.com/dashboard"
+                       class="js-account-menu-button font-extrabold italic uppercase text-xl  lg:bg-lime-reef lg:hover:bg-lime-reef/80 rounded-lg block lg:py-1 lg:px-4 transition-colors duration-300 ease-in-out"
+                       style="transform: skew(-10deg)"
+                       aria-label="User account account menu options"
+                    >
+                        <span style="transform: skew(10deg)" class="flex items-center ">
+                            <span class="mr-2">
+                                <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 32 32" fill="none" class="h-[32px] w-[32px] lg:w-[24px] lg-h-[24px]">
+                                    <path d="M24.9375 24.0125C23.5562 21.6125 20.9625 20 18 20H14C11.0375 20 8.44375 21.6125 7.0625 24.0125C9.2625 26.4625 12.45 28 16 28C19.55 28 22.7375 26.4563 24.9375 24.0125ZM0 16C0 11.7565 1.68571 7.68687 4.68629 4.68629C7.68687 1.68571 11.7565 0 16 0C20.2435 0 24.3131 1.68571 27.3137 4.68629C30.3143 7.68687 32 11.7565 32 16C32 20.2435 30.3143 24.3131 27.3137 27.3137C24.3131 30.3143 20.2435 32 16 32C11.7565 32 7.68687 30.3143 4.68629 27.3137C1.68571 24.3131 0 20.2435 0 16ZM16 17C17.1935 17 18.3381 16.5259 19.182 15.682C20.0259 14.8381 20.5 13.6935 20.5 12.5C20.5 11.3065 20.0259 10.1619 19.182 9.31802C18.3381 8.47411 17.1935 8 16 8C14.8065 8 13.6619 8.47411 12.818 9.31802C11.9741 10.1619 11.5 11.3065 11.5 12.5C11.5 13.6935 11.9741 14.8381 12.818 15.682C13.6619 16.5259 14.8065 17 16 17Z" fill="black"/>
+                                </svg>
+                            </span>
+                            <span class="js-account-name hidden lg:block mt-[2px] max-w-[120px] overflow-hidden text-ellipsis">
+                                                            </span>
+
+                        </span>
+                    </a>
+
+                    <div class="fixed inset-0 bg-black bg-opacity-25 z-10 hidden js-account-menu-overlay"></div>
+<div class="fixed left-0 bottom-0 right-0 md:absolute lg:top-[42px] md:left-auto md:bottom-auto z-20 mt-2 js-account-menu hidden md:w-[490px] lg:group-hover/account-menu:flex ">
+    <div class=" flex-auto overflow-y-scroll xs:overflow-hidden max-h-[100vh] bg-white  p-[28px] pt-[16px] md:pt-[28px] shadow-[0_0_16px_0_rgba(0,0,0,0.16)] border border-grey-very-light-grey rounded-t-2xl md:rounded-2xl">
+        <div class="js-account-menu-close-button text-right lg:hidden">
+            <i class="fas fa-times text-[32px]"></i>
+        </div>
+        
+
+        <div class="js-account-menu-content-authed    hidden  ">
+            <ul class="flex flex-col gap-6">
+                                <li class="flex flex-col gap-6">
+                    <a href="/dashboard/my-hub" class="group flex gap-x-6 group/account-menu-link cursor-pointer " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center  group-hover:bg-web-white-smoke/80 ">
+                            <i class="fas fa-table-columns text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  group-hover/account-menu-link:text-black/70 ">
+                            My Dashboard
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222] group-hover:text-[#222]/80  text-[15px]">See new jobs and content matching your interests</p>
+                        </div>
+                    </a>
+                </li>
+                                <li class="flex flex-col gap-6">
+                    <a href="/dashboard/app-tracker" class="group flex gap-x-6 group/account-menu-link cursor-pointer " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center  group-hover:bg-web-white-smoke/80 ">
+                            <i class="fas fa-clipboard-list-check text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  group-hover/account-menu-link:text-black/70 ">
+                            Application tracker
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222] group-hover:text-[#222]/80  text-[15px]">Track your applications across multiple jobs</p>
+                        </div>
+                    </a>
+                </li>
+                                <li class="flex flex-col gap-6">
+                    <a href="/dashboard/my-reviews" class="group flex gap-x-6 group/account-menu-link cursor-pointer " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center  group-hover:bg-web-white-smoke/80 ">
+                            <i class="fas fa-star-half-stroke text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  group-hover/account-menu-link:text-black/70 ">
+                            My Reviews
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222] group-hover:text-[#222]/80  text-[15px]">View your in progress or completed reviews</p>
+                        </div>
+                    </a>
+                </li>
+                                <li class="flex flex-col gap-6">
+                    <a href="/dashboard/saved-items" class="group flex gap-x-6 group/account-menu-link cursor-pointer " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center  group-hover:bg-web-white-smoke/80 ">
+                            <i class="fas fa-folder-check text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  group-hover/account-menu-link:text-black/70 ">
+                            Saved Items
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222] group-hover:text-[#222]/80  text-[15px]">Managed your saved jobs and searches</p>
+                        </div>
+                    </a>
+                </li>
+                                <li class="flex flex-col gap-6">
+                    <a href="/dashboard/account/personal-information" class="group flex gap-x-6 group/account-menu-link cursor-pointer " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center  group-hover:bg-web-white-smoke/80 ">
+                            <i class="fas fa-user-gear text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  group-hover/account-menu-link:text-black/70 ">
+                            Account
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222] group-hover:text-[#222]/80  text-[15px]">Update your profile to receive a better experience</p>
+                        </div>
+                    </a>
+                </li>
+                
+                
+
+            <hr class=" border-grey-very-light-grey">
+
+            <li class="md:grid md:grid-cols-2 gap-4">
+                <a href="/dashboard/my-hub" class="w-full hidden h-fit md:block btn-primary btn-purple ">
+                    Visit Dashboard
+                </a>
+                <form method="POST" action="/logout" class="">
+                    <input type="hidden" name="_token" value="3GFnGsoCwynpNcw3lCk9S7pmbArykOmhLTCVTQRb" autocomplete="off">                    <button type="submit" class="w-full btn-primary btn-grey " data-posthog-reset>
+                        Sign out
+                    </button>
+                </form>
+            </li>
+        </ul>
+        </div>
+
+        <ul class="js-account-menu-content-noauth   ">
+            <li class="flex flex-col gap-6">
+                                    <span class="group flex gap-x-6 opacity-25 " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center   ">
+                            <i class="fas fa-table-columns text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  ">
+                            My Dashboard
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222]   text-[15px]">See new jobs and content matching your interests</p>
+                        </div>
+                    </span>
+                                    <span class="group flex gap-x-6 opacity-25 " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center   ">
+                            <i class="fas fa-clipboard-list-check text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  ">
+                            Application tracker
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222]   text-[15px]">Track your applications across multiple jobs</p>
+                        </div>
+                    </span>
+                                    <span class="group flex gap-x-6 opacity-25 " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center   ">
+                            <i class="fas fa-star-half-stroke text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  ">
+                            My Reviews
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222]   text-[15px]">View your in progress or completed reviews</p>
+                        </div>
+                    </span>
+                                    <span class="group flex gap-x-6 opacity-25 " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center   ">
+                            <i class="fas fa-folder-check text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  ">
+                            Saved Items
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222]   text-[15px]">Managed your saved jobs and searches</p>
+                        </div>
+                    </span>
+                                    <span class="group flex gap-x-6 opacity-25  hidden sm:flex " >
+                        <div class="rounded-lg bg-web-white-smoke h-[70px] min-w-[70px] flex items-center justify-center   ">
+                            <i class="fas fa-user-gear text-[24px] group-hover/account-menu-link:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                        <span class="font-extrabold text-black uppercase italic  ">
+                            Account
+                            <i class="fas fa-chevron-right ml-2"></i>
+                        </span>
+                            <p class="mt-1 text-[#222]   text-[15px]">Update your profile to receive a better experience</p>
+                        </div>
+                    </span>
+                                </li>
+            <hr class="my-6 border-grey-very-light-grey">
+
+            <li class="flex flex-col gap-4">
+                <a href="/register" class="w-full btn-primary btn-purple">
+                    Create an account
+                    <i class="fas fa-angles-right ml-2"></i>
+                </a>
+                <a href="/login" class="w-full  btn-primary btn-grey ">
+                    Sign in
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+                </div>
+            </div>
+
+
+        </nav>
+    </div>
+</header>
+
+<div class="bg-white">
+    <div class="lg:hidden hidden relative z-40 js-navigation-container transition-opacity ease-linear duration-300 opacity-0">
+
+        <div class="fixed inset-0 bg-black bg-opacity-25 js-navigation-backdrop " aria-hidden="true"></div>
+
+        <div class="fixed inset-0 z-40 flex js-navigation-menu transition ease-in-out duration-300 transform -translate-x-full">
+            <!--
+                Off-canvas menu, show/hide based on off-canvas menu state.
+
+                Entering: "transition ease-in-out duration-300 transform"
+                  From: "translate-x-full"
+                  To: "translate-x-0"
+                Leaving: "transition ease-in-out duration-300 transform"
+                  From: "translate-x-0"
+                  To: "-translate-x-full"
+              -->
+            <ul class="relative flex w-[276px] flex-col overflow-y-auto bg-white shadow-xl">
+                <li class="flex">
+                    <button type="button" class="inline-flex items-center justify-center rounded-md px-8 py-4 ml-auto hover:text-black/70 ">
+                        <span class="sr-only">Close menu</span>
+                        <i class="fas fa-xmark text-4xl"></i>
+                    </button>
+                </li>
+                <!-- Links -->
+                                                    <li>
+    <div class="mb-2">
+        <a href="/search-jobs" class="font-extrabold italic uppercase text-xl px-[28px] py-[12px] hover:bg-gray-100 rounded block js-navigation-item-mobile">
+            Jobs
+                            <i class="fa fa-angle-down"></i>
+                    </a>
+    </div>
+            <div class="hidden">
+            <div class="flex flex-col gap-[28px] px-[28px] ">
+                                    <div class="lg:w-[220px]">
+    <a href="/search-jobs" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/25944c2fcd/menu_search_jobs_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="Search All Jobs">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Search all jobs <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Search and apply for internships, placements, graduate jobs, insights and apprenticeships</p>
+    </a>
+</div>
+                                    <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                    <div class="" style="max-width: 215px;">
+        <h2 class="font-extrabold uppercase italic mb-2">University Students</h2>
+        <ul>
+            <li>
+    <a href="/search-jobs/internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Internships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/placements" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Placements
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/graduates" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Graduate Jobs and Schemes
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/insights" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Insights &amp; Vacation Schemes
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/brand-ambassadors" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Brand Ambassadors
+    </a>
+</li>
+        </ul>
+</div>
+                                    <div class="" style="max-width: 215px;">
+        <h2 class="font-extrabold uppercase italic mb-2">School Leavers</h2>
+        <ul>
+            <li>
+    <a href="/search-jobs/apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/degree-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Degree Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/level-2-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 2 Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/level-3-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 3 Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/higher-level-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 4/5 Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/school-leaver-programme" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        School Leaver Programmes
+    </a>
+</li>
+        </ul>
+</div>
+                                    <div class="" style="max-width: 215px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Popular Searches</h2>
+        <ul>
+            <li>
+    <a href="/search-jobs/placements/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Placements in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/internships/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Internships in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/graduates/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Graduate Jobs in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/graduates/engineering-manufacturing" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Engineering Graduate Schemes
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/placements/business" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Business Placements
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/internships/financial" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Finance Internships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/placements/marketing-parent" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Marketing Placements
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/london" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Apprenticeships in London
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/business" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Business Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/financial" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Finance Apprenticeships
+    </a>
+</li>
+            <li>
+    <a href="/search-jobs/apprenticeships/technology" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Tech Apprenticeships
+    </a>
+</li>
+        </ul>
+</div>
+                            </div>
+        </div>
+    </li>
+
+
+                                    <li>
+    <div class="mb-2">
+        <a href="/search-reviews" class="font-extrabold italic uppercase text-xl px-[28px] py-[12px] hover:bg-gray-100 rounded block js-navigation-item-mobile">
+            Reviews
+                            <i class="fa fa-angle-down"></i>
+                    </a>
+    </div>
+            <div class="hidden">
+            <div class="flex flex-col gap-[28px] px-[28px] ">
+                                    <div class="lg:w-[220px]">
+    <a href="/write-a-review" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/7abf92c5e4/menu_new_review_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Write A Review <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Share your experience of your apprenticeship, internship or placement to help future applicants make informed career decisions</p>
+    </a>
+</div>
+                                    <div class="lg:w-[220px]">
+    <a href="/search-reviews" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/5b8b7de31e/menu_all_reviews_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Read All Reviews <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">What’s it like to work at your dream company? Written by university students and school leavers, read our job reviews to find out</p>
+    </a>
+</div>
+                                    <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                    <div class="" style="max-width: 282px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Reviews by Scheme</h2>
+        <ul>
+            <li>
+    <a href="/search-reviews/internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Internship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/placements" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Placement Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/graduates" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Graduate Job Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/insights" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Insight &amp; Vacation Scheme Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/degree-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Degree Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/level-2-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 2 Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/level-3-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 3 Apprenticeship Reviews
+    </a>
+</li>
+            <li>
+    <a href="/search-reviews/higher-level-apprenticeship" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Level 4/5 Apprenticeship Reviews
+    </a>
+</li>
+        </ul>
+</div>
+                            </div>
+        </div>
+    </li>
+
+
+                                    <li>
+    <div class="mb-2">
+        <a href="/search-companies" class="font-extrabold italic uppercase text-xl px-[28px] py-[12px] hover:bg-gray-100 rounded block js-navigation-item-mobile">
+            Companies
+                            <i class="fa fa-angle-down"></i>
+                    </a>
+    </div>
+            <div class="hidden">
+            <div class="flex flex-col gap-[28px] px-[28px] ">
+                                    <div class="lg:w-[220px]">
+    <a href="/search-companies" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/0bb6d76615/menu_search_companies_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">All Companies <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Search for companies to learn more about their culture, read job reviews written by students, and discover the latest job opportunities they have to offer</p>
+    </a>
+</div>
+                                    <div class="lg:w-[220px]">
+    <a href="/top-employers" class="block group/media-link">
+        <div class="rounded-lg overflow-hidden max-w-[220px] h-[165px] mb-2">
+            <img src="https://a.storyblok.com/f/299121/440x330/899c29a825/menu_topemployers_pink_x2.png/m/" class="block  lg:w-[220px] group-hover/media-link:scale-105 transition-transform" loading="lazy" alt="">
+        </div>
+        <h2 class="font-extrabold uppercase italic mb-2 ">Top Employers <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Each year, we rank the employers leading the way in apprenticeship, undergraduate and graduate schemes - voted for entirely by your student job reviews</p>
+    </a>
+</div>
+                            </div>
+        </div>
+    </li>
+
+
+                                    <li>
+    <div class="mb-2">
+        <a href="/careers-advice" class="font-extrabold italic uppercase text-xl px-[28px] py-[12px] hover:bg-gray-100 rounded block js-navigation-item-mobile">
+            Advice
+                            <i class="fa fa-angle-down"></i>
+                    </a>
+    </div>
+            <div class="hidden">
+            <div class="flex flex-col gap-[28px] px-[28px] ">
+                                    <div class="" style="max-width: 282px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Explore Industries</h2>
+        <ul>
+            <li>
+    <a href="/career-guides/accounting" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Accounting Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/banking" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Banking Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/business" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Business Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/engineering" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Engineering Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/finance" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Finance Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/it" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        IT &amp; Technology Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/legal-law" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Legal &amp; Law Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/marketing" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Marketing Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/public-sector" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Public Sector Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/retail-fmcg" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Retail &amp; FMCG Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides/science-research" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        Science &amp; Research Careers
+    </a>
+</li>
+            <li>
+    <a href="/career-guides" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        View all Industries »
+    </a>
+</li>
+        </ul>
+</div>
+                                    <div class="" style="max-width: 282px;">
+        <h2 class="font-extrabold uppercase italic mb-2">Explore Schemes</h2>
+        <ul>
+            <li>
+    <a href="/schemes/internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Internship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/placements" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Placement?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/graduate-jobs" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Graduate Job?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/graduate-schemes" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Graduate Scheme?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/insights-spring-weeks" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Insight Scheme?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/off-cycle-internships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Off-Cycle Internship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is an Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/degree-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Degree Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/level-2-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Level 2 Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/level-3-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Level 3 Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes/higher-apprenticeships" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        What is a Level 4 or 5 Apprenticeship?
+    </a>
+</li>
+            <li>
+    <a href="/schemes" class="block mb-2 text-black-shady-lady text-sm hover:text-web-purple-heart-heart transition-colors">
+        View all Schemes »
+    </a>
+</li>
+        </ul>
+</div>
+                                    <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                    <ul class="lg:w-[310px] lg:min-w-[310px] flex flex-col gap-6">
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/350x350/f5992149ce/careers-advice.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="careers advice">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">All Careers Advice <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Educate yourself on your future career decisions </p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/exploring-options">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/339x338/d92ad68ab0/exploring-options.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="exploring options">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Exploring Options <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Discover career paths that match your interests and strengths</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/application-tips">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/344x345/70d5d822f0/application-tips.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="application tips">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Application Tips <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Stand out with our CVs and application hacks</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/interview-tips">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/341x341/9be8ca2c4a/interview-tips.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="interview tips">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Interview Tips <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Turn nerves into confidence and impress employers</p>
+    </div>
+</a>
+    </li>
+    </ul>
+                                    <div class="w-auto  border-t lg:border-t-0 lg:h-auto lg:border-l border-solid border-[#d9d9d9]"></div>
+
+                                    <ul class="lg:w-[310px] lg:min-w-[310px] flex flex-col gap-6">
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/student-life">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/348x348/2b5975eadb/student-life.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="student life">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Student Life <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Make the most of your university or school experience</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/careers-advice/working-life">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/348x348/acc517ad90/working-life.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="working life">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Working Life <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Navigate your first job with ease</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/hubs/universities">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/350x350/84d1861673/uni-hub.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="university hub">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">University Hub <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Resources for university careers advisors and their students</p>
+    </div>
+</a>
+    </li>
+        <li class="flex flex-col gap-6">
+        <a class="flex flex-col lg:flex-row lg:gap-6  group/jumbo-link" href="/hubs/schools">
+    <div class="min-w-[80px] h-[80px] mb-4 lg:mb-0 rounded-lg  overflow-hidden">
+        <img src="https://a.storyblok.com/f/299121/348x348/f4d7b8d30a/school-hub.png/m/" class="block group-hover/jumbo-link:scale-105 transition-transform" width="80" height="80" loading="lazy" alt="schools hub">
+    </div>
+
+    <div>
+        <h2 class="font-extrabold uppercase italic mb-2">Schools Hub <i class="fa fa-angle-double-right"></i></h2>
+        <p class="text-sm">Supporting your students with post-16 options</p>
+    </div>
+</a>
+    </li>
+    </ul>
+                            </div>
+        </div>
+    </li>
+
+
+                                            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div id="Teleport-alerts-destination"></div>
+<div id="vue-flash-messages">
+    <flash-message></flash-message>
+</div>
+
+    <main class="container mx-auto md:px-4">
+                        <nav aria-label="Breadcrumb" class="container mx-auto my-9 ">
+		<ol id="breadcrumbs" class="flex flex-wrap px-4 items-center font-semibold md:px-1">
+							<li class="mr-1 text-left flex flex-nowrap">
+											<a class="" href="https://higherin.com">
+															<span class="">Home</span>
+													</a>
+						<span class="ml-1" aria-hidden="true">/</span>
+									</li>
+							<li class="mr-1 text-left flex flex-nowrap">
+											<a class="line-clamp-1" href="https://higherin.com/search-jobs">
+															<span class="line-clamp-1">Jobs</span>
+													</a>
+						<span class="ml-1" aria-hidden="true">/</span>
+									</li>
+							<li class="mr-1 text-left flex flex-nowrap">
+											<a class="line-clamp-1" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">
+															<span class="line-clamp-1">National Energy System Operator (NESO)</span>
+													</a>
+						<span class="ml-1" aria-hidden="true">/</span>
+									</li>
+							<li class="mr-1 text-left flex flex-nowrap">
+																		<span class="line-clamp-1" aria-current="page">Graduate Power System Engineer 2027</span>
+															</li>
+					</ol>
+	</nav>
+                    <div class="grid md:grid-cols-[minmax(430px,1fr),minmax(290px,416px)] grid-cols-1 gap-x-6">
+            <div class="text-center md:text-left md:border border-solid border-1 border-[#CECECE] pb-2 md:py-10 md:px-10 rounded-2xl">
+                    <div class="w-full flex flex-col md:flex-row">
+    <a href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso" class="w-[160px] h-[160px] lg:w-[200px] lg:h-[200px] self-center shrink-0 order-1 md:order-0">
+        <img class="w-full border border-1 border-solid border-grey-very-light-grey rounded-lg" src="https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png" alt="National Energy System Operator (NESO)" loading="lazy">
+    </a>
+    <div class="text-xl order-3 my-4 md:my-0 md:hidden font-bold">
+        at
+        <a class="hover:underline" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">National Energy System Operator (NESO)</a>
+    </div>
+    <div class="sm:ml-[22px] order-0 md:order-1 px-4">
+        <h1 class="text-3xl lg:text-4xl font-bold mb-5 md:mb-4">Graduate Power System Engineer 2027</h1>
+        <p class="hidden md:block text-xl lg:text-3xl font-semibold">
+            at <a class="hover:underline" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">National Energy System Operator (NESO)</a>
+        </p>
+    </div>
+</div>
+    <div class="md:hidden flex flex-nowrap items-center justify-center p-4 mx-auto">
+        <img src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-employer-large.svg" alt="Top Employer" class="h-[48px] mb-2" />
+    </div>
+<div class="md:hidden flex flex-nowrap items-center justify-center p-4 max-w-96 mx-auto">
+            <span  onclick="showCompanySummaryModal()" class="basis-1/2 cursor-pointer font-semibold text-md flex items-center justify-center"><span class="far fa-buildings text-2xl mr-2"></span>About</span>
+          <span class="h-8 w-[1px] block bg-black"></span>                 <span onclick="showCompanyRatingModal()" class="basis-1/2 cursor-pointer font-semibold text-md flex items-center justify-center"><span class="fak fa-rmp-custom-rating-star-square-bubble text-2xl mr-2"></span>4.6/5</span>
+    </div>
+<script>
+    function showCompanySummaryModal(){
+        document.dispatchEvent(new CustomEvent('open-modal-company-info-summary-modal'));
+    }
+    function showCompanyRatingModal(){
+        document.dispatchEvent(new CustomEvent('open-modal-company-rating-summary-modal'));
+    }
+</script>
+                <nav class="md:hidden z-10 sticky top-0 flex space-x-4 p-4 mt-3 bg-gray-100 text-center justify-center" aria-label="Tabs">
+                    <a href="#job-listing-details"
+                       class="w-full max-w-[176px] h-[50px] flex items-center justify-center font-extrabold uppercase italic rounded-lg px-4 text-black mobile-job-listing-tab-selected">Summary</a>
+                    <a href="#job-description"
+                       class="w-full max-w-[176px] whitespace-nowrap h-[50px] flex items-center justify-center font-extrabold uppercase italic rounded-lg px-4 text-black">Job
+                        Description</a>
+                </nav>
+                <div class="px-4 mb-4 md:mb-20 md:px-0 my-10 text-left">
+                    <div id="job-listing-details" class="block md:hidden mb-16 scroll-mt-24">
+                            <h2 class="hidden md:block font-bold text-2xl">Job Details</h2>
+    <div>
+    <div class="flex flex-wrap relative items-center border border-1 border-[#CECECE] border-solid rounded-lg p-4 mt-4  ">
+        <span class="far fa-alarm-clock mr-3 text-[20px] "></span> <b
+                class="text-[15px]">Deadline:</b>
+                    <span class="ml-2 text-[15px] font-semibold">Ongoing</span>
+        
+            </div>
+            <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg p-4 mt-4">
+            <span class="fak fa-rmp-custom-money-bag mr-3 text-[20px]"></span>
+            <b class="text-[15px]">Salary:</b>
+            <div class="flex flex-wrap">
+                                    <span class="w-full ml-4 text-[15px] font-semibold"> £35,000 per year</span>
+                                                    <span class="w-full ml-4 text-[15px] font-semibold">+ £2,000 welcome payment</span>
+                            </div>
+        </div>
+                    <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg px-4 pt-4 pb-1 mt-4">
+            <div class="shrink-0">
+                <span class="far fa-rocket-launch mr-2.5 text-[20px]"></span>
+                <span class="mr-4">
+                    <b class="text-[15px]">Job Type:</b>
+                </span>
+            </div>
+            <div class="flex flex-wrap">
+                <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Graduate Scheme</div>
+            </div>
+        </div>
+                <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg px-4 pt-4 pb-1 mt-4">
+            <div class="shrink-0">
+                <span class="far fa-briefcase mr-2.5 text-[20px]"></span>
+                <span class="mr-4">
+                    <b class="text-[15px]">Job Roles:</b>
+                </span>
+            </div>
+            <div class="flex flex-wrap">
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Information Technology</div>
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Engineering</div>
+                            </div>
+        </div>
+    
+            <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg px-4 pt-4 pb-1 mt-4">
+            <div class="shrink-0">
+                <span class="far fa-map-marker-alt mr-2.5 text-[20px]"></span><span class="mr-4"><b class="text-[15px]">Locations: </b></span>
+            </div>
+            <div class="flex flex-wrap">
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Warwick</div>
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Wokingham</div>
+                            </div>
+        </div>
+    </div>
+                    </div>
+                    <div id="job-description" class="scroll-mt-24">
+                            <h2 class="font-bold text-2xl mb-6">Job Description</h2>
+    
+    <div class="prose leading-normal max-w-none">
+        <p>Our 18-month Graduate Programme is designed to help you build the technical knowledge, confidence and connections to make a real impact. Through three six-month placements across different teams, you’ll gain a broad view of how we plan, operate and transform the electricity system — from real-time control through to future system planning and strategy.</p>
+<h3><strong>What You’ll Be Doing</strong></h3>
+<p>As a Graduate Power System Engineer, you’ll join the team working towards Clean Power by 2030. You’ll contribute to the big picture whilst learning fast on the job.</p>
+<p>You could be:</p>
+<ul>
+<li>Running power system analysis to explore risks and identify smarter network solutions</li>
+<li>Helping develop new strategies for balancing the grid with more renewables</li>
+<li>Collaborating with Transmission Owners to improve simulation models</li>
+<li>Supporting strategic energy planning and whole-system thinking</li>
+<li>Building technical publications used by government and industry</li>
+<li>Engaging with regulators, stakeholders, and industry partners</li>
+<li>Supporting new demand and generation connections</li>
+<li>Contributing to the development of the Grid Code and operability tools</li>
+<li>Developing and maintaining power system network models used for operational and future network studies</li>
+<li>Helping model emerging technologies such as battery energy storage, offshore wind, HVDC links, hydrogen integration and flexible demand</li>
+</ul>
+<h3><strong>What We’re Looking For</strong></h3>
+<p><strong>Degree Requirements:</strong> You’ll need a minimum 2:2 degree in:</p>
+<ul>
+<li>Electrical, Electronic or Mechanical Engineering</li>
+<li>Physics</li>
+<li>Maths</li>
+</ul>
+<p><strong>Skills & Attributes:</strong></p>
+<ul>
+<li>An understanding of how energy systems work (or curiosity to learn fast)</li>
+<li>Programming skills or a keen interest in data-driven analysis</li>
+<li>Confidence writing reports, presenting ideas, and solving problems</li>
+<li>A collaborative mindset and strong communication skills</li>
+<li><strong>Bonus:</strong> A full UK driving licence is desirable.</li>
+</ul>
+<p><em>We actively welcome applications from women and those from underrepresented backgrounds in tech. If you’re looking for a place that supports you to grow, we’re here for it.</em></p>
+<h3><strong>What You’ll Get</strong></h3>
+<ul>
+<li>£35,000 salary + £2,000 welcome payment</li>
+<li>Performance bonus</li>
+<li>26 days annual leave plus UK public holidays</li>
+<li>Birthday day off – enjoy your birthday as a paid day off!</li>
+<li>Structured training, mentorship and career development</li>
+<li>Access to professional networks, learning pathways and volunteering opportunities</li>
+<li>Work that aligns with your values – and drives impact for everyone</li>
+</ul>
+<h3><strong>Why NESO?</strong></h3>
+<p>We’re building a future where everyone has access to reliable, clean, and affordable energy.</p>
+<p>At NESO, you’ll join a team that’s:</p>
+<ul>
+<li>Curious and visionary</li>
+<li>Purpose-driven and inclusive</li>
+<li>Technically brilliant and always improving</li>
+<li>Collaborative, diverse and human</li>
+</ul>
+<p>Diversity, equity and inclusion are at the heart of what we do. We encourage applications from all backgrounds and are happy to discuss any reasonable adjustments you may need.</p>
+<h3><strong>How to apply</strong></h3>
+<p>To apply for this role and to find out more, please click on the apply button. Please note that applications may close before the application deadline, so apply early to avoid disappointment.</p>
+    </div>
+
+    
+    <div>
+        <br>
+            </div>
+
+                                        <div id="vue-job-apply-description" class="mt-4">
+                    <job-redirect-button class="w-fit"
+                        :id=44465
+                        url="/redirect?job_id=44465"
+                        company-name="National Energy System Operator (NESO)"
+                        apply-type="redirect"
+                        job-title="Graduate Power System Engineer 2027"
+                        logo="https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png"
+                    ></job-redirect-button>
+                </div>
+                                            </div>
+                </div>
+            </div>
+            <div class="pb-10">
+                    <div id="sticky"
+        class="fixed bottom-0 md:sticky w-full z-10 md:shadow-[10px_-4px_12px_31px_#ffffff] rounded-xl flex flex-col content-center md:top-6 right-0 md:mb-7"
+    >
+                <div class="border border-[#CECECE] md:rounded-xl px-6 py-4 md:py-6 bg-white md:shadow-[0px_0px_16px_0px_rgba(0,0,0,0.08)]">
+            <div class="flex justify-between md:block">
+                                                            <div id="vue-job-menu-actions">
+                            <job-redirect-button
+                                :id="44465"
+                                url="/redirect?job_id=44465"
+                                apply-type="redirect"
+                                company-name="National Energy System Operator (NESO)"
+                                job-title="Graduate Power System Engineer 2027"
+                                logo="https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png"
+                                class="md:mb-3"
+                            ></job-redirect-button>
+                        </div>
+                                    
+                                    <div id="vue-company-menu-save-item-icon">
+                        <save-item-button
+                            :id="44465"
+                            type="jobs"
+                            :company-id="3323"
+                            company-name="National Energy System Operator (NESO)"
+                            title="Graduate Power System Engineer 2027"
+                            url="/redirect?job_id=44465"
+                            animation="slide"
+                            class="flex items-center mt-1 md:mt-0"
+                        >
+                            <template #save-button="{toggleSavedItem, buttonRef }">
+                                <div class="flex items-center w-full">
+                                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                                        class="text-red group md:hover:bg-[#fbcbc8] md:bg-gray-100 flex justify-center rounded-lg font-extrabold md:active:bg-[#ee2f24] tracking-wide text-lg flex-col md:flex-row min-h-[50px] items-center md:active:!text-white"
+                                        :class="['w-full']"
+                                        @click="toggleSavedItem"
+                                    >
+                                        <span class="uppercase hidden md:block">Save Job</span>
+                                        <span class="fak fa-rmp-custom-heart font-normal md:hover:fa-exclamation-circle md:group-active:text-white md:group-active:!fa-rmp-custom-heart-solid md:ml-2 text-red text-inherit text-[18px]"></span>
+                                        <span class="md:hidden uppercase font-bold text-lg">Save</span>
+                                    </button>
+                                </div>
+                            </template>
+                            <template #saved-button="{ toggleSavedItem, buttonRef, extraContentRef }">
+                                <div class="hidden md:flex items-center w-full">
+                                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                                        class="group text-red w-[50px] px-4 bg-gray-100 flex justify-center rounded-lg font-extrabold tracking-wide text-lg flex-row min-h-[50px] items-center active:md:bg-red active:!text-white"
+                                        @click="toggleSavedItem"
+                                    >
+                                <span>
+                                  <span class="fak fa-rmp-custom-heart-solid group-hover:hidden text-red text-[21px]"></span>
+                                    <span class="fa fa-xmark !hidden group-hover:!block text-red text-[21px] active:!text-inherit"></span>
+                                </span>
+                                    </button>
+                                    <span :ref="(el) => extraContentRef(el)" class="ml-4">View in your <a class="underline" href="/dashboard/app-tracker/all/44465">Application Tracker</a></span>
+                                </div>
+                                <div class="md:hidden">
+                                    <button data-cy-id="save-item-button"
+                                            class="text-red md:hover:bg-[#fbcbc8] md:bg-gray-100 flex justify-center rounded-lg font-extrabold md:active:bg-[#ee2f24] tracking-wide text-lg flex-col md:flex-row min-h-[50px] items-center md:active:!text-white"
+                                            :class="['w-full']"
+                                            @click="toggleSavedItem">
+                                        <span class="fak fa-rmp-custom-heart-solid md:ml-2 text-red text-inherit text-[21px]"></span>
+                                        <span class="md:hidden uppercase font-bold text-lg">Saved</span>
+                                    </button>
+                                </div>
+                            </template>
+                        </save-item-button>
+                    </div>
+                            </div>
+        </div>
+    </div>
+    <div id='vue-job-redirect-modal'>
+        <job-redirect-modal
+            :id="44465"
+            url="/redirect?job_id=44465"
+            company-name="National Energy System Operator (NESO)"
+            job-title="Graduate Power System Engineer 2027"
+            logo="https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png"
+        ></job-redirect-modal>
+    </div>
+    <div id='vue-job-applied-modal'>
+        <job-applied-modal
+            :id="44465"
+            company-name="National Energy System Operator (NESO)"
+            job-title="Graduate Power System Engineer 2027"
+            logo="https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/3323/logos/NationalGridESO_200x200_logo_0.094961001729677187.png"
+            has-user-applied-for-job="false"
+        ></job-applied-modal>
+    </div>
+                <span id="job-details-block" class="hidden md:block">    <h2 class="hidden md:block font-bold text-2xl">Job Details</h2>
+    <div>
+    <div class="flex flex-wrap relative items-center border border-1 border-[#CECECE] border-solid rounded-lg p-4 mt-4  ">
+        <span class="far fa-alarm-clock mr-3 text-[20px] "></span> <b
+                class="text-[15px]">Deadline:</b>
+                    <span class="ml-2 text-[15px] font-semibold">Ongoing</span>
+        
+            </div>
+            <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg p-4 mt-4">
+            <span class="fak fa-rmp-custom-money-bag mr-3 text-[20px]"></span>
+            <b class="text-[15px]">Salary:</b>
+            <div class="flex flex-wrap">
+                                    <span class="w-full ml-4 text-[15px] font-semibold"> £35,000 per year</span>
+                                                    <span class="w-full ml-4 text-[15px] font-semibold">+ £2,000 welcome payment</span>
+                            </div>
+        </div>
+                    <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg px-4 pt-4 pb-1 mt-4">
+            <div class="shrink-0">
+                <span class="far fa-rocket-launch mr-2.5 text-[20px]"></span>
+                <span class="mr-4">
+                    <b class="text-[15px]">Job Type:</b>
+                </span>
+            </div>
+            <div class="flex flex-wrap">
+                <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Graduate Scheme</div>
+            </div>
+        </div>
+                <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg px-4 pt-4 pb-1 mt-4">
+            <div class="shrink-0">
+                <span class="far fa-briefcase mr-2.5 text-[20px]"></span>
+                <span class="mr-4">
+                    <b class="text-[15px]">Job Roles:</b>
+                </span>
+            </div>
+            <div class="flex flex-wrap">
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Information Technology</div>
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Engineering</div>
+                            </div>
+        </div>
+    
+            <div class="flex items-baseline border border-1 border-[#CECECE] border-solid rounded-lg px-4 pt-4 pb-1 mt-4">
+            <div class="shrink-0">
+                <span class="far fa-map-marker-alt mr-2.5 text-[20px]"></span><span class="mr-4"><b class="text-[15px]">Locations: </b></span>
+            </div>
+            <div class="flex flex-wrap">
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Warwick</div>
+                                    <div class="w-fit text-sm mb-3 mr-2 font-extrabold border-solid border-[2px] rounded-lg border-black py-1 px-[14px] shadow-[2px_2px_0px_rgba(0,0,0,1)]"> Wokingham</div>
+                            </div>
+        </div>
+    </div>
+</span>
+                            <div class="hidden md:block border border-solid border-1 border-[#CECECE] p-6 rounded-lg mt-8">
+            <div class="hidden md:flex md:flex-col items-center">
+    <figure class="w-fit mb-4">
+        <img class="w-[50px] h-[50px] md:w-[70px] md:h-[70px] border border-1 border-solid rounded-xl" src="https://imagekit-production.higherin.com/prod-higherin/tr:w-200,h-200,f-orig/companies/3323/logos/NationalGridESO_75x75_logo_small_0.157785001729677190.png" alt="">
+    </figure>
+    <h2 class="font-extrabold text-2xl mb-6">About National Energy System Operator (NESO)</h2>
+            <img class="h-[55px] mb-6" src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-employer-large.svg" alt="Top Employer">
+        <p class="prose leading-normal mb-6">We are the National Energy System Operator for Great Britain, making sure that Great Britain has the essential energy it needs by ensuring supply meets demand every second of every day. We sit at the heart of the energy system, harnessing our engineering and commercial expertise</p>
+
+    <a href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso" class="mt-4 w-full btn-secondary btn-grey">
+        View Company Profile <span class="fa fa-chevron-right ml-1"></span>
+    </a>
+</div>
+
+<div id="vue-company-info-summary" class="md:hidden">
+<blade-only-modal
+    id="company-info-summary-modal"
+    class="w-full md:w-[600px]"
+    custom-dimensions="max-h-[80vh] overflow-y-auto"
+    position-bottom
+    :show-open-modal-button="false"
+    :show-close-icon="true"
+    >
+    <template #modal-title>
+        <span></span>
+    </template>
+    <template #modal-body>
+        <div class="flex flex-col items-center px-2">
+            <figure class="w-[75px] h-[75px] self-center shrink-0 mb-4">
+                <img class="w-full border border-1 border-solid border-[#CECECE] rounded-lg" src="https://imagekit-production.higherin.com/prod-higherin/tr:w-200,h-200,f-orig/companies/3323/logos/NationalGridESO_75x75_logo_small_0.157785001729677190.png" alt="National Energy System Operator (NESO)" loading="lazy">
+            </figure>
+            <h2 class="font-bold text-2xl mb-6">About National Energy System Operator (NESO)</h2>
+                        <img class="h-[50px] mb-6" src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-employer-large.svg" alt="Top Employer">
+                        <p class="prose leading-normal mb-6">We are the National Energy System Operator for Great Britain, making sure that Great Britain has the essential energy it needs by ensuring supply meets demand every second of every day. We sit at the heart of the energy system, harnessing our engineering and commercial expertise</p>
+        <a href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso" class="focus-visible:outline-0 focus:outline-none bg-web-white-smoke flex items-center justify-center font-semibold no-underline text-center w-full rounded-md p-2">View Company Profile <span class="fa fa-chevron-right ml-2"></span></a>
+        </div>
+    </template>
+</blade-only-modal>
+</div>
+        </div>
+                            <div class="hidden md:block">
+            <div class="flex flex-col items-center md:border border-solid border-1 border-[#CECECE] px-4 md:p-6 rounded-lg md:mt-8">
+    <h2 class="text-2xl font-extrabold mb-2">Company Rating</h2>
+    <div class="flex flex-col items-center">
+        <div class="my-4 md:px-5">
+            <div class="flex justify-end items-center gap-1.5 rounded-md font-bold">
+    <i class="fa-kit fa-rmp-custom-rating-star-square-bubble-solid text-lime text-[30px] mt-1"></i>
+    <div class="text-[26px] font-extrabold"><span>4.6</span> <span class="text-[20px] -ml-2">/5</span></div>
+</div>
+        </div>
+        <p class="text-sm">Rating based on 41 Reviews </p>
+    </div>
+    <p class="my-6">This score is based on honest feedback written by students who’ve worked at National Energy System Operator (NESO).
+    </p>
+
+    <a href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso/reviews" class="mt-4 w-full btn-secondary btn-grey focus:outline-none">
+        See All Reviews <span class="fa fa-chevron-right ml-1"></span>
+    </a>
+</div>
+        </div>
+
+
+        <div id="vue-company-rating-summary">
+            <blade-only-modal
+                id="company-rating-summary-modal"
+                class="w-full md:w-[600px] p-0"
+                position-bottom
+                :show-open-modal-button="false"
+                :show-close-icon="true"
+            >
+                <template #modal-title>
+                    <span></span>
+                </template>
+                <template #modal-body>
+                    <div class="flex flex-col items-center md:border border-solid border-1 border-[#CECECE] px-4 md:p-6 rounded-lg md:mt-8">
+    <h2 class="text-2xl font-extrabold mb-2">Company Rating</h2>
+    <div class="flex flex-col items-center">
+        <div class="my-4 md:px-5">
+            <div class="flex justify-end items-center gap-1.5 rounded-md font-bold">
+    <i class="fa-kit fa-rmp-custom-rating-star-square-bubble-solid text-lime text-[30px] mt-1"></i>
+    <div class="text-[26px] font-extrabold"><span>4.6</span> <span class="text-[20px] -ml-2">/5</span></div>
+</div>
+        </div>
+        <p class="text-sm">Rating based on 41 Reviews </p>
+    </div>
+    <p class="my-6">This score is based on honest feedback written by students who’ve worked at National Energy System Operator (NESO).
+    </p>
+
+    <a href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso/reviews" class="mt-4 w-full btn-secondary btn-grey focus:outline-none">
+        See All Reviews <span class="fa fa-chevron-right ml-1"></span>
+    </a>
+</div>
+                </template>
+            </blade-only-modal>
+        </div>
+                </div>
+        </div>
+                    <div class="RelatedContent mFullWidth mt-10 py-8 border-y border-grey-200 mb-40 sm:mb-10 mx-4 lg:mx-0">
+
+            <div id="vue-related-jobs-content">
+                <div id="RelatedJobsCarousel" class="swiper relative pt-16" data-carousel-with-gtag-integration="1">
+                    <div class="swiper-wrapper">
+                                                    <div class="swiper-slide h-auto" data-carousel-gtag-data="[]">
+                                <div class="relative border border-[#DDD] rounded-lg p-6 flex flex-col justify-between shadow-[0_0_8px_0_rgba(0,0,0,0.04)] h-full bg-white w-full">
+    <div class="mb-12">
+        <div class="">
+            <a href="https://higherin.com/jobs/44462/national-energy-system-operator-neso/power-system-engineer-placement-2027" aria-label="Go to National Energy System Operator (NESO) job posting">
+                <img class="w-[78px] h-[78px] rounded-lg border border-grey-very-light-grey"
+                     src="https://imagekit-production.higherin.com/prod-higherin/tr:w-200,h-200,f-orig/companies/3323/logos/NationalGridESO_75x75_logo_small_0.157785001729677190.png"
+                     alt="National Energy System Operator (NESO)"
+                     width="75"
+                     height="75"
+                     loading="lazy"
+                >
+            </a>
+            <div class="flex absolute gap-2 right-8 top-8">
+                                                                                        <img class="w-10"
+                                src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-undergraduate-employer-small.svg"
+                                alt="Top Small to Medium-Sized Scheme"
+                                title="Top Small to Medium-Sized Scheme"
+                                loading="lazy"
+                            >
+                                                                                                                    </div>
+        </div>
+        <h2 class="mt-[18px] text-lg font-bold mb-[6px]">
+            <a href="https://higherin.com/jobs/44462/national-energy-system-operator-neso/power-system-engineer-placement-2027" aria-label="Go to Power System Engineer Placement 2027 job posting">Power System Engineer Placement 2027</a>
+        </h2>
+         <p class="text-sm font-medium mb-4">at <a class="hover:underline" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">National Energy System Operator (NESO)</a></p>
+        <ul>
+            <li class="text-sm"><span class="fa-regular fa-rocket-launch mr-2 text-base"></span>Placement (10 Months+)</li>
+                            <li class="text-sm mt-2.5 flex items-start">
+                    <span class="fak fa-rmp-custom-money-bag mr-2 text-base"></span>
+                    <div>
+                                                    <div>£26,000 per year</div>
+                                                                    </div>
+                </li>
+                                        <li class="text-sm mt-2.5 flex items-center">
+                    <span class="fa-regular fa-location-dot mr-2 text-base"></span>
+                    Warwick, Wokingham
+                </li>
+                    </ul>
+    </div>
+    <div class="flex items-center justify-between z-10">
+        <a href="https://higherin.com/jobs/44462/national-energy-system-operator-neso/power-system-engineer-placement-2027" class="btn-secondary btn-grey">
+            View Job
+            <span class="fa fa-chevron-right ml-2"></span>
+        </a>
+        <save-item-button
+                :id="44462"
+                type="jobs"
+                animation="fade"
+                :company-id="3323"
+                company-name="National Energy System Operator (NESO)"
+                title="Power System Engineer Placement 2027"
+                url="https://higherin.com/jobs/44462/national-energy-system-operator-neso/power-system-engineer-placement-2027"
+                class="flex mt-1 md:mt-0 relative">
+            <template #save-button="{toggleSavedItem, buttonRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-full']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Save ${jobTitle} at ${companyName}`">
+                        <span class="fak fa-rmp-custom-heart font-normal text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+            <template #saved-button="{ toggleSavedItem, buttonRef, extraContentRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-fit']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Remove ${jobTitle} at ${companyName} from saved jobs`">
+                        <span class="fak fa-rmp-custom-heart-solid group-hover:hidden text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+        </save-item-button>
+    </div>
+</div>
+
+                            </div>
+                                                    <div class="swiper-slide h-auto" data-carousel-gtag-data="[]">
+                                <div class="relative border border-[#DDD] rounded-lg p-6 flex flex-col justify-between shadow-[0_0_8px_0_rgba(0,0,0,0.04)] h-full bg-white w-full">
+    <div class="mb-12">
+        <div class="">
+            <a href="https://higherin.com/jobs/44464/national-energy-system-operator-neso/project-analyst-industrial-placement-2027" aria-label="Go to National Energy System Operator (NESO) job posting">
+                <img class="w-[78px] h-[78px] rounded-lg border border-grey-very-light-grey"
+                     src="https://imagekit-production.higherin.com/prod-higherin/tr:w-200,h-200,f-orig/companies/3323/logos/NationalGridESO_75x75_logo_small_0.157785001729677190.png"
+                     alt="National Energy System Operator (NESO)"
+                     width="75"
+                     height="75"
+                     loading="lazy"
+                >
+            </a>
+            <div class="flex absolute gap-2 right-8 top-8">
+                                                                                        <img class="w-10"
+                                src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-undergraduate-employer-small.svg"
+                                alt="Top Small to Medium-Sized Scheme"
+                                title="Top Small to Medium-Sized Scheme"
+                                loading="lazy"
+                            >
+                                                                                                                    </div>
+        </div>
+        <h2 class="mt-[18px] text-lg font-bold mb-[6px]">
+            <a href="https://higherin.com/jobs/44464/national-energy-system-operator-neso/project-analyst-industrial-placement-2027" aria-label="Go to Project Analyst Industrial Placement 2027 job posting">Project Analyst Industrial Placement 2027</a>
+        </h2>
+         <p class="text-sm font-medium mb-4">at <a class="hover:underline" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">National Energy System Operator (NESO)</a></p>
+        <ul>
+            <li class="text-sm"><span class="fa-regular fa-rocket-launch mr-2 text-base"></span>Placement (10 Months+)</li>
+                            <li class="text-sm mt-2.5 flex items-start">
+                    <span class="fak fa-rmp-custom-money-bag mr-2 text-base"></span>
+                    <div>
+                                                    <div>£26,000 per year</div>
+                                                                    </div>
+                </li>
+                                        <li class="text-sm mt-2.5 flex items-center">
+                    <span class="fa-regular fa-location-dot mr-2 text-base"></span>
+                    Warwick
+                </li>
+                    </ul>
+    </div>
+    <div class="flex items-center justify-between z-10">
+        <a href="https://higherin.com/jobs/44464/national-energy-system-operator-neso/project-analyst-industrial-placement-2027" class="btn-secondary btn-grey">
+            View Job
+            <span class="fa fa-chevron-right ml-2"></span>
+        </a>
+        <save-item-button
+                :id="44464"
+                type="jobs"
+                animation="fade"
+                :company-id="3323"
+                company-name="National Energy System Operator (NESO)"
+                title="Project Analyst Industrial Placement 2027"
+                url="https://higherin.com/jobs/44464/national-energy-system-operator-neso/project-analyst-industrial-placement-2027"
+                class="flex mt-1 md:mt-0 relative">
+            <template #save-button="{toggleSavedItem, buttonRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-full']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Save ${jobTitle} at ${companyName}`">
+                        <span class="fak fa-rmp-custom-heart font-normal text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+            <template #saved-button="{ toggleSavedItem, buttonRef, extraContentRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-fit']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Remove ${jobTitle} at ${companyName} from saved jobs`">
+                        <span class="fak fa-rmp-custom-heart-solid group-hover:hidden text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+        </save-item-button>
+    </div>
+</div>
+
+                            </div>
+                                                    <div class="swiper-slide h-auto" data-carousel-gtag-data="[]">
+                                <div class="relative border border-[#DDD] rounded-lg p-6 flex flex-col justify-between shadow-[0_0_8px_0_rgba(0,0,0,0.04)] h-full bg-white w-full">
+    <div class="mb-12">
+        <div class="">
+            <a href="https://higherin.com/jobs/44466/national-energy-system-operator-neso/graduate-project-analyst-2027" aria-label="Go to National Energy System Operator (NESO) job posting">
+                <img class="w-[78px] h-[78px] rounded-lg border border-grey-very-light-grey"
+                     src="https://imagekit-production.higherin.com/prod-higherin/tr:w-200,h-200,f-orig/companies/3323/logos/NationalGridESO_75x75_logo_small_0.157785001729677190.png"
+                     alt="National Energy System Operator (NESO)"
+                     width="75"
+                     height="75"
+                     loading="lazy"
+                >
+            </a>
+            <div class="flex absolute gap-2 right-8 top-8">
+                                                                                        <img class="w-10"
+                                src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-undergraduate-employer-small.svg"
+                                alt="Top Small to Medium-Sized Scheme"
+                                title="Top Small to Medium-Sized Scheme"
+                                loading="lazy"
+                            >
+                                                                                                                    </div>
+        </div>
+        <h2 class="mt-[18px] text-lg font-bold mb-[6px]">
+            <a href="https://higherin.com/jobs/44466/national-energy-system-operator-neso/graduate-project-analyst-2027" aria-label="Go to Graduate Project Analyst 2027 job posting">Graduate Project Analyst 2027</a>
+        </h2>
+         <p class="text-sm font-medium mb-4">at <a class="hover:underline" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">National Energy System Operator (NESO)</a></p>
+        <ul>
+            <li class="text-sm"><span class="fa-regular fa-rocket-launch mr-2 text-base"></span>Graduate Scheme</li>
+                            <li class="text-sm mt-2.5 flex items-start">
+                    <span class="fak fa-rmp-custom-money-bag mr-2 text-base"></span>
+                    <div>
+                                                    <div>£35,000 per year</div>
+                                                                            <div class="line-clamp-2">+ £2,000 welcome payment</div>
+                                            </div>
+                </li>
+                                        <li class="text-sm mt-2.5 flex items-center">
+                    <span class="fa-regular fa-location-dot mr-2 text-base"></span>
+                    Warwick
+                </li>
+                    </ul>
+    </div>
+    <div class="flex items-center justify-between z-10">
+        <a href="https://higherin.com/jobs/44466/national-energy-system-operator-neso/graduate-project-analyst-2027" class="btn-secondary btn-grey">
+            View Job
+            <span class="fa fa-chevron-right ml-2"></span>
+        </a>
+        <save-item-button
+                :id="44466"
+                type="jobs"
+                animation="fade"
+                :company-id="3323"
+                company-name="National Energy System Operator (NESO)"
+                title="Graduate Project Analyst 2027"
+                url="https://higherin.com/jobs/44466/national-energy-system-operator-neso/graduate-project-analyst-2027"
+                class="flex mt-1 md:mt-0 relative">
+            <template #save-button="{toggleSavedItem, buttonRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-full']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Save ${jobTitle} at ${companyName}`">
+                        <span class="fak fa-rmp-custom-heart font-normal text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+            <template #saved-button="{ toggleSavedItem, buttonRef, extraContentRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-fit']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Remove ${jobTitle} at ${companyName} from saved jobs`">
+                        <span class="fak fa-rmp-custom-heart-solid group-hover:hidden text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+        </save-item-button>
+    </div>
+</div>
+
+                            </div>
+                                                    <div class="swiper-slide h-auto" data-carousel-gtag-data="[]">
+                                <div class="relative border border-[#DDD] rounded-lg p-6 flex flex-col justify-between shadow-[0_0_8px_0_rgba(0,0,0,0.04)] h-full bg-white w-full">
+    <div class="mb-12">
+        <div class="">
+            <a href="https://higherin.com/jobs/44463/national-energy-system-operator-neso/commercial-analyst-industrial-placement-2027" aria-label="Go to National Energy System Operator (NESO) job posting">
+                <img class="w-[78px] h-[78px] rounded-lg border border-grey-very-light-grey"
+                     src="https://imagekit-production.higherin.com/prod-higherin/tr:w-200,h-200,f-orig/companies/3323/logos/NationalGridESO_75x75_logo_small_0.157785001729677190.png"
+                     alt="National Energy System Operator (NESO)"
+                     width="75"
+                     height="75"
+                     loading="lazy"
+                >
+            </a>
+            <div class="flex absolute gap-2 right-8 top-8">
+                                                                                        <img class="w-10"
+                                src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-undergraduate-employer-small.svg"
+                                alt="Top Small to Medium-Sized Scheme"
+                                title="Top Small to Medium-Sized Scheme"
+                                loading="lazy"
+                            >
+                                                                                                                    </div>
+        </div>
+        <h2 class="mt-[18px] text-lg font-bold mb-[6px]">
+            <a href="https://higherin.com/jobs/44463/national-energy-system-operator-neso/commercial-analyst-industrial-placement-2027" aria-label="Go to Commercial Analyst Industrial Placement 2027 job posting">Commercial Analyst Industrial Placement 2027</a>
+        </h2>
+         <p class="text-sm font-medium mb-4">at <a class="hover:underline" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">National Energy System Operator (NESO)</a></p>
+        <ul>
+            <li class="text-sm"><span class="fa-regular fa-rocket-launch mr-2 text-base"></span>Placement (10 Months+)</li>
+                            <li class="text-sm mt-2.5 flex items-start">
+                    <span class="fak fa-rmp-custom-money-bag mr-2 text-base"></span>
+                    <div>
+                                                    <div>£26,000 per year</div>
+                                                                    </div>
+                </li>
+                                        <li class="text-sm mt-2.5 flex items-center">
+                    <span class="fa-regular fa-location-dot mr-2 text-base"></span>
+                    Warwick, Wokingham
+                </li>
+                    </ul>
+    </div>
+    <div class="flex items-center justify-between z-10">
+        <a href="https://higherin.com/jobs/44463/national-energy-system-operator-neso/commercial-analyst-industrial-placement-2027" class="btn-secondary btn-grey">
+            View Job
+            <span class="fa fa-chevron-right ml-2"></span>
+        </a>
+        <save-item-button
+                :id="44463"
+                type="jobs"
+                animation="fade"
+                :company-id="3323"
+                company-name="National Energy System Operator (NESO)"
+                title="Commercial Analyst Industrial Placement 2027"
+                url="https://higherin.com/jobs/44463/national-energy-system-operator-neso/commercial-analyst-industrial-placement-2027"
+                class="flex mt-1 md:mt-0 relative">
+            <template #save-button="{toggleSavedItem, buttonRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-full']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Save ${jobTitle} at ${companyName}`">
+                        <span class="fak fa-rmp-custom-heart font-normal text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+            <template #saved-button="{ toggleSavedItem, buttonRef, extraContentRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-fit']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Remove ${jobTitle} at ${companyName} from saved jobs`">
+                        <span class="fak fa-rmp-custom-heart-solid group-hover:hidden text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+        </save-item-button>
+    </div>
+</div>
+
+                            </div>
+                                                    <div class="swiper-slide h-auto" data-carousel-gtag-data="[]">
+                                <div class="relative border border-[#DDD] rounded-lg p-6 flex flex-col justify-between shadow-[0_0_8px_0_rgba(0,0,0,0.04)] h-full bg-white w-full">
+    <div class="mb-12">
+        <div class="">
+            <a href="https://higherin.com/jobs/44467/national-energy-system-operator-neso/graduate-commercial-analyst-2027" aria-label="Go to National Energy System Operator (NESO) job posting">
+                <img class="w-[78px] h-[78px] rounded-lg border border-grey-very-light-grey"
+                     src="https://imagekit-production.higherin.com/prod-higherin/tr:w-200,h-200,f-orig/companies/3323/logos/NationalGridESO_75x75_logo_small_0.157785001729677190.png"
+                     alt="National Energy System Operator (NESO)"
+                     width="75"
+                     height="75"
+                     loading="lazy"
+                >
+            </a>
+            <div class="flex absolute gap-2 right-8 top-8">
+                                                                                        <img class="w-10"
+                                src="https://imagekit-production.higherin.com/prod-higherin/badges-v2/top-undergraduate-employer-small.svg"
+                                alt="Top Small to Medium-Sized Scheme"
+                                title="Top Small to Medium-Sized Scheme"
+                                loading="lazy"
+                            >
+                                                                                                                    </div>
+        </div>
+        <h2 class="mt-[18px] text-lg font-bold mb-[6px]">
+            <a href="https://higherin.com/jobs/44467/national-energy-system-operator-neso/graduate-commercial-analyst-2027" aria-label="Go to Graduate Commercial Analyst 2027 job posting">Graduate Commercial Analyst 2027</a>
+        </h2>
+         <p class="text-sm font-medium mb-4">at <a class="hover:underline" href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso">National Energy System Operator (NESO)</a></p>
+        <ul>
+            <li class="text-sm"><span class="fa-regular fa-rocket-launch mr-2 text-base"></span>Graduate Scheme</li>
+                            <li class="text-sm mt-2.5 flex items-start">
+                    <span class="fak fa-rmp-custom-money-bag mr-2 text-base"></span>
+                    <div>
+                                                    <div>£35,000 per year</div>
+                                                                            <div class="line-clamp-2">+ £2,000 welcome payment</div>
+                                            </div>
+                </li>
+                                        <li class="text-sm mt-2.5 flex items-center">
+                    <span class="fa-regular fa-location-dot mr-2 text-base"></span>
+                    Warwick, Wokingham
+                </li>
+                    </ul>
+    </div>
+    <div class="flex items-center justify-between z-10">
+        <a href="https://higherin.com/jobs/44467/national-energy-system-operator-neso/graduate-commercial-analyst-2027" class="btn-secondary btn-grey">
+            View Job
+            <span class="fa fa-chevron-right ml-2"></span>
+        </a>
+        <save-item-button
+                :id="44467"
+                type="jobs"
+                animation="fade"
+                :company-id="3323"
+                company-name="National Energy System Operator (NESO)"
+                title="Graduate Commercial Analyst 2027"
+                url="https://higherin.com/jobs/44467/national-energy-system-operator-neso/graduate-commercial-analyst-2027"
+                class="flex mt-1 md:mt-0 relative">
+            <template #save-button="{toggleSavedItem, buttonRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-full']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Save ${jobTitle} at ${companyName}`">
+                        <span class="fak fa-rmp-custom-heart font-normal text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+            <template #saved-button="{ toggleSavedItem, buttonRef, extraContentRef }">
+                <div class="flex items-center w-full">
+                    <button :ref="(el) => buttonRef(el)" data-cy-id="save-item-button"
+                            class="text-red hover:bg-gray-100 min-w-[50px] flex justify-center rounded-lg font-extrabold tracking-wide text-lg min-h-[50px] items-center"
+                            :class="['w-fit']"
+                            @click="toggleSavedItem"
+                            :aria-label="`Remove ${jobTitle} at ${companyName} from saved jobs`">
+                        <span class="fak fa-rmp-custom-heart-solid group-hover:hidden text-red text-[22px]"></span>
+                    </button>
+                </div>
+            </template>
+        </save-item-button>
+    </div>
+</div>
+
+                            </div>
+                                            </div>
+
+                    <div class="absolute top-0 right-0 hidden md:block">
+                        <button aria-label="Previous Slider Related Job Item" class="swiper-button-prev w-11 h-10 rounded-lg bg-[#F5F5F7] mr-1">
+                            <span class="fa fa-chevron-left"></span>
+                        </button>
+                        <button aria-label="Next Slider Related Job Item" class="swiper-button-next w-11 h-10 rounded-lg bg-[#F5F5F7]">
+                            <span class="fa fa-chevron-right"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-10">
+                <a href="https://higherin.com/company-profile/3323/national-energy-system-operator-neso/jobs"
+                   class="btn-secondary btn-grey"
+                >
+                    View More Jobs <span class="ml-1 fa fa-chevron-right"></span>
+                </a>
+            </div>
+        </div>
+        </main>
+    <div id='vue-common-modals'>
+    <save-item-modal></save-item-modal>
+    <dismiss-modal></dismiss-modal>
+    <register-success-modal></register-success-modal>
+</div>
+
+<div class="w-full  mt-12 " >
+        <div class="container mx-auto px-4">
+            <div class="p-4 sm:p-[36px] xl:p-[54px] bg-web-daisy-bush rounded-2xl">
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_500px] xl:grid-cols-2 lg:gap-[80px]">
+                <div class="text-white text-center mb-8 lg:mb-0 lg:text-left lg:pl-[40px]">
+                    <img
+                        src="https://imagekit-production.higherin.com/prod-higherin/footer/join-now.svg"
+                        alt="Join Now"
+                        class="mx-auto lg:-ml-[50px] mb-2">
+
+                    <h2 class="font-extrabold text-[32px] mb-8">Join the Higherin Community</h2>
+
+                    <h3 class="font-extrabold italic uppercase ">
+                        Save Time
+                    </h3>
+                    <p class="mb-8">
+                        Easily add jobs from Higherin or external platforms to keep everything organised.
+                    </p>
+
+                    <h3 class="font-extrabold italic uppercase ">
+                        Personalised Alerts
+                    </h3>
+                    <p  class="mb-8">
+                        Get tailored job recommendations and updates straight to your inbox.
+                    </p>
+
+                    <h3 class="font-extrabold italic uppercase ">
+                        Exclusive Features
+                    </h3>
+                    <p  class="mb-8">
+                        Access tools like application tracking, deadline reminders, and saved searches.
+                    </p>
+
+                    <h3 class="font-extrabold italic uppercase ">
+                        Stay Ahead
+                    </h3>
+                    <p  class="mb-8">
+                        Be the first to know about the latest opportunities and deadlines.
+                    </p>
+
+                    <h3 class="font-extrabold italic uppercase ">
+                        Completely Free
+                    </h3>
+                    <p  class="mb-8">
+                        Create an account and unlock powerful features at no cost.
+                    </p>
+                </div>
+
+                <div>
+                    <div id="vue-footer-signup" class="max-w-[600px] mx-auto">
+                        <footer-signup-form></footer-signup-form>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+<footer class="bg-lime mt-12">
+        <div class="mx-auto container px-4 pb-8 pt-12 lg:pt-20">
+        <nav aria-label="Footer Navigation" class="mb-[38px] md:mb-16 px-[38px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 xl:col-span-2 xl:mt-0">
+                            <div>
+    <h2 class="text-base font-extrabold italic uppercase text-black">Start Exploring</h2>
+    <ul role="list" class="mt-6 space-y-4">
+                    <li>
+                <a href="/search-jobs" class="text-base text-lime-verdun-green hover:text-black">
+    Search for Jobs
+</a>
+            </li>
+                    <li>
+                <a href="/search-reviews" class="text-base text-lime-verdun-green hover:text-black">
+    Job Reviews
+</a>
+            </li>
+                    <li>
+                <a href="/search-companies" class="text-base text-lime-verdun-green hover:text-black">
+    Companies
+</a>
+            </li>
+                    <li>
+                <a href="/top-employers/apprenticeships" class="text-base text-lime-verdun-green hover:text-black">
+    Top Apprenticeship Employers
+</a>
+            </li>
+                    <li>
+                <a href="/top-employers/graduates" class="text-base text-lime-verdun-green hover:text-black">
+    Top Graduate Employers
+</a>
+            </li>
+                    <li>
+                <a href="/top-employers/undergraduates" class="text-base text-lime-verdun-green hover:text-black">
+    Top Undergraduate Employers
+</a>
+            </li>
+                    <li>
+                <a href="/summer" class="text-base text-lime-verdun-green hover:text-black">
+    Summer Level-Up
+</a>
+            </li>
+            </ul>
+</div>
+
+                            <div>
+    <h2 class="text-base font-extrabold italic uppercase text-black">Help &amp; Support</h2>
+    <ul role="list" class="mt-6 space-y-4">
+                    <li>
+                <a href="/contact" class="text-base text-lime-verdun-green hover:text-black">
+    Contact Us
+</a>
+            </li>
+                    <li>
+                <a href="/report-a-problem" class="text-base text-lime-verdun-green hover:text-black">
+    Report a Problem
+</a>
+            </li>
+            </ul>
+</div>
+
+                            <div>
+    <h2 class="text-base font-extrabold italic uppercase text-black">For Employers</h2>
+    <ul role="list" class="mt-6 space-y-4">
+                    <li>
+                <a href="https://employers.higherin.com/what-we-do/undergraduate-recruitment" class="text-base text-lime-verdun-green hover:text-black">
+    Promote Internships 
+</a>
+            </li>
+                    <li>
+                <a href="https://employers.higherin.com/what-we-do/apprenticeship-recruitment" class="text-base text-lime-verdun-green hover:text-black">
+    Hire Apprentices
+</a>
+            </li>
+                    <li>
+                <a href="https://employers.higherin.com/what-we-do/graduate-recruitment" class="text-base text-lime-verdun-green hover:text-black">
+    Recruit Graduates
+</a>
+            </li>
+                    <li>
+                <a href="https://employers.higherin.com/what-we-do/brand-ambassadors" class="text-base text-lime-verdun-green hover:text-black">
+    Brand Ambassadors
+</a>
+            </li>
+                    <li>
+                <a href="https://employers.higherin.com/what-we-do/creative-agency" class="text-base text-lime-verdun-green hover:text-black">
+    Employer Branding Activations
+</a>
+            </li>
+            </ul>
+</div>
+
+                            <div>
+    <h2 class="text-base font-extrabold italic uppercase text-black">Privacy &amp; Legal</h2>
+    <ul role="list" class="mt-6 space-y-4">
+                    <li>
+                <a href="/terms-and-conditions" class="text-base text-lime-verdun-green hover:text-black">
+    Terms and Conditions
+</a>
+            </li>
+                    <li>
+                <a href="/privacy-policy" class="text-base text-lime-verdun-green hover:text-black">
+    Privacy Policy
+</a>
+            </li>
+                    <li>
+                <a href="/cookie-policy" class="text-base text-lime-verdun-green hover:text-black">
+    Cookie Policy
+</a>
+            </li>
+            </ul>
+</div>
+
+                            <div>
+    <h2 class="text-base font-extrabold italic uppercase text-black">Our Company</h2>
+    <ul role="list" class="mt-6 space-y-4">
+                    <li>
+                <a href="/about-us" class="text-base text-lime-verdun-green hover:text-black">
+    About Us
+</a>
+            </li>
+                    <li>
+                <a href="https://www.higherinacademy.com" class="text-base text-lime-verdun-green hover:text-black">
+    Higherin Academy
+</a>
+            </li>
+                    <li>
+                <a href="https://careers.higherin.com" class="text-base text-lime-verdun-green hover:text-black">
+    Careers
+</a>
+            </li>
+            </ul>
+</div>
+
+                    </nav>
+        <img class="w-full mx-auto px-6 sm:px-[130px] md:px-[160px] xl:px-[200px] js-pickle-rain-button" src="https://imagekit-production.higherin.com/prod-higherin/logos/higherin-logo-with-subtext.svg" alt="Higherin Logo">
+        <div class="mt-12 border-t border-lime-citron pt-8 md:flex md:items-center md:justify-between">
+            <div class="flex flex-col sm:flex-row gap-6 md:gap-12 md:order-2">
+                                    <div class="bg-lime-reef rounded-xl py-4 px-6 w-full sm:w-1/2 md:w-fit">
+    <h2 class="mb-3"><span class="fa-regular fa-at mr-1"></span>higherin.careers</h2>
+    <div class="flex gap-6">
+                    <a target="_blank" href="https://www.linkedin.com/company/higherincareers" class="text-black hover:text-black/80 text-2xl" title="LinkedIn" aria-label="Go to LinkedIn in a new tab">
+    <i class="fa-brands fa-linkedin"></i>
+</a>
+                    <a target="_blank" href="https://www.instagram.com/higherin.careers" class="text-black hover:text-black/80 text-2xl" title="Instagram" aria-label="Go to Instagram in a new tab">
+    <i class="fa-brands fa-instagram"></i>
+</a>
+                    <a target="_blank" href="https://www.tiktok.com/@higherin.careers" class="text-black hover:text-black/80 text-2xl" title="TikTok" aria-label="Go to TikTok in a new tab">
+    <i class="fa-brands fa-tiktok"></i>
+</a>
+                    <a target="_blank" href="https://www.youtube.com/@Higherin.Careers" class="text-black hover:text-black/80 text-2xl" title="YouTube" aria-label="Go to YouTube in a new tab">
+    <i class="fa-brands fa-youtube"></i>
+</a>
+            </div>
+</div>
+                                    <div class="bg-lime-reef rounded-xl py-4 px-6 w-full sm:w-1/2 md:w-fit">
+    <h2 class="mb-3"><span class="fa-regular fa-at mr-1"></span>higherin.apprenticeships</h2>
+    <div class="flex gap-6">
+                    <a target="_blank" href="https://www.linkedin.com/company/higherinapprenticeships" class="text-black hover:text-black/80 text-2xl" title="LinkedIn" aria-label="Go to LinkedIn in a new tab">
+    <i class="fa-brands fa-linkedin"></i>
+</a>
+                    <a target="_blank" href="https://www.instagram.com/higherin.apprenticeships" class="text-black hover:text-black/80 text-2xl" title="Instagram" aria-label="Go to Instagram in a new tab">
+    <i class="fa-brands fa-instagram"></i>
+</a>
+                    <a target="_blank" href="https://www.tiktok.com/@higherin.apprenticeships" class="text-black hover:text-black/80 text-2xl" title="TikTok" aria-label="Go to TikTok in a new tab">
+    <i class="fa-brands fa-tiktok"></i>
+</a>
+            </div>
+</div>
+                            </div>
+            <p class="mt-8 text-sm/6 text-black md:order-1 md:mt-0 text-center md:text-left flex">
+                <img src="https://imagekit-production.higherin.com/prod-higherin/footer/gherkin.svg" alt="Copyright Gherkin" width="16" height="16" class="mr-1 opacity-70 js-pickle-button"/>
+                <span>2026 Higherin. All rights reserved.</span>
+            </p>
+        </div>
+    </div>
+    <style>
+    .pickle-icon {
+        position: fixed !important;
+        top: 0;
+        font-size: 1.5rem;
+        color: #49bd1c; /* Lime Citron */
+        animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+        0% {
+            transform: translateY(-50vh);
+        }
+        100% {
+            transform: translateY(100vh);
+        }
+    }
+</style>
+<script>
+  (() => {
+    const $trigger = document.querySelector('.js-pickle-rain-button');
+
+    if (!$trigger) return;
+
+    let clickCount = 0;
+
+    $trigger.addEventListener('click', (e) => {
+      if (!e.shiftKey) return;
+
+      clickCount++;
+      if (clickCount === 5) {
+        cascadeIcons();
+        clickCount = 0;
+      }
+    });
+
+    function cascadeIcons() {
+      for (let i = 0; i < 5; i++) {
+        const icon = document.createElement('img');
+        icon.className = `pickle-icon`;
+        icon.width = '30';
+        icon.src = 'https://imagekit-production.higherin.com/prod-higherin/footer/gherkin.svg';
+        icon.style.left = `${Math.random() * 100}vw`;
+        icon.style.animationDuration = `${2 + Math.random() * 2}s`;
+
+        document.body.appendChild(icon);
+
+        setTimeout(() => {
+          icon.remove();
+        }, 5500);
+      }
+    }
+  })()
+
+</script>
+    </footer>
+
+
+
+<div id="Teleport-footer-modals">
+    
+</div>
+
+
+
+</body>
+
+<script>
+    // Mobile tabs
+    // On click, scroll to the relevant section
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('[aria-label="Tabs"] a');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function (e) {
+                e.preventDefault();
+                tabs.forEach(tab => tab.classList.remove('mobile-job-listing-tab-selected'));
+                this.classList.add('mobile-job-listing-tab-selected');
+                const target = this.getAttribute('href');
+                const targetElement = document.querySelector(target);
+                targetElement.scrollIntoView({behavior: 'smooth', block: "start", inline: "nearest"});
+            });
+        });
+
+
+        // Intersection Observer for tabs - mobile
+        // On scroll into view, highlight the tab
+        function callback(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    console.log(entry.target.id);
+                    tabs.forEach(tab => tab.classList.remove('mobile-job-listing-tab-selected'));
+                    const target = `a[href="#${entry.target.id}"]`;
+                    const targetElement = document.querySelector(target);
+                    targetElement.classList.add('mobile-job-listing-tab-selected');
+                }
+            });
+        }
+
+        const options = {
+            root: null,
+            rootMargin: '30px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver(callback, options);
+        tabs.forEach(tab => {
+            const target = tab.getAttribute('href');
+            const targetElement = document.querySelector(target);
+            observer.observe(targetElement);
+        });
+    });
+</script>
+</html>

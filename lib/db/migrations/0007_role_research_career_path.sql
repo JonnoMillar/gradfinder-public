@@ -1,0 +1,1 @@
+ALTER TABLE `role_research` ADD `career_path` text;

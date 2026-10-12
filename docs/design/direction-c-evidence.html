@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Direction C — Evidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:oklch(0.981 0.002 255); --surf:oklch(1 0 0); --sunk:oklch(0.959 0.003 255);
+  --ink:oklch(0.205 0.012 262); --ink-2:oklch(0.432 0.011 262); --line:oklch(0.902 0.004 258);
+  --line-soft:oklch(0.944 0.003 258);
+  --high:oklch(0.455 0.108 152); --high-bg:oklch(0.955 0.030 152);
+  --med:oklch(0.448 0.108 252); --med-bg:oklch(0.955 0.028 252);
+  --low:oklch(0.475 0.095 72);  --low-bg:oklch(0.955 0.035 80);
+  --gap:oklch(0.545 0.006 262); --gap-bg:oklch(0.962 0.003 262);
+  --urgent:oklch(0.505 0.180 30);
+  --r:7px; --ease:cubic-bezier(0.22,1,0.36,1);
+  font-synthesis-weight:none;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+.top{background:var(--surf);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.top-in{display:flex;align-items:baseline;gap:14px;padding:12px 0}
+.brand{font-weight:700;font-size:15.5px;letter-spacing:-0.02em}
+.brand span{color:var(--ink-2);font-weight:400}
+.tstat{color:var(--ink-2);font-size:12.5px}
+.tstat b{color:var(--ink);font-weight:600}
+.sp{margin-left:auto}
+.btn{border:1px solid var(--line);background:var(--surf);border-radius:var(--r);padding:5px 11px;font:inherit;font-size:12.5px;font-weight:500;color:var(--ink);cursor:pointer;transition:background .13s var(--ease)}
+.btn:hover{background:var(--sunk)}
+.btn--go{background:var(--ink);color:oklch(0.99 0 0);border-color:var(--ink);font-weight:600}
+
+.alert{background:oklch(0.958 0.032 38);border-bottom:1px solid oklch(0.885 0.045 38)}
+.alert-in{display:flex;gap:10px;align-items:baseline;padding:9px 0;font-size:12.5px;color:oklch(0.355 0.11 30)}
+.alert b{font-weight:600}
+.alert a{margin-left:auto;text-decoration:underline;text-underline-offset:2px;white-space:nowrap;font-weight:500}
+
+.lead{padding:24px 0 4px}
+.lead h1{font-size:22px;font-weight:600;letter-spacing:-0.024em;text-wrap:balance}
+.lead p{color:var(--ink-2);font-size:13.5px;margin-top:4px;max-width:70ch;text-wrap:pretty}
+
+/* legend: the palette IS the confidence scale, so name it once up front */
+.legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px;padding:9px 13px;background:var(--surf);border:1px solid var(--line);border-radius:var(--r);font-size:12px}
+.legend .lt{color:var(--ink-2);font-weight:500}
+.lg{display:flex;align-items:center;gap:6px}
+.sw{width:9px;height:9px;border-radius:3px;flex:none}
+.sw-high{background:var(--high)} .sw-med{background:var(--med)} .sw-low{background:var(--low)} .sw-gap{background:var(--gap);opacity:.4}
+.lg b{font-weight:600}
+.lg span{color:var(--ink-2)}
+
+.sorts{display:flex;gap:5px;margin:16px 0 10px;flex-wrap:wrap;align-items:center}
+.s{font-size:12px;font-weight:500;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--ink-2);background:var(--surf);cursor:pointer}
+.s--on{background:var(--ink);color:oklch(0.99 0 0);border-color:var(--ink);font-weight:600}
+.s b{font-weight:700}
+
+/* ---------- rows ---------- */
+.rows{border-top:1px solid var(--line)}
+.r{display:block;padding:12px 14px 11px;border-bottom:1px solid var(--line-soft);transition:background .13s var(--ease)}
+.r:hover{background:var(--surf)}
+.r--on{background:var(--surf)}
+.r-head{display:flex;align-items:center;gap:9px}
+.logo{--s:22px;width:var(--s);height:var(--s);border-radius:5px;object-fit:contain;background:var(--sunk);border:1px solid var(--line);flex:none}
+.logo--fb{display:grid;place-items:center;font-size:calc(var(--s)*0.40);font-weight:600;color:var(--ink-2)}
+.r-co{font-weight:600;font-size:13px;white-space:nowrap}
+.r-t{font-size:14.5px;font-weight:500;letter-spacing:-0.012em;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meter{margin-left:auto;display:flex;align-items:center;gap:2px;flex:none}
+.meter i{width:4px;height:11px;border-radius:1.5px;background:var(--gap);opacity:.25}
+.meter i.on{background:var(--high);opacity:1}
+.meter b{font-size:11px;font-weight:600;color:var(--ink-2);margin-left:6px;min-width:26px}
+
+.r-facts{display:flex;flex-wrap:wrap;gap:3px 18px;margin-top:8px}
+.f{display:flex;align-items:baseline;gap:5px;font-size:12.5px}
+.f em{font-style:normal;color:var(--ink-2);font-size:11.5px}
+.f b{font-weight:600}
+.f s{text-decoration:none;color:var(--gap);font-weight:500;border-bottom:1px dotted oklch(0.78 0.006 262)}
+.r-gaps{display:flex;flex-wrap:wrap;gap:5px;align-items:baseline;margin-top:8px;padding-top:7px;border-top:1px solid var(--line-soft);font-size:11px;color:var(--gap)}
+.r-gaps span{background:var(--gap-bg);padding:1.5px 6px;border-radius:4px;font-weight:500}
+
+/* ---------- factfile ---------- */
+.screen2{margin-top:44px;border-top:1px solid var(--line);background:var(--surf)}
+.slab{font-size:10.5px;font-weight:600;color:var(--ink-2);padding:10px 0 0}
+.ff{padding:16px 0 56px;max-width:840px}
+.ff-head{display:flex;gap:13px;align-items:flex-start}
+.ff-co{font-size:13px;font-weight:600;color:var(--ink-2)}
+.ff h1{font-size:25px;font-weight:600;letter-spacing:-0.026em;line-height:1.15;margin:2px 0 9px;text-wrap:balance}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.c{font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:var(--sunk);color:var(--ink-2);border:1px solid var(--line)}
+.c.u{background:oklch(0.957 0.035 38);color:oklch(0.38 0.14 30);border-color:oklch(0.89 0.045 38)}
+
+.score{display:flex;align-items:center;gap:14px;margin:18px 0 0;padding:13px 16px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.score .meter i{height:16px;width:6px}
+.score .sl{font-size:13px;color:var(--ink-2);line-height:1.4}
+.score .sl b{display:block;font-size:14.5px;color:var(--ink);font-weight:600;letter-spacing:-0.012em}
+.score .sgo{margin-left:auto;display:flex;gap:7px}
+
+h2{font-size:12px;font-weight:600;color:var(--ink-2);margin:26px 0 9px}
+h2 .n{font-weight:400;color:oklch(0.60 0.006 262)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+
+.claims{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.cl{padding:9px 13px;border-bottom:1px solid var(--line-soft);background:var(--surf)}
+.cl:last-child{border-bottom:none}
+.cl dt{font-size:11.5px;color:var(--ink-2);font-weight:500;margin-bottom:2px}
+.cv{font-size:13.5px;font-weight:600;line-height:1.35;display:block;overflow-wrap:anywhere}
+.prov-inline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:4px}
+.cf{font-size:10px;font-weight:700;padding:1.5px 6px;border-radius:4px}
+.cf-high{color:var(--high);background:var(--high-bg)}
+.cf-medium{color:var(--med);background:var(--med-bg)}
+.cf-low{color:var(--low);background:var(--low-bg)}
+.kind{font-size:10.5px;color:var(--ink-2)}
+.url{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:10.5px;color:var(--ink-2);border-bottom:1px solid var(--line)}
+.url:hover{color:var(--med);border-color:var(--med)}
+.gap{color:var(--gap);font-weight:600;font-size:13.5px}
+.gap-in{font-weight:400;font-size:12px}
+
+.gaps{border:1px dashed oklch(0.855 0.005 262);border-radius:10px;background:var(--gap-bg);overflow:hidden}
+.gp{padding:9px 13px;border-bottom:1px dashed oklch(0.885 0.004 262)}
+.gp:last-child{border-bottom:none}
+.gp b{display:block;font-size:13px;font-weight:600;color:var(--ink-2)}
+.gp span{font-size:12.5px;color:var(--gap);line-height:1.45}
+
+.warn{margin-top:10px;padding:11px 14px;border:1px solid oklch(0.875 0.045 80);background:var(--low-bg);border-radius:10px;font-size:12.5px;color:oklch(0.36 0.085 70);line-height:1.55}
+.warn b{font-weight:600}
+.warn .u2{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:11.5px;text-decoration:underline;text-underline-offset:2px}
+
+.reqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.rq{background:var(--surf);padding:8px 12px;display:flex;align-items:baseline;gap:8px;font-size:13px}
+.m{font-size:11px;font-weight:700;width:13px;flex:none}
+.m.yes{color:var(--high)} .m.no,.m.unknown{color:var(--gap)}
+.rq .rs{margin-left:auto;font-size:11px;color:var(--gap)}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.pill{font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:var(--high-bg);color:var(--high)}
+
+.fr{display:grid;grid-template-columns:128px 1fr auto;gap:12px;padding:8px 13px;border-bottom:1px solid var(--line-soft);font-size:13px;align-items:baseline;background:var(--surf)}
+.fr:last-child{border-bottom:none}
+.ff-f{color:var(--ink-2);font-size:11.5px;font-weight:500}
+.ff-v{line-height:1.4;overflow-wrap:anywhere}
+.fs{display:flex;gap:6px;align-items:baseline;white-space:nowrap}
+
+.led{max-width:350px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.ld{display:flex;justify-content:space-between;padding:6px 13px;border-bottom:1px solid var(--line-soft);font-size:13px;background:var(--surf)}
+.ld span{color:var(--ink-2)} .ld b{font-weight:600}
+.ld--t{background:var(--sunk);border-bottom:none}
+.ld--t span{color:var(--ink);font-weight:600}
+.pos{color:var(--high)} .neg{color:var(--urgent)} .zero{color:var(--gap)}
+.prov{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-2);line-height:1.65}
+.prov b{color:var(--ink);font-weight:600}
+.prov code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:11px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+
+<header class="top"><div class="wrap top-in">
+  <span class="brand">gradfinder <span>· Direction C — Evidence</span></span>
+  <span class="tstat"><b>639</b> roles · <b>8,433</b> sourced facts · <b>367</b> companies still unresearched</span>
+  <span class="sp"></span><button class="btn">Sweeps</button><button class="btn btn--go">Run sweep</button>
+</div></header>
+
+<div class="alert"><div class="wrap alert-in">
+  <b>6 sources failed</b><span>brightnetwork — [brightnetwork/parse] only 23/30 pages yielded a JobPosting…</span>
+  <a href="#">All runs</a></div></div>
+
+<main class="wrap">
+  <div class="lead">
+    <h1>What we actually know</h1>
+    <p>Every role is scored on how much of it is evidenced, not on how good it looks. The bar is the count of key fields found; colour is the confidence of the source behind each claim.</p>
+    <div class="legend">
+      <span class="lt">Confidence</span>
+      <span class="lg"><span class="sw sw-high"></span><b>High</b><span>the posting itself</span></span>
+      <span class="lg"><span class="sw sw-med"></span><b>Medium</b><span>Wikipedia or news</span></span>
+      <span class="lg"><span class="sw sw-low"></span><b>Low</b><span>search snippet</span></span>
+      <span class="lg"><span class="sw sw-gap"></span><b>Not found</b><span>rendered as absent, never guessed</span></span>
+    </div>
+  </div>
+
+  <div class="sorts">
+    <button class="s s--on">Best evidenced</button><button class="s">Rank</button>
+    <button class="s">Deadline</button><button class="s">Biggest gaps</button>
+    <span style="width:10px"></span>
+    <button class="s">Unresearched company <b>140</b></button>
+    <button class="s">Excluded <b>1339</b></button>
+  </div>
+
+  <div class="rows">
+  <a class="r" href="#">
+    <span class="r-head">
+      <span class="logo logo--fb" style="--s:22px">A</span>
+      <span class="r-co">Attio</span>
+      <span class="r-t">Operations Graduate Associate</span>
+      <span class="meter" title="5 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>5/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><b>£40,000+</b></span>
+      <span class="f"><em>Closes</em><b>11d left</b></span>
+      <span class="f"><em>Sector</em><b>Fintech</b></span>
+      <span class="f"><em>AI</em><b>3/3</b></span>
+      <span class="f"><em>Degree</em><s>not found</s></span>
+      <span class="f"><em>Where</em><b>London</b></span>
+      <span class="f r-src"><em>Seen on</em><b>targetjobs</b></span>
+      <span class="f"><em>Rank</em><b>13</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Start date</span><span>Work mode</span><span>Degree class</span><span>Visa</span></span>
+  </a>
+  <a class="r" href="#">
+    <span class="r-head">
+      <img class="logo" style="--s:22px" src="https://media.licdn.com/dms/image/v2/C560BAQEBL8SoUQMCoQ/company-logo_100_100/company-logo_100_100/0/1630652772820/castleton_commodities_international_logo?e=2147483647&amp;v=beta&amp;t=J8Y3GcpBPwtFob4q33tvJ4yXOg0Rn8B4P2IAP_OH2wg" alt="" loading="lazy">
+      <span class="r-co">Castleton Commodities International</span>
+      <span class="r-t">Commodities Trading Rotational Analyst Graduate Programme</span>
+      <span class="meter" title="3 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>3/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><s>not found</s></span>
+      <span class="f"><em>Closes</em><b>1d left</b></span>
+      <span class="f"><em>Sector</em><b>Energy</b></span>
+      <span class="f"><em>AI</em><b>2/3</b></span>
+      <span class="f"><em>Degree</em><s>not found</s></span>
+      <span class="f"><em>Where</em><b>London</b></span>
+      <span class="f r-src"><em>Seen on</em><b>linkedin, targetjobs</b></span>
+      <span class="f"><em>Rank</em><b>11</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Pay</span><span>Start date</span><span>Work mode</span><span>Degree class</span><span>Visa</span><span>Process stages</span></span>
+  </a>
+  <a class="r" href="#">
+    <span class="r-head">
+      <img class="logo" style="--s:22px" src="https://media.licdn.com/dms/image/v2/C560BAQEBL8SoUQMCoQ/company-logo_100_100/company-logo_100_100/0/1630652772820/castleton_commodities_international_logo?e=2147483647&amp;v=beta&amp;t=J8Y3GcpBPwtFob4q33tvJ4yXOg0Rn8B4P2IAP_OH2wg" alt="" loading="lazy">
+      <span class="r-co">Castleton Commodities International</span>
+      <span class="r-t">Graduate Commodities Trading Rotational Analyst Programme 2027</span>
+      <span class="meter" title="4 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>4/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><s>not found</s></span>
+      <span class="f"><em>Closes</em><b>1d left</b></span>
+      <span class="f"><em>Sector</em><b>Energy</b></span>
+      <span class="f"><em>AI</em><b>2/3</b></span>
+      <span class="f"><em>Degree</em><s>not found</s></span>
+      <span class="f"><em>Where</em><b>London</b></span>
+      <span class="f r-src"><em>Seen on</em><b>brightnetwork</b></span>
+      <span class="f"><em>Rank</em><b>11</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Pay</span><span>Start date</span><span>Work mode</span><span>Degree class</span><span>Visa</span></span>
+  </a>
+  <a class="r" href="#">
+    <span class="r-head">
+      <span class="logo logo--fb" style="--s:22px">A</span>
+      <span class="r-co">Attio</span>
+      <span class="r-t">GTM Graduate Associate</span>
+      <span class="meter" title="4 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>4/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><b>£40,000+</b></span>
+      <span class="f"><em>Closes</em><s>not found</s></span>
+      <span class="f"><em>Sector</em><b>Fintech</b></span>
+      <span class="f"><em>AI</em><b>3/3</b></span>
+      <span class="f"><em>Degree</em><s>not found</s></span>
+      <span class="f"><em>Where</em><b>London</b></span>
+      <span class="f r-src"><em>Seen on</em><b>targetjobs</b></span>
+      <span class="f"><em>Rank</em><b>11</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Deadline</span><span>Start date</span><span>Work mode</span><span>Degree class</span><span>Visa</span></span>
+  </a>
+  <a class="r" href="#">
+    <span class="r-head">
+      <span class="logo logo--fb" style="--s:22px">EU</span>
+      <span class="r-co">EDF UK</span>
+      <span class="r-t">Commercial Graduate 2027</span>
+      <span class="meter" title="6 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>6/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><b>£30,000 to £35,000</b></span>
+      <span class="f"><em>Closes</em><b>10d left</b></span>
+      <span class="f"><em>Sector</em><b>Energy</b></span>
+      <span class="f"><em>AI</em><b>2/3</b></span>
+      <span class="f"><em>Degree</em><b>2:2</b></span>
+      <span class="f"><em>Where</em><b>London +2</b></span>
+      <span class="f r-src"><em>Seen on</em><b>targetjobs, brightnetwork</b></span>
+      <span class="f"><em>Rank</em><b>10</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Start date</span><span>Work mode</span><span>Visa</span></span>
+  </a>
+  <a class="r" href="#">
+    <span class="r-head">
+      <span class="logo logo--fb" style="--s:22px">EU</span>
+      <span class="r-co">EDF UK</span>
+      <span class="r-t">Electrical Engineering Graduate 2027</span>
+      <span class="meter" title="5 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>5/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><b>£37,500 per annum</b></span>
+      <span class="f"><em>Closes</em><b>10d left</b></span>
+      <span class="f"><em>Sector</em><b>Energy</b></span>
+      <span class="f"><em>AI</em><b>2/3</b></span>
+      <span class="f"><em>Degree</em><s>not found</s></span>
+      <span class="f"><em>Where</em><b>London +2</b></span>
+      <span class="f r-src"><em>Seen on</em><b>targetjobs, brightnetwork</b></span>
+      <span class="f"><em>Rank</em><b>10</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Start date</span><span>Work mode</span><span>Degree class</span><span>Visa</span></span>
+  </a>
+  <a class="r r--on" href="#">
+    <span class="r-head">
+      <span class="logo logo--fb" style="--s:22px">EU</span>
+      <span class="r-co">EDF UK</span>
+      <span class="r-t">Data &amp; Technology Graduate 2027</span>
+      <span class="meter" title="6 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>6/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><b>£30,000 to £35,000</b></span>
+      <span class="f"><em>Closes</em><b>10d left</b></span>
+      <span class="f"><em>Sector</em><b>Energy</b></span>
+      <span class="f"><em>AI</em><b>2/3</b></span>
+      <span class="f"><em>Degree</em><b>2:2</b></span>
+      <span class="f"><em>Where</em><b>London +2</b></span>
+      <span class="f r-src"><em>Seen on</em><b>targetjobs, brightnetwork</b></span>
+      <span class="f"><em>Rank</em><b>10</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Start date</span><span>Work mode</span><span>Visa</span></span>
+  </a>
+  <a class="r" href="#">
+    <span class="r-head">
+      <img class="logo" style="--s:22px" src="https://media.licdn.com/dms/image/v2/D4E0BAQHTUPZD9dL2Tw/company-logo_100_100/B4EZgeutFNHoAQ-/0/1752862217192?e=2147483647&amp;v=beta&amp;t=7-BBQKxObDo0VvdS6frIpt8pv39Lcsjmxk_l8FPFFk4" alt="" loading="lazy">
+      <span class="r-co">Deutsche Bank</span>
+      <span class="r-t">Deutsche Bank Graduate Programme - Investment Banking &amp; Capital Markets - Capital Markets</span>
+      <span class="meter" title="3 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>3/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><s>not found</s></span>
+      <span class="f"><em>Closes</em><b>20d left</b></span>
+      <span class="f"><em>Sector</em><b>Fintech</b></span>
+      <span class="f"><em>AI</em><s>not assessed</s></span>
+      <span class="f"><em>Degree</em><b>2:1</b></span>
+      <span class="f"><em>Where</em><b>London</b></span>
+      <span class="f r-src"><em>Seen on</em><b>linkedin, targetjobs</b></span>
+      <span class="f"><em>Rank</em><b>10</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Pay</span><span>Start date</span><span>Work mode</span><span>Visa</span><span>Process stages</span><span>AI-forward</span></span>
+  </a>
+  <a class="r" href="#">
+    <span class="r-head">
+      <img class="logo" style="--s:22px" src="https://media.licdn.com/dms/image/v2/D4E0BAQHTUPZD9dL2Tw/company-logo_100_100/B4EZgeutFNHoAQ-/0/1752862217192?e=2147483647&amp;v=beta&amp;t=7-BBQKxObDo0VvdS6frIpt8pv39Lcsjmxk_l8FPFFk4" alt="" loading="lazy">
+      <span class="r-co">Deutsche Bank</span>
+      <span class="r-t">Deutsche Bank Graduate Programme – Investment Banking &amp; Capital Markets</span>
+      <span class="meter" title="3 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i>
+     <b>3/9</b></span>
+    </span>
+    <span class="r-facts">
+      <span class="f"><em>Pay</em><s>not found</s></span>
+      <span class="f"><em>Closes</em><b>20d left</b></span>
+      <span class="f"><em>Sector</em><b>Fintech</b></span>
+      <span class="f"><em>AI</em><s>not assessed</s></span>
+      <span class="f"><em>Degree</em><b>2:1</b></span>
+      <span class="f"><em>Where</em><b>London</b></span>
+      <span class="f r-src"><em>Seen on</em><b>linkedin, targetjobs</b></span>
+      <span class="f"><em>Rank</em><b>10</b></span>
+    </span>
+    <span class="r-gaps">Missing: <span>Pay</span><span>Start date</span><span>Work mode</span><span>Visa</span><span>Process stages</span><span>AI-forward</span></span>
+  </a></div>
+</main>
+
+<section class="screen2"><div class="wrap">
+  <div class="slab">FACTFILE — /jobs/1915</div>
+  <div class="ff">
+    <div class="ff-head">
+      <span class="logo logo--fb" style="--s:44px">EU</span>
+      <div style="min-width:0">
+        <div class="ff-co">EDF UK · Energy</div>
+        <h1>Data &amp; Technology Graduate 2027</h1>
+        <div class="chips">
+          <span class="c">Scheme</span>
+          <span class="c u">10d left</span>
+          <span class="c">London +2</span>
+          <span class="c">Rank 10</span>
+          <span class="c">targetjobs</span><span class="c">brightnetwork</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="score">
+      <span class="meter" title="7 of 9 key fields found">
+     <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i>
+     <b>7/9</b></span>
+      <span class="sl"><b>7 of 9 key fields evidenced</b>2 still missing: Work mode, Visa</span>
+      <span class="sgo"><button class="btn btn--go">Open posting ↗</button><button class="btn">Mark interested</button></span>
+    </div>
+
+    <div class="two" style="margin-top:22px">
+      <div>
+        <h2>Evidenced <span class="n">— value, confidence, source</span></h2>
+        <dl class="claims">
+          <div class="cl"><dt>Pay</dt><dd><span class="cv">£30,000 to £35,000</span>
+    <span class="prov-inline">
+      <span class="cf cf-high">high</span>
+      <span class="kind">posting</span>
+      <a class="url" href="https://targetjobs.co.uk/jobs/data-technology-graduate-242197" target="_blank" rel="noreferrer">targetjobs.co.uk</a>
+    </span></dd></div><div class="cl"><dt>Deadline</dt><dd><span class="cv">1 Oct 2026 · 10d left</span>
+    <span class="prov-inline">
+      <span class="cf cf-high">high</span>
+      <span class="kind">posting</span>
+      <a class="url" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer">brightnetwork.co.uk</a>
+    </span></dd></div><div class="cl"><dt>Start</dt><dd><span class="cv">September 2027</span>
+    <span class="prov-inline">
+      <span class="cf cf-high">high</span>
+      <span class="kind">posting</span>
+      <a class="url" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer">brightnetwork.co.uk</a>
+    </span></dd></div><div class="cl"><dt>Degree class</dt><dd><span class="cv">2:2 or above</span>
+    <span class="prov-inline">
+      <span class="cf cf-high">high</span>
+      <span class="kind">posting</span>
+      <a class="url" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer">brightnetwork.co.uk</a>
+    </span></dd></div><div class="cl"><dt>Process</dt><dd><span class="cv">Logical Thinking Exercise → virtual Assessment Centre</span>
+    <span class="prov-inline">
+      <span class="cf cf-high">high</span>
+      <span class="kind">posting</span>
+      <a class="url" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer">brightnetwork.co.uk</a>
+    </span></dd></div><div class="cl"><dt>Sector</dt><dd><span class="cv">Energy</span>
+    <span class="prov-inline">
+      <span class="cf cf-medium">medium</span>
+      <span class="kind">wikipedia</span>
+      <a class="url" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a>
+    </span></dd></div><div class="cl"><dt>AI-forward</dt><dd><span class="cv">2 of 3</span>
+    <span class="prov-inline">
+      <span class="cf cf-low">low</span>
+      <span class="kind">search snippet</span>
+      <a class="url" href="https://careers.edfenergy.com/job/data-and-technology-graduate-in-london-jid-2284" target="_blank" rel="noreferrer">careers.edfenergy.com</a>
+    </span></dd></div><div class="cl"><dt>Scheme length</dt><dd><span class="cv">two-year graduate programme</span>
+    <span class="prov-inline">
+      <span class="cf cf-low">low</span>
+      <span class="kind">search snippet</span>
+      <a class="url" href="https://careers.edfenergy.com/job/commercial-graduate-in-london-jid-2282" target="_blank" rel="noreferrer">careers.edfenergy.com</a>
+    </span></dd></div>
+        </dl>
+      </div>
+      <div>
+        <h2>Not found <span class="n">— stated plainly, never guessed</span></h2>
+        <div class="gaps">
+          <div class="gp"><b>Work mode</b><span>The posting never says onsite, hybrid or remote.</span></div><div class="gp"><b>Visa sponsorship</b><span>Not mentioned; do not assume either way.</span></div><div class="gp"><b>CV / cover letter</b><span>Six of the eight requirement flags came back unknown — only the two named stages are evidenced.</span></div><div class="gp"><b>Applicants per place</b><span>No published competitiveness figure found in search.</span></div>
+        </div>
+
+        <h2>Source integrity</h2>
+        <div class="warn">
+          <b>Company summary comes from a Wikipedia article title that does not literally match the employer name.</b>
+          This one resolves to <a class="u2" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">EDF_Energy</a>, which is correct for EDF UK.
+          25 companies currently trip this check — some are fine, some are the wrong organisation entirely.
+        </div>
+
+        <h2>Why it ranks 10</h2>
+        <div class="led">
+          <div class="ld"><span>Sector match</span><b class="pos">+2</b></div><div class="ld"><span>AI-forward (×2)</span><b class="pos">+4</b></div><div class="ld"><span>Deadline proximity</span><b class="pos">+2</b></div><div class="ld"><span>Eligibility risk</span><b class="zero">0</b></div><div class="ld"><span>Role kind</span><b class="pos">+2</b></div>
+          <div class="ld ld--t"><span>rank_score</span><b>10</b></div>
+        </div>
+      </div>
+    </div>
+
+    <h2>What the application asks for <span class="n">— six of eight flags came back unknown, shown as unknown</span></h2>
+    <div class="reqs">
+      <div class="rq"><span class="m unknown">?</span><span>CV</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Cover letter</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Motivational questions</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Video interview</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Online tests</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Assessment centre</span><span class="rs">Not stated</span></div>
+    </div>
+    <div class="pills"><span class="pill">✓ Logical Thinking Exercise</span><span class="pill">✓ virtual Assessment Centre</span></div>
+
+    <h2>Company facts <span class="n">— 9 rows, every one with a source_url</span></h2>
+    <div class="claims">
+      
+      <div class="fr"><span class="ff-f">ai forward</span>
+      <span class="ff-v">2/3 — The company&#39;s Data and Technology Graduate Programme includes placements building experience in Artificial Intelligence.</span>
+      <span class="fs"><span class="cf cf-low">low</span><a class="url" href="https://careers.edfenergy.com/job/data-and-technology-graduate-in-london-jid-2284" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span></div>
+      <div class="fr"><span class="ff-f">pay band</span>
+      <span class="ff-v">£35,000 per annum</span>
+      <span class="fs"><span class="cf cf-low">low</span><a class="url" href="https://careers.edfenergy.com/job/commercial-graduate-in-london-jid-2282" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span></div>
+      <div class="fr"><span class="ff-f">scheme structure</span>
+      <span class="ff-v">two-year graduate programme</span>
+      <span class="fs"><span class="cf cf-low">low</span><a class="url" href="https://careers.edfenergy.com/job/commercial-graduate-in-london-jid-2282" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span></div>
+      <div class="fr"><span class="ff-f">sector</span>
+      <span class="ff-v">energy — EDF Energy is an integrated energy company operating in electricity generation and the sale of natural gas and electricity.</span>
+      <span class="fs"><span class="cf cf-medium">medium</span><a class="url" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span></div>
+      <div class="fr"><span class="ff-f">what they do</span>
+      <span class="ff-v">EDF Energy is a British integrated energy company, wholly owned by the French state-owned EDF, with operations spanning electricity generation and the sale of natural gas and electricity to homes and </span>
+      <span class="fs"><span class="cf cf-medium">medium</span><a class="url" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span></div>
+      <div class="fr"><span class="ff-f">what they do</span>
+      <span class="ff-v">integrated energy company spanning electricity generation and sales</span>
+      <span class="fs"><span class="cf cf-medium">medium</span><a class="url" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span></div>
+    </div>
+
+    <div class="prov"><b>Provenance.</b> Seen on <b>targetjobs</b> and <b>brightnetwork</b> · first seen 20 Sept 2026 ·
+    posting facts extracted by <code>gemini/gemini-3.1-flash-lite</code> ·
+    company research refreshed 21 Sept 2026.<br>
+    Grounding rule: every requirement flag, degree class and visa value must have its keyword in the posting text, or it is downgraded to unknown before it reaches this page.</div>
+  </div>
+</div></section>
+</body></html>

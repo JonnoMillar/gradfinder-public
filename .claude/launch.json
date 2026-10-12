@@ -1,0 +1,41 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "gradfinder",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "gradfinder-demo",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "demo"
+      ],
+      "port": 3100,
+      "autoPort": true
+    },
+    {
+      "name": "gradfinder-hosted-demo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "node_modules/next/dist/bin/next",
+        "start",
+        "-H",
+        "127.0.0.1",
+        "-p",
+        "3200"
+      ],
+      "env": {
+        "NEXT_DIST_DIR": ".next-hosted"
+      },
+      "port": 3200
+    }
+  ]
+}

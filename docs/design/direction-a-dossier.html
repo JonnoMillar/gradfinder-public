@@ -1,0 +1,1015 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Direction A — Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:oklch(0.984 0.003 240); --surface:oklch(1 0 0); --sunk:oklch(0.963 0.004 240);
+  --ink:oklch(0.21 0.015 255); --ink-2:oklch(0.435 0.013 255);
+  --line:oklch(0.906 0.005 250); --line-soft:oklch(0.945 0.004 250);
+  --urgent:oklch(0.505 0.185 30); --urgent-bg:oklch(0.957 0.035 38);
+  --signal:oklch(0.44 0.085 200); --signal-bg:oklch(0.955 0.022 200);
+  --good:oklch(0.47 0.10 155);
+  --r:7px; --z-sticky:10; --z-pop:40;
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  font-synthesis-weight:none;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums;
+}
+a{color:inherit;text-decoration:none}
+.app{display:grid;grid-template-rows:auto auto 1fr;height:100%}
+
+/* ---------- header ---------- */
+.top{display:flex;align-items:baseline;gap:14px;padding:11px 18px;border-bottom:1px solid var(--line);background:var(--surface)}
+.brand{font-weight:700;letter-spacing:-0.022em;font-size:15px}
+.brand span{color:var(--ink-2);font-weight:500}
+.top-stat{color:var(--ink-2);font-size:12.5px}
+.top-stat b{color:var(--ink);font-weight:600}
+.top-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:5px 11px;font:inherit;font-size:12.5px;font-weight:500;color:var(--ink);cursor:pointer;transition:background .12s var(--ease),border-color .12s var(--ease)}
+.btn:hover{background:var(--sunk);border-color:oklch(0.86 0.006 250)}
+.btn--go{background:var(--ink);color:oklch(0.99 0 0);border-color:var(--ink)}
+.btn--go:hover{background:oklch(0.30 0.018 255)}
+
+/* ---------- failure banner: loud, not decorative ---------- */
+.alert{display:flex;gap:10px;align-items:flex-start;padding:9px 18px;background:var(--urgent-bg);border-bottom:1px solid oklch(0.88 0.045 38);font-size:12.5px;color:oklch(0.35 0.11 30)}
+.alert b{font-weight:600}
+.alert code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;background:oklch(0.98 0.02 38);padding:1px 5px;border-radius:4px}
+.alert a{text-decoration:underline;text-underline-offset:2px;margin-left:auto;white-space:nowrap;font-weight:500}
+
+/* ---------- panes ---------- */
+.panes{display:grid;grid-template-columns:406px 1fr;min-height:0}
+.rail{border-right:1px solid var(--line);display:grid;grid-template-rows:auto 1fr;min-height:0;background:var(--surface)}
+.detail{overflow-y:auto;min-height:0;background:var(--bg)}
+
+/* ---------- filters ---------- */
+.filters{padding:9px 12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:5px;align-items:center;background:var(--surface);position:sticky;top:0;z-index:var(--z-sticky)}
+.fbtn{font-size:12px;font-weight:500;padding:3.5px 9px;border-radius:99px;border:1px solid var(--line);color:var(--ink-2);background:var(--surface);cursor:pointer;white-space:nowrap;transition:background .12s var(--ease)}
+.fbtn:hover{background:var(--sunk)}
+.fbtn--on{background:var(--ink);color:oklch(0.99 0 0);border-color:var(--ink)}
+.fbtn b{font-weight:600;font-variant-numeric:tabular-nums}
+.sortline{width:100%;display:flex;align-items:baseline;gap:6px;color:var(--ink-2);font-size:11.5px;padding-top:2px}
+.sortline b{color:var(--ink);font-weight:600}
+
+/* ---------- rows: hairlines + hierarchy, not cards ---------- */
+.rows{overflow-y:auto;min-height:0}
+.row{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:start;padding:10px 12px;border-bottom:1px solid var(--line-soft);transition:background .12s var(--ease)}
+.row:hover{background:var(--sunk)}
+.row--on{background:var(--signal-bg)}
+.row--on:hover{background:var(--signal-bg)}
+.row--on .row-co::before{content:"";width:5px;height:5px;border-radius:99px;background:var(--signal);display:inline-block;margin-right:6px;vertical-align:1.5px}
+.logo{--s:26px;width:var(--s);height:var(--s);border-radius:5px;object-fit:contain;background:var(--surface);border:1px solid var(--line);display:block}
+.logo--fb{display:grid;place-items:center;font-size:calc(var(--s)*0.38);font-weight:600;color:var(--ink-2);background:var(--sunk)}
+.row-main{min-width:0;display:block}
+.row-top{display:flex;align-items:baseline;gap:8px}
+.row-co{font-weight:600;font-size:13px;letter-spacing:-0.006em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-dl{margin-left:auto;font-size:11.5px;font-weight:600;white-space:nowrap}
+.row-title{display:block;font-size:14px;line-height:1.3;margin-top:1px;letter-spacing:-0.008em}
+.row-meta{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:11.5px;color:var(--ink-2);flex-wrap:wrap}
+.mk{font-weight:600;color:var(--ink)}
+.ai{color:var(--signal);font-weight:600}
+.dot{width:2.5px;height:2.5px;border-radius:99px;background:oklch(0.80 0.006 250);flex:none}
+.row-rank{font-size:12px;font-weight:600;color:var(--ink-2);padding-top:1px;min-width:18px;text-align:right}
+.u-today,.u-week{color:var(--urgent)}
+.u-month{color:oklch(0.46 0.10 55)}
+.u-later,.u-none{color:var(--ink-2);font-weight:500}
+.u-past{color:var(--ink-2);font-weight:500;text-decoration:line-through}
+
+/* ---------- detail ---------- */
+.sheet{max-width:820px;padding:22px 30px 60px}
+.fhead{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
+.fh-co{font-size:13px;font-weight:600;color:var(--ink-2)}
+h1{font-size:25px;line-height:1.16;letter-spacing:-0.024em;font-weight:700;text-wrap:balance;margin:1px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:11.5px;font-weight:600;padding:3px 8px;border-radius:5px;background:var(--sunk);color:var(--ink-2);border:1px solid var(--line)}
+.chip.sig{background:var(--signal-bg);color:oklch(0.35 0.075 200);border-color:oklch(0.88 0.03 200)}
+.chip.urg{background:var(--urgent-bg);color:oklch(0.38 0.14 30);border-color:oklch(0.89 0.045 38)}
+.acts{display:flex;gap:7px;margin:16px 0 0;padding-bottom:18px;border-bottom:1px solid var(--line);align-items:center}
+.status-sel{border:1px solid var(--line);border-radius:var(--r);padding:5px 9px;font:inherit;font-size:12.5px;font-weight:500;background:var(--surface);color:var(--ink)}
+
+h2{font-size:12px;font-weight:600;letter-spacing:0.02em;color:var(--ink-2);margin:26px 0 9px;text-transform:none}
+h2 .n{color:oklch(0.62 0.008 250);font-weight:500;margin-left:5px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+.cell{background:var(--surface);padding:9px 12px;min-width:0}
+.cell dt{font-size:11.5px;color:var(--ink-2);font-weight:500;margin-bottom:2px}
+.cell dd{font-size:13.5px;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.val{font-weight:600}
+.also{color:var(--ink-2);font-weight:400}
+.src{display:inline-block;font-size:10.5px;color:var(--ink-2);border-bottom:1px solid var(--line);margin-left:6px;font-weight:500;transition:color .12s var(--ease),border-color .12s var(--ease)}
+.src:hover{color:var(--signal);border-color:var(--signal)}
+.unknown{color:var(--ink-2);font-weight:500}
+.unknown-q{font-weight:400;font-size:12px}
+
+.reqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:2px 18px}
+.req{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.mark{font-size:11px;font-weight:700;width:15px;flex:none;text-align:center}
+.mark.yes{color:var(--good)} .mark.no{color:oklch(0.66 0.006 250)} .mark.unknown{color:oklch(0.66 0.006 250)}
+.req .rl{font-weight:500}
+.req .rs{margin-left:auto;font-size:11.5px;color:var(--ink-2)}
+.extra{margin-top:9px;display:flex;flex-wrap:wrap;gap:5px}
+
+ol.stages{list-style:none;counter-reset:s;display:flex;flex-wrap:wrap;gap:6px}
+ol.stages li{counter-increment:s;display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:6px 11px 6px 8px;font-size:13px;font-weight:500}
+ol.stages li::before{content:counter(s);font-size:10.5px;font-weight:700;color:var(--ink-2);background:var(--sunk);width:17px;height:17px;border-radius:4px;display:grid;place-items:center;flex:none}
+
+.prose{font-size:13.5px;line-height:1.62;color:var(--ink);max-width:68ch;text-wrap:pretty}
+.prose p{margin-bottom:9px}
+details.desc{margin-top:4px}
+details.desc summary{cursor:pointer;font-size:12.5px;color:var(--ink-2);font-weight:500;list-style:none;padding:4px 0}
+details.desc summary::-webkit-details-marker{display:none}
+details.desc summary::before{content:"▸ ";color:oklch(0.68 0.006 250)}
+details.desc[open] summary::before{content:"▾ "}
+
+.facts{border:1px solid var(--line-soft);border-radius:var(--r);overflow:hidden}
+.fact{display:grid;grid-template-columns:140px 1fr auto;gap:12px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--line-soft);font-size:13px;align-items:baseline}
+.fact:last-child{border-bottom:none}
+.fact-f{color:var(--ink-2);font-weight:500;font-size:12px}
+.fact-v{overflow-wrap:anywhere;line-height:1.4}
+.fact-s{display:flex;gap:6px;align-items:baseline;white-space:nowrap;font-size:10.5px;color:var(--ink-2)}
+.conf{font-weight:600;padding:1px 5px;border-radius:4px;background:var(--sunk)}
+.conf.high{color:var(--good);background:oklch(0.955 0.025 155)}
+.conf.medium{color:oklch(0.44 0.085 245);background:oklch(0.955 0.02 245)}
+.conf.low{color:var(--ink-2)}
+
+.ledger{border:1px solid var(--line-soft);border-radius:var(--r);background:var(--surface);max-width:360px;overflow:hidden}
+.led{display:flex;justify-content:space-between;padding:6px 12px;font-size:13px;border-bottom:1px solid var(--line-soft)}
+.led span:first-child{color:var(--ink-2)}
+.led b{font-weight:600;font-variant-numeric:tabular-nums}
+.led--tot{background:var(--sunk);border-bottom:none;font-weight:600}
+.led--tot span:first-child{color:var(--ink)}
+.pos{color:var(--good)} .neg{color:var(--urgent)} .zero{color:oklch(0.66 0.006 250)}
+
+.news li{list-style:none;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13px;display:flex;gap:10px;align-items:baseline}
+.news li:last-child{border-bottom:none}
+.news .when{color:var(--ink-2);font-size:11.5px;white-space:nowrap;min-width:52px}
+.news .nt{line-height:1.35;overflow-wrap:anywhere}
+.news .nsrc{color:var(--ink-2);font-size:11.5px;margin-left:auto;white-space:nowrap}
+.news a:hover .nt{text-decoration:underline;text-underline-offset:2px}
+
+.prov{margin-top:26px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-2);line-height:1.65}
+.prov b{color:var(--ink);font-weight:600}
+.prov code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+
+.note{margin:0 0 14px;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);font-size:12.5px;color:var(--ink-2)}
+.note b{color:var(--ink);font-weight:600}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head>
+<body>
+<div class="app">
+  <header class="top">
+    <span class="brand">gradfinder <span>· Direction A — Dossier</span></span>
+    <span class="top-stat"><b>639</b> kept · <b>1339</b> filtered out · <b>527</b> companies · <b>8,435</b> sourced facts</span>
+    <span class="top-right">
+      <button class="btn">Sweeps</button>
+      <button class="btn btn--go">Run sweep</button>
+    </span>
+  </header>
+
+  <div class="alert">
+    <b>6 sources failed</b>
+    <span><code>brightnetwork</code> [brightnetwork/parse] only 23/30 pages yielded a JobPosting…</span>
+    <a href="#">See all runs</a>
+  </div>
+
+  <div class="panes">
+    <div class="rail">
+      <div class="filters">
+        <button class="fbtn fbtn--on">All <b>639</b></button>
+        <button class="fbtn">Scheme <b>286</b></button><button class="fbtn">Grad role <b>222</b></button><button class="fbtn">Register interest <b>80</b></button>
+        <button class="fbtn">Closing ≤30d <b>125</b></button>
+        <button class="fbtn">Excluded <b>1339</b></button>
+        <div class="sortline">Sorted by <b>rank</b> · deadline · newest &nbsp;·&nbsp; showing 40 of 639</div>
+      </div>
+      <div class="rows">
+        
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">A</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Attio</span>
+        <span class="row-dl u-month">11d left</span>
+      </span>
+      <span class="row-title">Operations Graduate Associate</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 13">13</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://media.licdn.com/dms/image/v2/C560BAQEBL8SoUQMCoQ/company-logo_100_100/company-logo_100_100/0/1630652772820/castleton_commodities_international_logo?e=2147483647&amp;v=beta&amp;t=J8Y3GcpBPwtFob4q33tvJ4yXOg0Rn8B4P2IAP_OH2wg" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Castleton Commodities International</span>
+        <span class="row-dl u-week">1d left</span>
+      </span>
+      <span class="row-title">Commodities Trading Rotational Analyst Graduate Programme</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Energy</span>
+        <span class="dot"></span><span class="ai">AI 2/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 11">11</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://media.licdn.com/dms/image/v2/C560BAQEBL8SoUQMCoQ/company-logo_100_100/company-logo_100_100/0/1630652772820/castleton_commodities_international_logo?e=2147483647&amp;v=beta&amp;t=J8Y3GcpBPwtFob4q33tvJ4yXOg0Rn8B4P2IAP_OH2wg" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Castleton Commodities International</span>
+        <span class="row-dl u-week">1d left</span>
+      </span>
+      <span class="row-title">Graduate Commodities Trading Rotational Analyst Programme 2027</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Energy</span>
+        <span class="dot"></span><span class="ai">AI 2/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 11">11</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">A</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Attio</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">GTM Graduate Associate</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 11">11</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">EU</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">EDF UK</span>
+        <span class="row-dl u-month">10d left</span>
+      </span>
+      <span class="row-title">Commercial Graduate 2027</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Energy</span>
+        <span class="dot"></span><span class="ai">AI 2/3</span>
+        <span class="dot"></span><span>+2 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">EU</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">EDF UK</span>
+        <span class="row-dl u-month">10d left</span>
+      </span>
+      <span class="row-title">Electrical Engineering Graduate 2027</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Energy</span>
+        <span class="dot"></span><span class="ai">AI 2/3</span>
+        <span class="dot"></span><span>+2 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row row--on" href="#">
+    <span class="logo logo--fb" style="--s:26px">EU</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">EDF UK</span>
+        <span class="row-dl u-month">10d left</span>
+      </span>
+      <span class="row-title">Data &amp; Technology Graduate 2027</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Energy</span>
+        <span class="dot"></span><span class="ai">AI 2/3</span>
+        <span class="dot"></span><span>+2 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://media.licdn.com/dms/image/v2/D4E0BAQHTUPZD9dL2Tw/company-logo_100_100/B4EZgeutFNHoAQ-/0/1752862217192?e=2147483647&amp;v=beta&amp;t=7-BBQKxObDo0VvdS6frIpt8pv39Lcsjmxk_l8FPFFk4" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Deutsche Bank</span>
+        <span class="row-dl u-month">20d left</span>
+      </span>
+      <span class="row-title">Deutsche Bank Graduate Programme - Investment Banking &amp; Capital Markets - Capital Markets</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://media.licdn.com/dms/image/v2/D4E0BAQHTUPZD9dL2Tw/company-logo_100_100/B4EZgeutFNHoAQ-/0/1752862217192?e=2147483647&amp;v=beta&amp;t=7-BBQKxObDo0VvdS6frIpt8pv39Lcsjmxk_l8FPFFk4" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Deutsche Bank</span>
+        <span class="row-dl u-month">20d left</span>
+      </span>
+      <span class="row-title">Deutsche Bank Graduate Programme – Investment Banking &amp; Capital Markets</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://media.licdn.com/dms/image/v2/D4E0BAQHTUPZD9dL2Tw/company-logo_100_100/B4EZgeutFNHoAQ-/0/1752862217192?e=2147483647&amp;v=beta&amp;t=7-BBQKxObDo0VvdS6frIpt8pv39Lcsjmxk_l8FPFFk4" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Deutsche Bank</span>
+        <span class="row-dl u-month">20d left</span>
+      </span>
+      <span class="row-title">Deutsche Bank Graduate Programme - Investment Bank: Capital Markets - UK Coverage</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://imagekit-production.higherin.com/prod-higherin/tr:w-400,h-400,f-orig/companies/337/logos/BankofAmerica_200x200_logo_0.647764001691580602.png" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Bank of America</span>
+        <span class="row-dl u-month">20d left</span>
+      </span>
+      <span class="row-title">Global Technology Software Engineer Graduate Analyst 2027</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        <span class="dot"></span><span class="ai">AI 2/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://media.licdn.com/dms/image/v2/D4E0BAQHTUPZD9dL2Tw/company-logo_100_100/B4EZgeutFNHoAQ-/0/1752862217192?e=2147483647&amp;v=beta&amp;t=7-BBQKxObDo0VvdS6frIpt8pv39Lcsjmxk_l8FPFFk4" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Deutsche Bank</span>
+        <span class="row-dl u-month">20d left</span>
+      </span>
+      <span class="row-title">Investment Banking &amp; Capital Markets Graduate Programme 2027</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <img class="logo" style="--s:26px" src="https://media.licdn.com/dms/image/v2/D4E0BAQHTUPZD9dL2Tw/company-logo_100_100/B4EZgeutFNHoAQ-/0/1752862217192?e=2147483647&amp;v=beta&amp;t=7-BBQKxObDo0VvdS6frIpt8pv39Lcsjmxk_l8FPFFk4" alt="" loading="lazy">
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Deutsche Bank</span>
+        <span class="row-dl u-month">20d left</span>
+      </span>
+      <span class="row-title">Investment Bank: Capital Markets Graduate Programme - UK Coverage 2027</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">L</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Lseg</span>
+        <span class="row-dl u-month">29d left</span>
+      </span>
+      <span class="row-title">Business Analyst Graduate Programme</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">L</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Lseg</span>
+        <span class="row-dl u-month">29d left</span>
+      </span>
+      <span class="row-title">Engineering Graduate Programme (Backend)</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">L</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Lseg</span>
+        <span class="row-dl u-month">29d left</span>
+      </span>
+      <span class="row-title">Engineering Graduate Programme (Fullstack)</span>
+      <span class="row-meta">
+        <span class="mk">Scheme</span>
+        <span class="dot"></span><span>Fintech</span>
+        
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">A</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Anthropic</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Research Engineer, Machine Learning (RL Velocity)</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">W</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Wayve</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Controls Engineer</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">W</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Wayve</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Engineering Technician</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">W</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Wayve</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Machine Learning Engineer, ADAS</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">W</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Wayve</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Machine Learning Engineer, Performance Tooling</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">W</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Wayve</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Model Release Engineer </span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">W</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Wayve</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Software Engineer, AI Libraries</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">IL</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Isomorphic Labs</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">General Application - Register Your Interest</span>
+      <span class="row-meta">
+        <span class="mk">Register interest</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">IL</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Isomorphic Labs</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Team Coordinator, President Team, London</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">G</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Graphcore</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">AI Research Engineer</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>Deep tech</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">G</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Graphcore</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Infrastructure and MLOps Engineer</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>Deep tech</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">G</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Graphcore</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Software Engineer in Build Engineering </span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>Deep tech</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">G</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">Graphcore</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Software Infrastructure Kubernetes Engineer </span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>Deep tech</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">O</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">OpenAI</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Software Engineer, Platform Systems</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">O</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">OpenAI</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Applied AI Engineer, Codex Core Agent</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        <span class="dot"></span><span>+3 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">O</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">OpenAI</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Software Engineer, Compute Infrastructure</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        <span class="dot"></span><span>+4 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">O</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">OpenAI</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Researcher, Training - London </span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">O</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">OpenAI</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Software Engineer, Privacy Engineering (Lawful Access) </span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">O</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">OpenAI</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Network Engineer</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">O</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">OpenAI</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Product Engineer, Cyber</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        <span class="dot"></span><span>+2 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">E</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">ElevenLabs</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Full-Stack Engineer (Front-End Leaning)</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        <span class="dot"></span><span>+15 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">E</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">ElevenLabs</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Product Designer</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        <span class="dot"></span><span>+2 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">E</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">ElevenLabs</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Infrastructure Security Engineer</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        <span class="dot"></span><span>+18 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+  <a class="row" href="#">
+    <span class="logo logo--fb" style="--s:26px">E</span>
+    <span class="row-main">
+      <span class="row-top">
+        <span class="row-co">ElevenLabs</span>
+        <span class="row-dl u-none">No deadline listed</span>
+      </span>
+      <span class="row-title">Automation Engineer - Influencers</span>
+      <span class="row-meta">
+        <span class="mk">Grad role</span>
+        <span class="dot"></span><span>AI</span>
+        <span class="dot"></span><span class="ai">AI 3/3</span>
+        <span class="dot"></span><span>+6 offices</span>
+      </span>
+    </span>
+    <span class="row-rank" title="rank_score 10">10</span>
+  </a>
+      </div>
+    </div>
+
+    <div class="detail"><div class="sheet">
+      <div class="fhead">
+        <span class="logo logo--fb" style="--s:46px">EU</span>
+        <div>
+          <div class="fh-co">EDF UK · Energy</div>
+          <h1>Data &amp; Technology Graduate 2027</h1>
+          <div class="chips">
+            <span class="chip ">Scheme</span>
+            <span class="chip urg">10d left</span>
+            <span class="chip sig">AI-forward 2/3</span>
+            <span class="chip ">London +2</span>
+            <span class="chip ">Rank 10</span>
+            <span class="chip ">targetjobs</span><span class="chip ">brightnetwork</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="acts">
+        <button class="btn btn--go">Open posting ↗</button>
+        <select class="status-sel"><option>Discovered</option><option>Interested</option><option>Applying</option><option>Applied</option><option>Tests</option><option>Interview</option></select>
+        <button class="btn">Add next action</button>
+        <button class="btn">Dismiss</button>
+      </div>
+
+      <h2>At a glance</h2>
+      <dl class="grid">
+        <div class="cell"><dt>Pay</dt><dd><span class="val">£30,000 to £35,000</span><a class="src" href="https://targetjobs.co.uk/jobs/data-technology-graduate-242197" target="_blank" rel="noreferrer"
+         title="posting · high confidence · https://targetjobs.co.uk/jobs/data-technology-graduate-242197"
+        >targetjobs.co.uk</a></dd></div><div class="cell"><dt>Deadline</dt><dd><span class="val">1 Oct 2026 · 10d left</span><a class="src" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer"
+         title="posting · high confidence · https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y"
+        >brightnetwork.co.uk</a></dd></div><div class="cell"><dt>Starts</dt><dd><span class="val">September 2027</span><a class="src" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer"
+         title="posting · high confidence · https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y"
+        >brightnetwork.co.uk</a></dd></div><div class="cell"><dt>Location</dt><dd>London<span class="also"> · also Exeter, Brighton</span></dd></div><div class="cell"><dt>Work mode</dt><dd><span class="unknown">Not stated <span class="unknown-q">in the posting</span></span></dd></div><div class="cell"><dt>Degree</dt><dd><span class="val">2:2 or above</span><a class="src" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer"
+         title="posting · high confidence · https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y"
+        >brightnetwork.co.uk</a></dd></div><div class="cell"><dt>Visa sponsorship</dt><dd><span class="unknown">Not stated <span class="unknown-q">in the posting</span></span></dd></div><div class="cell"><dt>Sector</dt><dd><span class="val">Energy</span><a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer"
+         title="wikipedia · medium confidence · https://en.wikipedia.org/wiki/EDF_Energy"
+        >en.wikipedia.org</a></dd></div>
+      </dl>
+
+      <h2>What the application asks for <span class="n">from the posting text only</span></h2>
+      <div class="reqs">
+        <div class="req"><span class="mark unknown">?</span><span class="rl">CV</span><span class="rs">Not stated</span></div><div class="req"><span class="mark unknown">?</span><span class="rl">Cover letter</span><span class="rs">Not stated</span></div><div class="req"><span class="mark unknown">?</span><span class="rl">Motivational questions</span><span class="rs">Not stated</span></div><div class="req"><span class="mark unknown">?</span><span class="rl">Video interview</span><span class="rs">Not stated</span></div><div class="req"><span class="mark unknown">?</span><span class="rl">Online tests</span><span class="rs">Not stated</span></div><div class="req"><span class="mark unknown">?</span><span class="rl">Assessment centre</span><span class="rs">Not stated</span></div>
+      </div>
+      <div class="extra"><span class="chip sig">Logical Thinking Exercise</span><span class="chip sig">virtual Assessment Centre</span></div>
+
+      <h2>Process <span class="n">2 stages named in the posting</span></h2>
+      <ol class="stages"><li>Logical Thinking Exercise</li><li>virtual Assessment Centre</li></ol>
+
+      <h2>Eligibility</h2>
+      <div class="prose">
+        <p>bachelor’s degree (2:2 or higher) in any field of study</p>
+        <p style="color:var(--ink-2);font-size:12.5px">Subjects: any · Visa sponsorship: unknown</p>
+      </div>
+
+      <h2>Why it ranks 10</h2>
+      <div class="ledger">
+        <div class="led"><span>Sector match</span><b class="pos">+2</b></div><div class="led"><span>AI-forward (×2)</span><b class="pos">+4</b></div><div class="led"><span>Deadline proximity</span><b class="pos">+2</b></div><div class="led"><span>Eligibility risk</span><b class="zero">0</b></div><div class="led"><span>Role kind</span><b class="pos">+2</b></div>
+        <div class="led led--tot"><span>rank_score</span><b>10</b></div>
+      </div>
+
+      <h2>About EDF UK</h2>
+      <div class="prose"><p>EDF Energy is a British integrated energy company, wholly owned by the French state-owned EDF, with operations spanning electricity generation and the sale of natural gas and electricity to homes and businesses throughout the United Kingdom. It employs 11,717 people, and handles 5.22 million business and residential customer accounts.</p></div>
+      <div class="note"><b>Source check.</b> This summary comes from <a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org / EDF_Energy</a> — confirm it describes this employer and not a similarly-named organisation.</div>
+      <div class="prose"><p style="font-size:13px;color:var(--ink-2)">2/3 — The company&#39;s Data and Technology Graduate Programme includes placements building experience in Artificial Intelligence.</p></div>
+
+      <h2>Company facts <span class="n">9 rows, each with a source</span></h2>
+      <div class="facts">
+        
+        <div class="fact">
+          <span class="fact-f">ai forward</span>
+          <span class="fact-v">2/3 — The company&#39;s Data and Technology Graduate Programme includes placements building experience in Artificial Intelligence.</span>
+          <span class="fact-s"><span class="conf low">low</span><a class="src" href="https://careers.edfenergy.com/job/data-and-technology-graduate-in-london-jid-2284" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span>
+        </div>
+        <div class="fact">
+          <span class="fact-f">pay band</span>
+          <span class="fact-v">£35,000 per annum</span>
+          <span class="fact-s"><span class="conf low">low</span><a class="src" href="https://careers.edfenergy.com/job/commercial-graduate-in-london-jid-2282" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span>
+        </div>
+        <div class="fact">
+          <span class="fact-f">scheme structure</span>
+          <span class="fact-v">two-year graduate programme</span>
+          <span class="fact-s"><span class="conf low">low</span><a class="src" href="https://careers.edfenergy.com/job/commercial-graduate-in-london-jid-2282" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span>
+        </div>
+        <div class="fact">
+          <span class="fact-f">sector</span>
+          <span class="fact-v">energy — EDF Energy is an integrated energy company operating in electricity generation and the sale of natural gas and electricity.</span>
+          <span class="fact-s"><span class="conf medium">medium</span><a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span>
+        </div>
+        <div class="fact">
+          <span class="fact-f">what they do</span>
+          <span class="fact-v">EDF Energy is a British integrated energy company, wholly owned by the French state-owned EDF, with operations spanning electricity generation and the sale of natural gas and electricity to homes and businesses</span>
+          <span class="fact-s"><span class="conf medium">medium</span><a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span>
+        </div>
+        <div class="fact">
+          <span class="fact-f">what they do</span>
+          <span class="fact-v">integrated energy company spanning electricity generation and sales</span>
+          <span class="fact-s"><span class="conf medium">medium</span><a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span>
+        </div>
+      </div>
+
+      <h2>Recent news <span class="n">Google News, last 30 days</span></h2>
+      <ul class="news">
+        <li><a href="https://news.google.com/rss/articles/CBMipwFBVV95cUxOYWJLUW8xaFFtSDdIZ3BBUFBVTVFreklXdzluSlRndzNjdmJfQ04yWXNDcVI4ckdtZ3NPaVJoRjVrVU1Ja0RXUGY1UV84eElfQ094bXNaM0dPSTg5QWgzV0tLdnNyWkl3M0luemt3dWlVT3E4cS00Yi1DeVV3RVlQNUs3ck1vdTJyaG9WeDNTV2lDNU5vSnN4OThaV1dxTHN0Uk5kX2QyYw?oc=5" target="_blank" rel="noreferrer" style="display:flex;gap:10px;align-items:baseline;width:100%">
+          <span class="when">20 Sept 2026</span>
+          <span class="nt">Palisades restart project completes major phase</span>
+          <span class="nsrc">scanx.trade</span></a></li><li><a href="https://news.google.com/rss/articles/CBMivgFBVV95cUxNMlpiaDJfZ1duMXluOV9ieU9lcjhEeXZKUFBEU2xjZVZCZ3pXWGdjUXVCdF85RHVIX18xRjJXTzA1SjRZenRyZF9DaGhzdzFCNG9iN1RkNEEtV2I0aTBrZ2VIWXlIb0RHUkVTQzR3MG1FbjhhbTNnNDV0UTdpMnRrMDd5NzlicDZfTFg4UjBhZlpzZDkyNjlBbWtieFpuUG9nMlJPUXVRdzZhcE5OSERvOFluNV96c2NGYXNJREJ3?oc=5" target="_blank" rel="noreferrer" style="display:flex;gap:10px;align-items:baseline;width:100%">
+          <span class="when">17 Sept 2026</span>
+          <span class="nt">How can Europe achieve its growth potential?</span>
+          <span class="nsrc">Fortune</span></a></li><li><a href="https://news.google.com/rss/articles/CBMifkFVX3lxTE10Z1JsTW96YmtwODNLOFhKeG5rVUNGWTZadjdCMDhpdFZLcGRTTDZIUVhHNmV0YThURXJwaTFFSEMtLUtUa1Z1M1EwTnQ0QklQZzNFZ2dpaDVvbnNDam5TYS1TWUhybk94eFl2SjIxR0E4SThaUUh1ZHMtYWxodw?oc=5" target="_blank" rel="noreferrer" style="display:flex;gap:10px;align-items:baseline;width:100%">
+          <span class="when">17 Sept 2026</span>
+          <span class="nt">Torness: Job security and a future in close to home</span>
+          <span class="nsrc">Nuclear Industry Association</span></a></li><li><a href="https://news.google.com/rss/articles/CBMiowFBVV95cUxPSlE5Wm1PeXlRX1R6SEI1RWs2c09lRENpdWhfQUowU3pIQ3JibllnZkVIV1p5MU1ZeWJuMUdBS0pUSXhwZDRwZ1QzVDFwRk9ubVQ1UGxTLU9FaXVENUVraVdNVGpEall2dl9PZ0Q3b1Zicmt6U0xCb2NRZ2JvQWRQMGZidzBZd1B4SE55RndiZFRncGxtaHVuY3VkeW5tR09yTHlF?oc=5" target="_blank" rel="noreferrer" style="display:flex;gap:10px;align-items:baseline;width:100%">
+          <span class="when">16 Sept 2026</span>
+          <span class="nt">‘The U.K. has a competitiveness deficit in its energy costs—that’s a real call to action,’ says EDF U.K. chair</span>
+          <span class="nsrc">Fortune</span></a></li><li><a href="https://news.google.com/rss/articles/CBMiiwFBVV95cUxOS0RfZnBKT2ZkQjJKWk1kRWZCRXpEc2hmTGZOVWdJWmhsOGlKVDM3Xy0zcEJ1ZUN4UlM0T0V4ZlhXTVhybVBLOUNjQmtzeE0zNkFRLXBGdDF3MlhlX1I1S3dmZVl6WkMxclB5R0JmLWJtbkhPT29WRm4ySHBkdHMyNEFiWjhWbEk1b0JF?oc=5" target="_blank" rel="noreferrer" style="display:flex;gap:10px;align-items:baseline;width:100%">
+          <span class="when">15 Sept 2026</span>
+          <span class="nt">Kate Dohaney says AI demands a different type of leadership—‘I’m not a CEO sitting back saying cut, cut, cut’</span>
+          <span class="nsrc">Fortune</span></a></li><li><a href="https://news.google.com/rss/articles/CBMipgFBVV95cUxPSTcxOXBudWxFTHREUHNyWE54bXpueGRqeVZUR0dVMk5mMlZhSHRacWlQV01waFlhVC1uTlM5TXJPUjNjcndTTV9McHRtVllKTHlLWmo0QVFvb0VIWHZJNzNVajNHR1l6MHRWcFBCS3dHYWUyYm94bEV4YjZfLUExSTNUU2pLTFR3MDdxeTVsQVpHUVR1Q0VIYWFVc3M5OWxkdnFIemxn?oc=5" target="_blank" rel="noreferrer" style="display:flex;gap:10px;align-items:baseline;width:100%">
+          <span class="when">8 Sept 2026</span>
+          <span class="nt">EDF Energy in talks to take on So Energy customers</span>
+          <span class="nsrc">Solar Power Portal</span></a></li>
+      </ul>
+
+      <h2>Posting text <span class="n">5,836 characters as fetched</span></h2>
+      <details class="desc"><summary>Show the posting as the sweep stored it</summary>
+        <div class="prose" style="margin-top:8px"><p>Ready to shape the future of energy through data and technology? At EDF, Success is Personal. You’ll learn from experts, build valuable technical skills and start a career that helps Britain achieve net zero.</p><p>The opportunity</p><p>Alongside earning a salary of £35,000 per annum, you’ll join our two-year Data and Technology Graduate Programme, expected to begin in September 2027. From day one, you’ll become part of our graduate community and start building a career that combines technology, innovation and purpose.</p><p>Over the course of the programme, you’ll complete placements across different areas of our Data and Technology function, gaining experience in Software Engineering, Data Science and AI, Data Engineering and Cloud Computing. As you develop your skills, you’ll contribute to projects that help transform EDF and support Britain’s transition to a low-carbon future.</p><p>You’ll enjoy a flexible working experience, with most of your time spent working remotely or from an EDF office, whichever suits you best. You’ll also have opportunities to spend time at sites and offices across EDF, including locations such as London, Brighton and Exeter. This is a great way to experience different parts of the business, build your network and see first-hand how technology supports the delivery of cleaner energy.</p><p>What you’ll experience</p><p>No two placements are the same. You’ll work alongside technology specialists, data scientists, software engineers and business teams while developing skills that are in demand across every industry.</p></div>
+      </details>
+
+      <div class="prov">
+        <b>Provenance.</b> Seen on <b>targetjobs</b> and <b>brightnetwork</b> · first seen 20 Sept 2026 ·
+        posting facts extracted by <code>gemini/gemini-3.1-flash-lite</code> on 21 Sept 2026 ·
+        company research refreshed 21 Sept 2026.<br>
+        Every value above is a <code>facts</code> row with a <code>source_url</code>, or a field parsed from the posting itself. Nothing on this page was written by a model without a source.
+      </div>
+    </div></div>
+  </div>
+</div>
+</body></html>

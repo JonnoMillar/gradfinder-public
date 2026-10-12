@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npm run demo:build",
+  "framework": "nextjs"
+}

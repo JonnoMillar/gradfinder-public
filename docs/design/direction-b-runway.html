@@ -1,0 +1,1296 @@
+<!doctype html>
+<html lang="en-GB"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Direction B — Runway</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:oklch(0.185 0.014 322); --surf:oklch(0.232 0.013 322); --surf-2:oklch(0.272 0.013 322);
+  --line:oklch(0.315 0.012 322); --line-soft:oklch(0.262 0.011 322);
+  --ink:oklch(0.962 0.004 322); --ink-2:oklch(0.755 0.011 322); --ink-3:oklch(0.625 0.012 322);
+  --hot:oklch(0.735 0.175 42); --hot-dim:oklch(0.40 0.10 42);
+  --warm:oklch(0.795 0.135 75);
+  --mid:oklch(0.80 0.075 105);
+  --cool:oklch(0.735 0.045 200);
+  --open:oklch(0.66 0.028 322);
+  --mint:oklch(0.815 0.125 168);
+  --vio:oklch(0.755 0.105 302);
+  --r:9px; --ease:cubic-bezier(0.22,1,0.36,1);
+  font-synthesis-weight:none;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+
+.top{position:sticky;top:0;z-index:10;background:oklch(0.185 0.014 322/0.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-soft)}
+.top-in{display:flex;align-items:baseline;gap:14px;padding:13px 0}
+.brand{font-weight:700;font-size:16px;letter-spacing:-0.022em}
+.brand span{color:var(--ink-3);font-weight:500}
+.tstat{color:var(--ink-2);font-size:12.5px}
+.tstat b{color:var(--ink);font-weight:600}
+.spacer{margin-left:auto}
+.btn{border:1px solid var(--line);background:var(--surf);border-radius:var(--r);padding:6px 12px;font:inherit;font-size:12.5px;font-weight:500;color:var(--ink);cursor:pointer;transition:background .14s var(--ease),border-color .14s var(--ease)}
+.btn:hover{background:var(--surf-2);border-color:oklch(0.40 0.014 322)}
+.btn--go{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.btn--go:hover{background:oklch(0.88 0.01 322)}
+
+.alert{background:oklch(0.285 0.055 40);border-bottom:1px solid oklch(0.38 0.09 42)}
+.alert-in{display:flex;gap:10px;align-items:baseline;padding:9px 0;font-size:12.5px;color:oklch(0.90 0.055 55)}
+.alert b{color:var(--hot);font-weight:600}
+.alert code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+.alert a{margin-left:auto;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
+
+.lead{padding:26px 0 6px}
+.lead h1{font-size:23px;font-weight:600;letter-spacing:-0.026em;text-wrap:balance}
+.lead p{color:var(--ink-2);font-size:13.5px;margin-top:4px;max-width:66ch;text-wrap:pretty}
+.scrub{display:flex;gap:5px;margin-top:14px;flex-wrap:wrap}
+.sc{font-size:12px;font-weight:500;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--ink-2);background:transparent;cursor:pointer;transition:background .14s var(--ease)}
+.sc:hover{background:var(--surf)}
+.sc--on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.sc b{font-weight:700}
+
+.band{margin-top:26px}
+.bh{display:flex;align-items:baseline;gap:9px;padding:7px 0;position:sticky;top:50px;background:oklch(0.185 0.014 322/0.95);backdrop-filter:blur(8px);z-index:5}
+.bh h2{font-size:14px;font-weight:600;letter-spacing:-0.012em}
+.bh .n{font-size:12.5px;color:var(--ink-2);font-weight:600}
+.bh .note{font-size:12px;color:var(--ink-3);margin-left:6px}
+.bh .rule{flex:1;height:1px;background:var(--line-soft);margin-left:4px}
+.bh-hot h2{color:var(--hot)} .bh-mid h2{color:var(--mid)} .bh-cool h2{color:var(--cool)} .bh-open h2{color:var(--ink-2)}
+
+.r{display:grid;grid-template-columns:56px 1fr auto;gap:14px;align-items:center;padding:11px 12px 11px 0;border-bottom:1px solid var(--line-soft);border-radius:var(--r);transition:background .14s var(--ease)}
+.r:hover{background:var(--surf)}
+.gut{display:grid;justify-items:center;align-content:center;gap:0;line-height:1}
+.gut b{font-size:23px;font-weight:700;letter-spacing:-0.03em}
+.g-u{font-size:10px;color:var(--ink-3);font-weight:500;margin-top:3px;letter-spacing:0.01em}
+.g-open{font-size:11.5px;color:var(--open);font-weight:600}
+.g-hot b{color:var(--hot)} .g-warm b{color:var(--warm)} .g-mid b{color:var(--mid)} .g-cool b{color:var(--cool)}
+.r-body{min-width:0}
+.r-l1{display:flex;align-items:center;gap:7px;font-size:12.5px}
+.logo{--s:18px;width:var(--s);height:var(--s);border-radius:4px;object-fit:contain;background:var(--surf-2);flex:none}
+.logo--fb{display:grid;place-items:center;font-size:calc(var(--s)*0.42);font-weight:700;color:var(--ink-3)}
+.r-co{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-sec{color:var(--ink-3)}
+.r-ai{color:var(--vio);font-weight:600}
+.r-rank{color:var(--ink-3);font-weight:600;font-size:11.5px;background:var(--surf-2);padding:1px 6px;border-radius:5px}
+.r-t{display:block;font-size:15px;font-weight:500;letter-spacing:-0.013em;line-height:1.28;margin-top:2px}
+.r-l3{display:flex;align-items:center;gap:7px;margin-top:4px;font-size:11.5px;color:var(--ink-2);flex-wrap:wrap}
+.r-l3 .k{color:var(--ink);font-weight:600}
+.r-l3 i{width:2.5px;height:2.5px;border-radius:99px;background:var(--ink-3);flex:none}
+.r-act{display:flex;gap:6px;opacity:.5;transition:opacity .14s var(--ease)}
+.r:hover .r-act{opacity:1}
+.q{font:inherit;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:99px;border:1px solid var(--line);background:var(--surf-2);color:var(--ink-2);cursor:pointer}
+.q-y:hover{color:var(--mint);border-color:var(--mint)}
+.q:hover{color:var(--ink);border-color:var(--ink-2)}
+.more{padding:10px 0 0;font-size:12.5px;color:var(--ink-2)}
+.more a{color:var(--mint);text-decoration:underline;text-underline-offset:2px;font-weight:500}
+
+/* ---------- factfile ---------- */
+.screen2{margin-top:48px;border-top:1px solid var(--line);background:var(--surf)}
+.slab{font-size:11px;font-weight:600;color:var(--ink-3);padding:9px 0 0}
+.ff{padding:18px 0 56px;max-width:790px}
+.ff-head{display:flex;gap:14px;align-items:flex-start}
+.ff-co{font-size:13px;color:var(--ink-2);font-weight:600}
+.ff h1{font-size:26px;font-weight:600;letter-spacing:-0.028em;line-height:1.14;margin:2px 0 9px;text-wrap:balance}
+.ff-chips{display:flex;flex-wrap:wrap;gap:5px}
+.c{font-size:11.5px;font-weight:600;padding:3.5px 9px;border-radius:6px;background:var(--surf-2);color:var(--ink-2)}
+.c.hot{background:oklch(0.315 0.075 42);color:var(--hot)}
+.c.vio{background:oklch(0.30 0.055 302);color:var(--vio)}
+
+.count{display:flex;align-items:center;gap:13px;margin:18px 0;padding:14px 16px;background:var(--bg);border-radius:12px}
+.count b{font-size:38px;font-weight:700;letter-spacing:-0.04em;color:var(--hot);line-height:1}
+.count .cl{font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.count .cl b{display:block;font-size:14px;color:var(--ink);letter-spacing:-0.01em;margin-bottom:1px}
+.count .cgo{margin-left:auto;display:flex;gap:7px}
+
+h3{font-size:12px;font-weight:600;color:var(--ink-3);margin:24px 0 9px}
+h3 .n{font-weight:500;color:oklch(0.545 0.012 322)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;background:var(--line-soft);border-radius:10px;overflow:hidden}
+.cel{background:var(--bg);padding:10px 13px}
+.cel dt{font-size:11.5px;color:var(--ink-3);font-weight:500}
+.cel dd{font-size:14px;font-weight:600;margin-top:2px;letter-spacing:-0.008em;overflow-wrap:anywhere}
+.cel dd .sub{display:block;font-size:11.5px;font-weight:400;color:var(--ink-2);margin-top:1px}
+.nf{color:var(--ink-3);font-weight:500;font-size:13px}
+.src{font-size:10.5px;color:var(--ink-3);border-bottom:1px solid var(--line);font-weight:500;margin-left:5px}
+.src:hover{color:var(--mint);border-color:var(--mint)}
+
+.reqs{display:grid;grid-template-columns:repeat(auto-fit,minmax(198px,1fr));gap:1px;background:var(--line-soft);border-radius:10px;overflow:hidden}
+.rq{background:var(--bg);padding:8px 12px;display:flex;align-items:baseline;gap:8px;font-size:13px}
+.m{font-size:11px;font-weight:700;width:13px;flex:none}
+.m.yes{color:var(--mint)} .m.no,.m.unknown{color:var(--ink-3)}
+.rq .rs{margin-left:auto;font-size:11px;color:var(--ink-3)}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+
+ol.st{list-style:none;counter-reset:s;display:flex;flex-wrap:wrap;gap:7px}
+ol.st li{counter-increment:s;display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:8px;padding:7px 13px 7px 9px;font-size:13.5px;font-weight:500}
+ol.st li::before{content:counter(s);font-size:10.5px;font-weight:700;color:var(--bg);background:var(--ink-2);width:17px;height:17px;border-radius:5px;display:grid;place-items:center;flex:none}
+
+.fr{display:grid;grid-template-columns:132px 1fr auto;gap:12px;padding:8px 13px;background:var(--bg);border-bottom:1px solid var(--line-soft);font-size:13px;align-items:baseline}
+.fr:last-child{border-bottom:none}
+.fr:first-child{border-radius:10px 10px 0 0} .fr:last-child{border-radius:0 0 10px 10px}
+.ff-f{color:var(--ink-3);font-size:11.5px;font-weight:500}
+.ff-v{line-height:1.4;overflow-wrap:anywhere;color:var(--ink-2)}
+.cnf{font-size:10px;font-weight:600;padding:2px 6px;border-radius:5px;background:var(--surf-2);color:var(--ink-3)}
+.cnf.high{color:var(--mint);background:oklch(0.30 0.05 168)}
+.cnf.medium{color:var(--cool);background:oklch(0.29 0.035 200)}
+
+.led{max-width:340px;border-radius:10px;overflow:hidden}
+.ld{display:flex;justify-content:space-between;padding:7px 13px;background:var(--bg);border-bottom:1px solid var(--line-soft);font-size:13px}
+.ld span{color:var(--ink-2)}
+.ld b{font-weight:600}
+.ld--t{background:var(--surf-2);border-bottom:none}
+.ld--t span{color:var(--ink);font-weight:600}
+.pos{color:var(--mint)} .neg{color:var(--hot)} .zero{color:var(--ink-3)}
+
+.note{margin-top:10px;padding:10px 13px;background:var(--bg);border-radius:10px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
+.note b{color:var(--ink);font-weight:600}
+.prose{font-size:13.5px;line-height:1.62;color:var(--ink-2);max-width:68ch;text-wrap:pretty}
+.prov{margin-top:26px;padding-top:13px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);line-height:1.65}
+.prov b{color:var(--ink-2);font-weight:600}
+.prov code{font-family:ui-monospace,Menlo,monospace;font-size:11px}
+.news li{list-style:none;display:flex;gap:11px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.news li:last-child{border-bottom:none}
+.news .w{color:var(--ink-3);font-size:11.5px;min-width:54px;white-space:nowrap}
+.news .s{margin-left:auto;color:var(--ink-3);font-size:11.5px;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head>
+<body>
+
+<header class="top"><div class="wrap top-in">
+  <span class="brand">gradfinder <span>· Direction B — Runway</span></span>
+  <span class="tstat"><b>639</b> live · <b>30</b> close this week</span>
+  <span class="spacer"></span>
+  <button class="btn">Sweeps</button><button class="btn btn--go">Run sweep</button>
+</div></header>
+
+<div class="alert"><div class="wrap alert-in">
+  <b>6 sources failed</b><span><code>brightnetwork</code> — [brightnetwork/parse] only 23/30 pages yielded a JobPosting…</span>
+  <a href="#">All runs</a></div></div>
+
+<main class="wrap">
+  <div class="lead">
+    <h1>What closes soonest</h1>
+    <p>Ordered by the deadline printed on the posting. 458 of 639 roles publish no deadline at all, so they sit in their own band, ranked instead of timed.</p>
+    <div class="scrub">
+      <button class="sc sc--on">Deadline</button><button class="sc">Rank</button><button class="sc">Newest</button>
+      <span style="width:12px"></span>
+      <button class="sc">Scheme <b>286</b></button><button class="sc">Grad role <b>222</b></button><button class="sc">Register interest <b>80</b></button>
+      <button class="sc">Excluded <b>1339</b></button>
+    </div>
+  </div>
+
+  
+  <section class="band">
+    <div class="bh bh-hot"><h2>Closes this week</h2><span class="n">30</span><span class="note">act now or let it go</span><span class="rule"></span></div>
+    
+  <a class="r" href="#">
+    <span class="gut g-hot">
+      <b>1</b><span class="g-u">day</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQEBL8SoUQMCoQ/company-logo_100_100/company-logo_100_100/0/1630652772820/castleton_commodities_international_logo?e=2147483647&amp;v=beta&amp;t=J8Y3GcpBPwtFob4q33tvJ4yXOg0Rn8B4P2IAP_OH2wg" alt="" loading="lazy">
+        <span class="r-co">Castleton Commodities International</span>
+        <span class="r-sec">Energy</span>
+        <span class="r-ai">AI 2/3</span>
+        <span class="r-rank" title="rank_score">11</span>
+      </span>
+      <span class="r-t">Commodities Trading Rotational Analyst Graduate Programme</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        <i></i><span>22 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-hot">
+      <b>1</b><span class="g-u">day</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQEBL8SoUQMCoQ/company-logo_100_100/company-logo_100_100/0/1630652772820/castleton_commodities_international_logo?e=2147483647&amp;v=beta&amp;t=J8Y3GcpBPwtFob4q33tvJ4yXOg0Rn8B4P2IAP_OH2wg" alt="" loading="lazy">
+        <span class="r-co">Castleton Commodities International</span>
+        <span class="r-sec">Energy</span>
+        <span class="r-ai">AI 2/3</span>
+        <span class="r-rank" title="rank_score">11</span>
+      </span>
+      <span class="r-t">Graduate Commodities Trading Rotational Analyst Programme 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        <i></i><span>22 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-hot">
+      <b>2</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">LQ</span>
+        <span class="r-co">L&amp;Q</span>
+        <span class="r-sec">Not researched</span>
+        
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Finance Graduate</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£30,000 to £35,000</span>
+        <i></i><span>23 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-hot">
+      <b>2</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2025-09/3d3f559d-9ce4-46df-b512-6e6a04d53e17-912cf4a1-aab3-439e-85af-1809905592f5-chambers.webp" alt="" loading="lazy">
+        <span class="r-co">Chambers and Partners</span>
+        <span class="r-sec">Other</span>
+        
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Research Analyst - Later Hours</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£36,000</span>
+        <i></i><span>23 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://d2q79iu7y748jz.cloudfront.net/s/_squarelogo/256x256/76b365e481c96410a45876ea3fcf78d9" alt="" loading="lazy">
+        <span class="r-co">Barclays</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">8</span>
+      </span>
+      <span class="r-t">Quantitative Analytics Associate Graduate Programme 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Dutch Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Swedish Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Spanish Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Korean Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Japanese Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Hindi Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Italian Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, German Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">MU</span>
+        <span class="r-co">Multipanel Uk</span>
+        <span class="r-sec">Not researched</span>
+        
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Environmental &amp; Sustainability Manager - Graduate Trainee</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£25,000 to £30,000</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2025-09/3d3f559d-9ce4-46df-b512-6e6a04d53e17-912cf4a1-aab3-439e-85af-1809905592f5-chambers.webp" alt="" loading="lazy">
+        <span class="r-co">Chambers and Partners</span>
+        <span class="r-sec">Other</span>
+        
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Research Analyst - German-speaking</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£30,000</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Associate, Client Service, French Speaker, 2026</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£48,500–£57,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Associate, Client Service, English Speaker, 2026</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£48,500–£57,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2026-08/cf11537f-d1e5-4b64-93ae-fb527fe43352-05700fe9-16f4-4088-8e63-be24b9b2905e.webp" alt="" loading="lazy">
+        <span class="r-co">Kaorium Ltd</span>
+        <span class="r-sec">Not researched</span>
+        
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Japanese-Speaking Operations &amp; Client Support Coordinator</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£20,000–£23,500</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>4</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2023-01/Logo (3).webp" alt="" loading="lazy">
+        <span class="r-co">Investment20/20</span>
+        <span class="r-sec">Not researched</span>
+        
+        <span class="r-rank" title="rank_score">4</span>
+      </span>
+      <span class="r-t">Global Credit Trainee</span>
+      <span class="r-l3">
+        <span class="k">Internship</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        <i></i><span>25 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>6</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">AW</span>
+        <span class="r-co">Anglian Water</span>
+        <span class="r-sec">Energy</span>
+        <span class="r-ai">AI 1/3</span>
+        <span class="r-rank" title="rank_score">7</span>
+      </span>
+      <span class="r-t">Reservoirs Graduate Programmes</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£30,000 to £35,000</span>
+        <i></i><span>27 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>6</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">AW</span>
+        <span class="r-co">Anglian Water</span>
+        <span class="r-sec">Energy</span>
+        <span class="r-ai">AI 1/3</span>
+        <span class="r-rank" title="rank_score">7</span>
+      </span>
+      <span class="r-t">Corporate Affairs Graduate 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£30,000 to £35,000</span>
+        <i></i><span>27 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>6</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">AW</span>
+        <span class="r-co">Anglian Water</span>
+        <span class="r-sec">Energy</span>
+        <span class="r-ai">AI 1/3</span>
+        <span class="r-rank" title="rank_score">7</span>
+      </span>
+      <span class="r-t">Technical Engineering Graduate</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£30,000 to £35,000</span>
+        <i></i><span>27 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>6</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">AW</span>
+        <span class="r-co">Anglian Water</span>
+        <span class="r-sec">Energy</span>
+        <span class="r-ai">AI 1/3</span>
+        <span class="r-rank" title="rank_score">7</span>
+      </span>
+      <span class="r-t">Water Recycling Operations Graduate 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>Location not stated</span>
+        <i></i><span>competitive salary</span>
+        <i></i><span>27 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>6</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2023-11/Grad Profile Image - 300 x 300 (85).webp" alt="" loading="lazy">
+        <span class="r-co">Enterprise Mobility</span>
+        <span class="r-sec">Not researched</span>
+        
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Graduate Management Trainee - London</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        <i></i><span>27 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>7</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://media.licdn.com/dms/image/v2/C560BAQFwAv8LC2z7Hg/company-logo_100_100/company-logo_100_100/0/1657205295670?e=2147483647&amp;v=beta&amp;t=JfLQ1TWTH2oM9mNvcnTXeXJ7GZaoapQjWGGYdai0XQg" alt="" loading="lazy">
+        <span class="r-co">AlphaSights</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">6</span>
+      </span>
+      <span class="r-t">Associate, Client Service, Portuguese Speaker, 2027</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£41,500</span>
+        <i></i><span>28 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>7</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2026-03/b48bf5f0-c4ed-4b27-96c1-2add506580d0-5fb1592e-990e-43d3-8a86-145fc22ee428-Acturis_20Main_20Logo_20300_20x_20300.webp" alt="" loading="lazy">
+        <span class="r-co">Acturis</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Graduate Integration Developer, London</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£35,000–£37,000</span>
+        <i></i><span>28 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>7</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2026-03/b48bf5f0-c4ed-4b27-96c1-2add506580d0-5fb1592e-990e-43d3-8a86-145fc22ee428-Acturis_20Main_20Logo_20300_20x_20300.webp" alt="" loading="lazy">
+        <span class="r-co">Acturis</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Graduate Technical Business Analyst, Data &amp; AI, London</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£33,000–£35,000</span>
+        <i></i><span>28 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>7</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2026-03/b48bf5f0-c4ed-4b27-96c1-2add506580d0-5fb1592e-990e-43d3-8a86-145fc22ee428-Acturis_20Main_20Logo_20300_20x_20300.webp" alt="" loading="lazy">
+        <span class="r-co">Acturis</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Graduate Technical Business Analyst, Insurance Products, London</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£33,000–£35,000</span>
+        <i></i><span>28 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-warm">
+      <b>7</b><span class="g-u">days</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <img class="logo" style="--s:18px" src="https://images.groupgti.com/2026-03/b48bf5f0-c4ed-4b27-96c1-2add506580d0-5fb1592e-990e-43d3-8a86-145fc22ee428-Acturis_20Main_20Logo_20300_20x_20300.webp" alt="" loading="lazy">
+        <span class="r-co">Acturis</span>
+        <span class="r-sec">Other</span>
+        <span class="r-ai">AI 0/3</span>
+        <span class="r-rank" title="rank_score">5</span>
+      </span>
+      <span class="r-t">Graduate Technical Business Analyst, London</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£33,000–£35,000</span>
+        <i></i><span>28 Sept 2026</span>
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+    
+  </section>
+  <section class="band">
+    <div class="bh bh-mid"><h2>Closes this month</h2><span class="n">95</span><span class="note">plan the application</span><span class="rule"></span></div>
+    
+    <div class="more"><a href="#">Show the other 95 in this band</a></div>
+  </section>
+  <section class="band">
+    <div class="bh bh-cool"><h2>Later</h2><span class="n">49</span><span class="note">deadline published, more than a month out</span><span class="rule"></span></div>
+    
+    <div class="more"><a href="#">Show the other 49 in this band</a></div>
+  </section>
+  <section class="band">
+    <div class="bh bh-open"><h2>Rolling, or no deadline listed</h2><span class="n">458</span><span class="note">the majority — ordered by rank, not time</span><span class="rule"></span></div>
+    
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">A</span>
+        <span class="r-co">Attio</span>
+        <span class="r-sec">Fintech</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">11</span>
+      </span>
+      <span class="r-t">GTM Graduate Associate</span>
+      <span class="r-l3">
+        <span class="k">Scheme</span>
+        <i></i><span>London</span>
+        <i></i><span>£40,000+</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">A</span>
+        <span class="r-co">Anthropic</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Research Engineer, Machine Learning (RL Velocity)</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>£370,000—£630,000 GBP</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">W</span>
+        <span class="r-co">Wayve</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Controls Engineer</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">W</span>
+        <span class="r-co">Wayve</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Engineering Technician</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">W</span>
+        <span class="r-co">Wayve</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Machine Learning Engineer, ADAS</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">W</span>
+        <span class="r-co">Wayve</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Machine Learning Engineer, Performance Tooling</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">W</span>
+        <span class="r-co">Wayve</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Model Release Engineer </span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">W</span>
+        <span class="r-co">Wayve</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Software Engineer, AI Libraries</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">IL</span>
+        <span class="r-co">Isomorphic Labs</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">General Application - Register Your Interest</span>
+      <span class="r-l3">
+        <span class="k">Register interest</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+  <a class="r" href="#">
+    <span class="gut g-open">
+      <span class="g-open">open</span>
+    </span>
+    <span class="r-body">
+      <span class="r-l1">
+        <span class="logo logo--fb" style="--s:18px">IL</span>
+        <span class="r-co">Isomorphic Labs</span>
+        <span class="r-sec">AI</span>
+        <span class="r-ai">AI 3/3</span>
+        <span class="r-rank" title="rank_score">10</span>
+      </span>
+      <span class="r-t">Team Coordinator, President Team, London</span>
+      <span class="r-l3">
+        <span class="k">Grad role</span>
+        <i></i><span>London</span>
+        <i></i><span>Pay not stated</span>
+        
+      </span>
+    </span>
+    <span class="r-act">
+      <button class="q q-y" title="Interested">Keep</button>
+      <button class="q" title="Dismiss">Skip</button>
+    </span>
+  </a>
+    <div class="more"><a href="#">Show the other 448 in this band</a></div>
+  </section>
+</main>
+
+<section class="screen2"><div class="wrap">
+  <div class="slab">FACTFILE — /jobs/1915</div>
+  <div class="ff">
+    <div class="ff-head">
+      <span class="logo logo--fb" style="--s:44px">EU</span>
+      <div style="min-width:0">
+        <div class="ff-co">EDF UK · Energy</div>
+        <h1>Data &amp; Technology Graduate 2027</h1>
+        <div class="ff-chips">
+          <span class="c">Scheme</span>
+          <span class="c hot">10d left</span>
+          <span class="c vio">AI-forward 2/3</span>
+          <span class="c">London +2</span>
+          <span class="c">Rank 10</span>
+          <span class="c">targetjobs</span><span class="c">brightnetwork</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="count">
+      <b>10</b>
+      <span class="cl"><b>days to apply</b>Closes 1 Oct 2026 · posting says “1st October”</span>
+      <span class="cgo"><button class="btn btn--go">Open posting ↗</button><button class="btn">Mark interested</button></span>
+    </div>
+
+    <h3>At a glance</h3>
+    <dl class="g">
+      <div class="cel"><dt>Pay</dt><dd>£30,000 to £35,000<a class="src" href="https://targetjobs.co.uk/jobs/data-technology-graduate-242197" target="_blank" rel="noreferrer" title="posting · high">targetjobs.co.uk</a></dd></div>
+      <div class="cel"><dt>Starts</dt><dd>September 2027<a class="src" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer" title="posting · high">brightnetwork.co.uk</a></dd></div>
+      <div class="cel"><dt>Location</dt><dd>London<span class="sub">also Exeter, Brighton</span></dd></div>
+      <div class="cel"><dt>Work mode</dt><dd><span class="nf">Not stated in the posting</span></dd></div>
+      <div class="cel"><dt>Degree</dt><dd>2:2 or above<a class="src" href="https://www.brightnetwork.co.uk/graduate-jobs/edf-energy/data-technology-graduate-2027-am2y" target="_blank" rel="noreferrer" title="posting · high">brightnetwork.co.uk</a></dd></div>
+      <div class="cel"><dt>Visa sponsorship</dt><dd><span class="nf">Not stated in the posting</span></dd></div>
+    </dl>
+
+    <h3>What the application asks for <span class="n">— posting text only</span></h3>
+    <div class="reqs">
+      <div class="rq"><span class="m unknown">?</span><span>CV</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Cover letter</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Motivational questions</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Video interview</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Online tests</span><span class="rs">Not stated</span></div><div class="rq"><span class="m unknown">?</span><span>Assessment centre</span><span class="rs">Not stated</span></div>
+    </div>
+    <div class="pills"><span class="c vio">Logical Thinking Exercise</span><span class="c vio">virtual Assessment Centre</span></div>
+
+    <h3>Process <span class="n">— 2 stages named in the posting</span></h3>
+    <ol class="st"><li>Logical Thinking Exercise</li><li>virtual Assessment Centre</li></ol>
+
+    <h3>Why it ranks 10</h3>
+    <div class="led">
+      <div class="ld"><span>Sector match</span><b class="pos">+2</b></div><div class="ld"><span>AI-forward (×2)</span><b class="pos">+4</b></div><div class="ld"><span>Deadline proximity</span><b class="pos">+2</b></div><div class="ld"><span>Eligibility risk</span><b class="zero">0</b></div><div class="ld"><span>Role kind</span><b class="pos">+2</b></div>
+      <div class="ld ld--t"><span>rank_score</span><b>10</b></div>
+    </div>
+
+    <h3>About EDF UK</h3>
+    <div class="prose"><p>EDF Energy is a British integrated energy company, wholly owned by the French state-owned EDF, with operations spanning electricity generation and the sale of natural gas and electricity to homes and businesses throughout the United Kingdom. It employs 11,717 people, and handles 5.22 million business and residential customer accounts.</p></div>
+    <div class="note"><b>Source check.</b> Summary taken from <a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org / EDF_Energy</a>. Confirm it is this employer.</div>
+
+    <h3>Company facts <span class="n">— 9 rows, each with a source</span></h3>
+    <div>
+      
+      <div class="fr"><span class="ff-f">ai forward</span>
+      <span class="ff-v">2/3 — The company&#39;s Data and Technology Graduate Programme includes placements building experience in Artificial Intelligence.</span>
+      <span style="display:flex;gap:6px;align-items:baseline"><span class="cnf low">low</span><a class="src" href="https://careers.edfenergy.com/job/data-and-technology-graduate-in-london-jid-2284" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span></div>
+      <div class="fr"><span class="ff-f">pay band</span>
+      <span class="ff-v">£35,000 per annum</span>
+      <span style="display:flex;gap:6px;align-items:baseline"><span class="cnf low">low</span><a class="src" href="https://careers.edfenergy.com/job/commercial-graduate-in-london-jid-2282" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span></div>
+      <div class="fr"><span class="ff-f">scheme structure</span>
+      <span class="ff-v">two-year graduate programme</span>
+      <span style="display:flex;gap:6px;align-items:baseline"><span class="cnf low">low</span><a class="src" href="https://careers.edfenergy.com/job/commercial-graduate-in-london-jid-2282" target="_blank" rel="noreferrer">careers.edfenergy.com</a></span></div>
+      <div class="fr"><span class="ff-f">sector</span>
+      <span class="ff-v">energy — EDF Energy is an integrated energy company operating in electricity generation and the sale of natural gas and electricity.</span>
+      <span style="display:flex;gap:6px;align-items:baseline"><span class="cnf medium">medium</span><a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span></div>
+      <div class="fr"><span class="ff-f">what they do</span>
+      <span class="ff-v">EDF Energy is a British integrated energy company, wholly owned by the French state-owned EDF, with operations spanning electricity generation and the sale of natural gas and electricity to </span>
+      <span style="display:flex;gap:6px;align-items:baseline"><span class="cnf medium">medium</span><a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span></div>
+      <div class="fr"><span class="ff-f">what they do</span>
+      <span class="ff-v">integrated energy company spanning electricity generation and sales</span>
+      <span style="display:flex;gap:6px;align-items:baseline"><span class="cnf medium">medium</span><a class="src" href="https://en.wikipedia.org/wiki/EDF_Energy" target="_blank" rel="noreferrer">en.wikipedia.org</a></span></div>
+    </div>
+
+    <h3>Recent news <span class="n">— Google News, last 30 days</span></h3>
+    <ul class="news"><li><span class="w">20 Sept 2026</span><span>Palisades restart project completes major phase</span><span class="s">scanx.trade</span></li><li><span class="w">17 Sept 2026</span><span>How can Europe achieve its growth potential?</span><span class="s">Fortune</span></li><li><span class="w">17 Sept 2026</span><span>Torness: Job security and a future in close to home</span><span class="s">Nuclear Industry Association</span></li><li><span class="w">16 Sept 2026</span><span>‘The U.K. has a competitiveness deficit in its energy costs—that’s a real call to action,’ says EDF U.K. chair</span><span class="s">Fortune</span></li><li><span class="w">15 Sept 2026</span><span>Kate Dohaney says AI demands a different type of leadership—‘I’m not a CEO sitting back saying cut, cut, cut’</span><span class="s">Fortune</span></li><li><span class="w">8 Sept 2026</span><span>EDF Energy in talks to take on So Energy customers</span><span class="s">Solar Power Portal</span></li></ul>
+
+    <div class="prov"><b>Provenance.</b> Seen on <b>targetjobs</b> and <b>brightnetwork</b> · first seen 20 Sept 2026 ·
+    extracted by <code>gemini/gemini-3.1-flash-lite</code> ·
+    research refreshed 21 Sept 2026.<br>
+    Every value is a <code>facts</code> row with a <code>source_url</code>, or a field parsed from the posting.</div>
+  </div>
+</div></section>
+</body></html>

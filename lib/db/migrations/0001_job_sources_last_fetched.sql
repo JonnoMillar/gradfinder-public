@@ -1,0 +1,1 @@
+ALTER TABLE `job_sources` ADD `last_fetched` text;
