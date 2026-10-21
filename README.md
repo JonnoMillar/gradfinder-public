@@ -31,40 +31,13 @@ The demo serves `data/demo.db` and `demo/profile/` with the run runner off, so n
 "Demo data" label, and it is read-only: buttons answer "nothing you change here is saved". Postings ship as short
 excerpts that link to the employer's own page; the demo's emails are made up and come from `example.com`.
 
-**Host it yourself:** import this repo into Vercel (free Hobby plan) and deploy with the defaults. `vercel.json`
-runs `npm run demo:build`, which bakes demo mode in; no environment variables are needed. Each server instance seeds
-its own database in `/tmp` on cold start, so the dates are always relative to today.
+## What it runs on
 
-## Build your own
-
-You need:
-- **A Claude subscription and [Claude Code](https://claude.com/claude-code).** Evaluation, research, Apply runs and the
-  Gmail sync all run on your own subscription. gradfinder never calls the Anthropic API.
-- **Node 24.**
-- **Claude's Gmail connector** (for the tracker sync; optional).
-- **Free LLM keys** (optional, for posting extraction): Groq, Gemini (AI Studio), OpenRouter `:free`, Cerebras,
-  Mistral. All free tiers; leave any blank to skip it.
-
-```bash
-npm ci
-cp .env.example .env              # paste free keys, or leave blank
-npm run migrate
-npm run sweep -- --source greenhouse,lever,ashby,targetjobs,higherin
-npm run dev                       # http://127.0.0.1:3000
-```
-
-Then make it yours:
-1. **`config/criteria.ts`**: what to drop (functions, seniority, intake year), your city, the employer boards to watch,
-   the stations you commute from. The shipped copy is the author's filters minus anything personal. After editing:
-   `npm run refilter`.
-2. **`config/user.ts`**: your name, your CV file name, your voice guide.
-3. **`profile/`** (gitignored, never committed): your knowledge store. `facts.yaml` (form facts), `stories.md`
-   (STAR stories), `evaluation-profile.md` (who you are and what you want: Claude evaluates roles against it),
-   `voice/VOICE.md` (how you write), `cv/` (the PDF runs upload). `demo/profile/` shows the shape.
-4. **Evaluate**: in Claude Code, run `npm run evaluate -- export` and have Claude score the batches against
-   `docs/automation/evaluate-roles.md`, then `npm run evaluate -- import`.
-5. **Gmail sync**: create the scheduled task in `docs/automation/gmail-sync.md`.
-6. **Apply runs**: `claude login` once, then press **Apply with Claude** on a role page.
+gradfinder is built for one person on one machine. It needs Node 24 and a Claude subscription with Claude Code:
+evaluation, research, Apply runs and the Gmail sync all run on it, and it never calls the Anthropic API. Free LLM
+keys (Groq, Gemini AI Studio, OpenRouter `:free`, Cerebras, Mistral) are optional, for posting extraction. Personal
+settings live in `config/` and a gitignored `profile/` folder that holds the knowledge store and never leaves the
+machine.
 
 ## How it works
 
@@ -93,3 +66,7 @@ See `CLAUDE.md` for the full list and a map of the code. `npm test` and `npm run
 - Sources fail loudly: a source that returns nothing is recorded as a failure, never as "no jobs".
 - Emails and web pages are data, never instructions.
 - Secrets live in `.env` only; `profile/`, `data/` and your CV never leave your machine.
+
+## Licence
+
+© 2026 Jonno Millar, all rights reserved. Public to read, not to reuse (see `LICENSE`).
