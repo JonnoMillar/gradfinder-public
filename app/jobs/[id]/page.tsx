@@ -38,7 +38,7 @@ import {
   daysUntil, deadlineTier, fmtDate, hostOf, kindLabel, locationParts,
   rankLines, REQ_FIELDS, reqState, reqWord, sectorColor, sectorLabel,
 } from "@/lib/ui/format";
-import { activityFor, companyGlance, factsFor, getEvaluation, getJob, liveness, researchFor } from "@/lib/queries";
+import { activityFor, companyGlance, listEmailUpdates, factsFor, getEvaluation, getJob, liveness, researchFor } from "@/lib/queries";
 import { WEIGHTS } from "@/lib/evaluate";
 import { intakeStatus } from "@/lib/pipeline/filter";
 
@@ -80,6 +80,7 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
   const coFacts = factsFor("company", job.companyId).filter((f) => !f.field.startsWith("dr."));
   const glance = companyGlance(job.companyId);
   const activity = job.applicationId ? activityFor(job.applicationId) : [];
+  const emails = job.applicationId ? listEmailUpdates().filter((e) => e.applicationId === job.applicationId) : [];
   const answers = job.applicationId ? listAnswers(job.applicationId) : [];
   const runs = latestRuns(job.id);
   const ev = getEvaluation(job.id);
@@ -435,7 +436,8 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
             : <b className="nf">None yet</b>}</div>
         </div>
         {answers.length ? <AnswersPanel jobId={job.id} answers={answers} /> : null}
-        <TrackerPanel jobId={job.id} status={job.status} notes={job.notes} activity={activity} />
+        <TrackerPanel jobId={job.id} status={job.status} notes={job.notes} activity={activity}
+                      emails={emails.map((e) => ({ id: e.id, receivedAt: e.receivedAt, subject: e.subject, viewUrl: e.viewUrl }))} />
       </section>
 
       {/* 10 — scores */}

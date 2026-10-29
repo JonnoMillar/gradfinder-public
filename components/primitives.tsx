@@ -137,3 +137,8 @@ export function CompanyLink({ slug, children }: { slug: string; children: React.
 export function SportStamp({ title = "Sport: the employer or the role is in sport" }: { title?: string }) {
   return <span className="stamp" title={title} aria-label="Sport">Sport</span>;
 }
+
+/** Same stamp as Sport, in blue: first seen in the last two weeks. */
+export function NewStamp() {
+  return <span className="stamp stamp--new" title="Newly listed: first seen in the last two weeks">New</span>;
+}

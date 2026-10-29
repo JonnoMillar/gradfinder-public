@@ -22,6 +22,11 @@ describe("normaliseTitle", () => {
     expect(normaliseTitle("2027 Graduate Programme – Technology (London)")).toBe("graduate programme technology");
     expect(normaliseTitle("Graduate Programme - Technology 2027 start")).toBe("graduate programme technology");
   });
+  it("drops a pay tail so a LinkedIn repost matches the ATS posting (Lendable)", () => {
+    expect(normaliseTitle("Graduate Analyst - £50,000 + Share Options")).toBe("graduate analyst");
+    expect(normaliseTitle("Graduate Analyst (£28k-£32k)")).toBe("graduate analyst");
+    expect(dedupeKey("Lendable", "Graduate Analyst - £50,000 + Share Options", "London")).toBe(dedupeKey("Lendable", "Graduate Analyst", "London"));
+  });
 });
 
 describe("locationBucket", () => {

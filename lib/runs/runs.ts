@@ -10,6 +10,8 @@
  * The employer's form is the real state, so a re-queued run just re-reads it. One run at a time (one browser profile).
  * Layer 3: only the app's server actions, the runner and `npm run runq` write here.
  */
+import fs from "node:fs";
+import path from "node:path";
 import { z } from "zod";
 import { getSqlite } from "@/lib/db/client";
 import { automationStatus } from "@/lib/tracker/email";
@@ -79,8 +81,8 @@ export function needsYou(): { run: RunRow; company: string; title: string; quest
 
 export type RequestResult = { runId: number; created: boolean; state: RunState };
 
-/** Jonno pressed Apply or Research. An existing live run is returned, never duplicated. */
-export function requestRun(jobId: number, kind: RunKind, now = new Date().toISOString()): RequestResult {
+/** Jonno pressed Apply or Research. An existing live run is returned, never duplicated. `formUrl` = a form already known at enqueue time. */
+export function requestRun(jobId: number, kind: RunKind, now = new Date().toISOString(), opts: { formUrl?: string } = {}): RequestResult {
   if (!RUN_KINDS.includes(kind)) throw new Error(`Unknown run kind ${kind}`);
   const db = getSqlite();
   const job = db.prepare("select id, is_active from jobs where id = ?").get(jobId) as { id: number; is_active: number } | undefined;
@@ -92,8 +94,8 @@ export function requestRun(jobId: number, kind: RunKind, now = new Date().toISOS
     const st = automationStatus(jobId, "applying", "Apply run requested", now) as { applicationId?: number };
     applicationId = st.applicationId ?? (db.prepare("select id from applications where job_id = ?").get(jobId) as { id: number } | undefined)?.id ?? null;
   }
-  const info = db.prepare("insert into agent_runs (kind, job_id, application_id, state, note, created_at) values (?,?,?,?,?,?)")
-    .run(kind, jobId, applicationId, "queued", "Waiting for the runner", now);
+  const info = db.prepare("insert into agent_runs (kind, job_id, application_id, state, form_url, note, created_at) values (?,?,?,?,?,?,?)")
+    .run(kind, jobId, applicationId, "queued", opts.formUrl ?? null, "Waiting for the runner", now);
   return { runId: Number(info.lastInsertRowid), created: true, state: "queued" };
 }
 
@@ -124,8 +126,19 @@ export function readyApplyRun(): RunRow | null {
   return r ? toRun(r as Record<string, unknown>) : null;
 }
 
-/** Should the run browser be open now? Yes while an apply run is working, queued, or waiting/ready within WINDOW_MS. */
+// A file, not a variable: the runner may be a separate process from the Next server that stages the window.
+const STAGED = () => path.join(process.cwd(), "data", "runs", ".staged");
+/** Jonno is clicking through to a form in the run browser: keep it open (up to WINDOW_MS) though no run exists yet. */
+export function markStaged(on: boolean) {
+  fs.mkdirSync(path.dirname(STAGED()), { recursive: true });
+  if (on) fs.writeFileSync(STAGED(), String(Date.now()));
+  else fs.rmSync(STAGED(), { force: true });
+}
+const stagedRecently = (now: number) => { try { return now - fs.statSync(STAGED()).mtimeMs < WINDOW_MS; } catch { return false; } };
+
+/** Should the run browser be open now? Yes while an apply run is working, queued, or waiting/ready within WINDOW_MS, or while staged. */
 export function browserWanted(now = Date.now()): boolean {
+  if (stagedRecently(now)) return true;
   const rows = getSqlite().prepare("select state, heartbeat_at, created_at from agent_runs where kind = 'apply' and state in ('queued','running','needs_you','ready')").all() as
     { state: string; heartbeat_at: string | null; created_at: string }[];
   return rows.some((r) => r.state === "queued" || r.state === "running" || now - new Date(r.heartbeat_at ?? r.created_at).getTime() < WINDOW_MS);

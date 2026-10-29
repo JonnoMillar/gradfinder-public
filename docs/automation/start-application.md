@@ -22,6 +22,10 @@ Personal drafting runs on Claude (this session type), never on gradfinder's free
    - structured fields → fill from `profile/facts.yaml`. For a `null` or missing value, **stop and ask the user**, then
      add the answer to `facts.yaml`. Declarations and diversity answers are used verbatim, never inferred.
    - free-text questions → exact wording + word/character limit.
+   - **optional, collapsed and "Add entry" sections** (work, internships, projects, awards, languages, self-introduction,
+     links) → open every one and fill it from the store (CV pack, `stories.md`, `answers/`). "Optional" is not "skip": a
+     section the store can't back becomes a question, and the ready note says why each empty section is empty (2026-10-28,
+     from the ByteDance run that left seven sections blank).
 4. **Draft** each free-text question with the voice guide: every claim traced to `facts.yaml` / `stories.md` / the brief.
    Put unfillable gaps in `[ASK: …]` and in `gaps`. Write a JSON array and run `npm run track -- draft <file>`:
    `[{"applicationId": N, "question": "<exact form wording>", "wordLimit": 250, "text": "...", "gaps": [...], "sources": [...]}]`

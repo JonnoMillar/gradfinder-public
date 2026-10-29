@@ -12,7 +12,7 @@
  * those, and the card, logo and company name stay put.
  */
 import Link from "next/link";
-import { Logo, SportStamp } from "./primitives";
+import { Logo, NewStamp, SportStamp } from "./primitives";
 import { FitRing } from "./FitRing";
 import { NotInterested } from "./NotInterested";
 import { IconPin } from "@/lib/ui/icons";
@@ -35,7 +35,7 @@ const dueFlag = (deadline: string | null) => {
   return t === "hot" || t === "warm" ? t : undefined;
 };
 
-export function JobRow({ job }: { job: JobListRow }) {
+export function JobRow({ job, fresh }: { job: JobListRow; fresh?: boolean }) {
   const pay = shortPay(job.salaryText);
   const tracked = job.status && job.status !== "discovered";
 
@@ -67,6 +67,7 @@ export function JobRow({ job }: { job: JobListRow }) {
         </span>
 
         <span className="tile-meta" data-slide>
+          {fresh ? <NewStamp /> : null}
           {job.sport ? <SportStamp /> : null}
           {job.excludedReason ? (
             <span className="pill-excl" title={`Filtered out: ${job.excludedReason}`}>

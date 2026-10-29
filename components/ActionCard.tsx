@@ -11,8 +11,9 @@
 import Link from "next/link";
 import { Logo } from "./primitives";
 import { ActionDoneButton } from "./ActionDoneButton";
+import { StartButton } from "./StartButton";
+import type { DoItem, Suggestion } from "@/lib/queries";
 import { IconClock, IconExternal, IconTarget, IconTests, IconVideo } from "@/lib/ui/icons";
-import { fmtDate } from "@/lib/ui/format";
 import type { AttentionItem } from "@/lib/tracker/attention";
 
 /** What kind of task it is, read off the words: the icon and a short label. */
@@ -32,16 +33,56 @@ function Countdown({ days }: { days: number }) {
   return <span className="ac-n"><b>{days}</b><span>days left</span></span>;
 }
 
-export function ActionCard({ items }: { items: AttentionItem[] }) {
-  const [i] = items;
-  if (!i) {
+/**
+ * Nothing carries a date (Jonno 2026-10-27: "Do this first can't have nothing in it"): the card never sits empty. It
+ * falls back to finishing a role he already started, else starting the best role to apply for (`start`, the head of
+ * the Apply now queue).
+ */
+function Fallback({ finish, start }: { finish?: DoItem; start?: Suggestion }) {
+  if (!finish && !start) {
     return (
       <section className="ac ac--clear" aria-label="Do this first">
         <span className="ac-eye">Do this first</span>
-        <p className="ac-clear"><b>Nothing due.</b> No test, interview or step has a date on it. Send the next one below.</p>
+        <p className="ac-clear"><b>Everything is sent or waiting.</b> No role passes the apply-now bar right now. A fresh sweep finds more.</p>
       </section>
     );
   }
+  // the company in the headline, the role title as the one quiet line under it (Jonno 2026-10-28: "Finish your
+  // Bytedance application" reads at a glance; the full role title did not)
+  const r = finish
+    ? { id: finish.jobId, company: finish.company, title: finish.title, logoUrl: finish.logoUrl, domain: finish.domain, days: finish.days,
+        what: `Finish your ${finish.company} application` }
+    : { id: start!.id, company: start!.company, title: start!.title, logoUrl: start!.logoUrl, domain: start!.domain, days: start!.days,
+        what: `Start your ${start!.company} application` };
+  const dated = r.days !== null;
+  return (
+    <section className="ac" data-heat={dated && r.days! <= 1 ? "hot" : "warm"} aria-label="Do this first">
+      <div className="ac-top">
+        <span className="ac-eye">Do this first</span>
+      </div>
+      <div className="ac-body">
+        {dated ? <Countdown days={r.days!} /> : <span className="ac-n"><b data-word="1">Now</b></span>}
+        <div className="ac-what">
+          <p>{r.what}</p>
+          <span className="ac-who">
+            <Logo company={{ name: r.company, logoUrl: r.logoUrl, domain: r.domain }} size={20} />
+            <span className="ac-role">{r.title}</span>
+          </span>
+        </div>
+      </div>
+      <div className="ac-acts">
+        {finish
+          ? <Link href={`/jobs/${r.id}`} transitionTypes={["nav-forward"]} className="ac-go">Open the role</Link>
+          : <StartButton jobId={r.id} company={r.company} label="Start applying" />}
+        {finish ? null : <Link href={`/jobs/${r.id}`} transitionTypes={["nav-forward"]} className="ac-more">See the role →</Link>}
+      </div>
+    </section>
+  );
+}
+
+export function ActionCard({ items, finish, start }: { items: AttentionItem[]; finish?: DoItem; start?: Suggestion }) {
+  const [i] = items;
+  if (!i) return <Fallback finish={finish} start={start} />;
   const { Icon, word } = kindOf(i);
   const heat = i.days <= 1 ? "hot" : i.days <= 7 ? "warm" : "calm";
   const what = i.kind === "deadline" ? `Finish and send ${i.title ?? "the application"}` : i.text;
@@ -61,7 +102,6 @@ export function ActionCard({ items }: { items: AttentionItem[] }) {
           <span className="ac-who">
             <Logo company={{ name: i.company, logoUrl: i.logoUrl, domain: i.domain }} size={20} />
             {i.jobId ? <Link href={`/jobs/${i.jobId}`} transitionTypes={["nav-forward"]}>{i.company}</Link> : <span>{i.company}</span>}
-            <span className="ac-date">due {fmtDate(i.date)}</span>
           </span>
         </div>
       </div>

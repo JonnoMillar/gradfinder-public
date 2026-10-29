@@ -83,3 +83,9 @@ public/design-review/instrument-sans.woff2
 
 # hosted-demo production build tested locally (NEXT_DIST_DIR=.next-hosted npm run demo:build)
 /.next-hosted/
+
+# scratch: page snapshots and the local design-review fixture (real DB rows)
+/snap*.md
+/bd*.yml
+public/design-review/
+scripts/design-review-snapshot.cjs

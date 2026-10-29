@@ -53,7 +53,9 @@ Do not judge fit here; that's the scores. A great-fit role that needs 3 years' e
 - `hours`: IB-style / trading-floor hours culture stated or well known (e.g. front-office M&A).
 - `outside_london`: the role is mostly or definitely based outside London (e.g. "client site based across the UK",
   head office elsewhere, rotations outside London). NOT a dealbreaker when London is one of the listed locations or
-  the posting only asks for some flexibility: mention that in `reasons.workFit` or `stretch` instead.
+  the posting only asks for some flexibility: mention that in `reasons.workFit` or `stretch` instead. When the location
+  is unclear or the options are open, do not flag (Jonno 2026-10-27: don't rule out what isn't clear). Rank only
+  charges −25 when London is not a listed office; a flag on a London-listed role costs nothing.
 - `old_fashioned`: explicit signs of a slow, legacy employer. Use rarely; not just "big company".
 
 ## Rules

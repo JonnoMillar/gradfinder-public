@@ -36,6 +36,15 @@ describe("scoreJob — evaluated by Claude", () => {
     expect(r.breakdown.dealbreaker).toBe(-50);
     expect(r.score).toBe(50);
   });
+  it("outside_london: nothing when London is a listed office, −25 when it is not; hours stays −50", () => {
+    const ev = evaluated(5, { dealbreakers: [{ kind: "outside_london" }] });
+    const listed = scoreJob({ ...base, londonListed: true, evaluation: ev }, today);
+    expect(listed.breakdown.dealbreaker).toBeUndefined();
+    expect(listed.score).toBe(100);
+    expect(scoreJob({ ...base, londonListed: false, evaluation: ev }, today).breakdown.dealbreaker).toBe(-25);
+    const both = evaluated(5, { dealbreakers: [{ kind: "outside_london" }, { kind: "hours" }] });
+    expect(scoreJob({ ...base, londonListed: true, evaluation: both }, today).breakdown.dealbreaker).toBe(-50);
+  });
   it("register-interest and a first-class requirement cost points; an unconfirmed intake does not", () => {
     const b = scoreJob({
       ...base, kind: "register_interest", evaluation: evaluated(3),

@@ -1,5 +1,5 @@
 /** Apply/Research runs: one live run per role, one running at a time, questions re-queue, the reaper cleans up. */
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -133,6 +133,15 @@ describe("housekeeping", () => {
 
 describe("the filled-form window (single-page forms)", () => {
   const T0 = 6_000_000;
+  // browserWanted also reads the real data/runs/.staged marker (Jonno clicking through to a form): keep the suite off it.
+  const realCwd = process.cwd();
+  beforeAll(() => process.chdir(tmp));
+  afterAll(() => process.chdir(realCwd));
+  it("a staged window is wanted even with no run for it", () => {
+    R.markStaged(true);
+    expect(R.browserWanted()).toBe(true);
+    R.markStaged(false);
+  });
   it("while an apply run is ready, only research runs are claimed; the window is wanted for 2 hours", () => {
     const apply = R.activeRun(jobB, "apply")!;
     const claimed = R.claimNext(at(T0))!;
@@ -156,5 +165,30 @@ describe("the filled-form window (single-page forms)", () => {
     expect(R.getRun(apply.id)).toMatchObject({ state: "cancelled" });
     expect(R.getRun(apply.id)?.note).toMatch(/closed after 2 hours/);
     expect(R.readyApplyRun()).toBeNull();
+  });
+});
+
+describe("fill a form (manual jobs)", () => {
+  it("creates a hidden job and a queued apply run carrying the form url, and dedupes", async () => {
+    const { addManualJob } = await import("@/lib/runs/manual");
+    const url = "https://example.oraclecloud.com/apply/123";
+    const a = addManualJob({ url, company: "WTW", title: "Analyst" }, at(10));
+    expect(a).toMatchObject({ created: true, state: "queued" });
+    expect(R.getRun(a.runId)?.formUrl).toBe(url);
+    const job = getSqlite().prepare("select is_active, excluded_reason, dedupe_key from jobs where id = ?").get(a.jobId) as Record<string, unknown>;
+    expect(job).toMatchObject({ is_active: 0, excluded_reason: null, dedupe_key: `manual|${url}` });
+    const b = addManualJob({ url, company: "WTW", title: "Analyst" }, at(11));
+    expect(b).toMatchObject({ jobId: a.jobId, runId: a.runId, created: false });
+    expect((getSqlite().prepare("select count(*) n from jobs where dedupe_key = ?").get(`manual|${url}`) as { n: number }).n).toBe(1);
+  });
+  it("reuses a sweep job whose apply url is the form", async () => {
+    const { addManualJob } = await import("@/lib/runs/manual");
+    getSqlite().prepare("update jobs set apply_url = 'https://acme.example/apply' where id = ?").run(jobB);
+    expect(addManualJob({ url: "https://acme.example/apply", company: "Acme", title: "x" }, at(12)).jobId).toBe(jobB);
+  });
+  it("the action validates input", async () => {
+    const { addManualRunAction } = await import("@/app/actions");
+    expect(await addManualRunAction({ url: "nope", company: "A", title: "B" })).toMatchObject({ ok: false });
+    expect(await addManualRunAction({ url: "https://x.example/f", company: "", title: "B" })).toMatchObject({ ok: false });
   });
 });

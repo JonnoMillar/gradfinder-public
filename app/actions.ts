@@ -10,12 +10,14 @@
  */
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { openInBrowser } from "@/lib/runs/browser";
+import { redirect } from "next/navigation";
+import { addManualJob } from "@/lib/runs/manual";
+import { frontTabUrl, openInBrowser } from "@/lib/runs/browser";
 import { getSqlite } from "@/lib/db/client";
 import { APPLICATION_STATUSES, RUN_KINDS } from "@/lib/db/schema";
 import { reviewAnswer } from "@/lib/apply/answers";
 import { answerGap, setLetterApproved, unanswerGap } from "@/lib/kit";
-import { answer as answerRunQuestion, cancel as cancelRun, requestRun } from "@/lib/runs/runs";
+import { answer as answerRunQuestion, cancel as cancelRun, markStaged, requestRun } from "@/lib/runs/runs";
 import { DEMO, DEMO_READ_ONLY } from "@/lib/demo";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -185,12 +187,16 @@ const revalidateRun = (jobId: number) => {
 };
 
 /** Apply or Research: queue one run for the runner (lib/runs/runs.ts). An existing live run is reused, not duplicated. */
-export async function requestRunAction(raw: { jobId: unknown; kind: unknown }): Promise<ActionResult> {
+export async function requestRunAction(raw: { jobId: unknown; kind: unknown; useOpenTab?: unknown }): Promise<ActionResult> {
   if (DEMO) return DEMO_READ_ONLY;
-  const parsed = z.object({ jobId: JobId, kind: z.enum(RUN_KINDS) }).safeParse(raw);
+  const parsed = z.object({ jobId: JobId, kind: z.enum(RUN_KINDS), useOpenTab: z.boolean().optional() }).safeParse(raw);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   try {
-    requestRun(parsed.data.jobId, parsed.data.kind);
+    // Apply from the form tab Jonno already opened: its URL becomes the run's formUrl, and the agent fills that tab.
+    const formUrl = parsed.data.useOpenTab ? await frontTabUrl() : null;
+    if (parsed.data.useOpenTab && !formUrl) return { ok: false, error: "No form tab found in the gradfinder Chrome window. Open the form there first." };
+    requestRun(parsed.data.jobId, parsed.data.kind, undefined, formUrl ? { formUrl } : {});
+    markStaged(false); // the queued run now keeps the window open
     revalidateRun(parsed.data.jobId);
     return { ok: true };
   } catch (e) {
@@ -222,6 +228,22 @@ export async function openLoginBrowserAction(raw: { url: unknown }): Promise<Act
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid link" };
   try {
     await openInBrowser(parsed.data.url);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+/** Apply step 1: open the job's apply page in the run browser so Jonno can click through to the form himself. */
+export async function openApplyBrowserAction(raw: { jobId: unknown }): Promise<ActionResult> {
+  if (DEMO) return DEMO_READ_ONLY;
+  const parsed = z.object({ jobId: JobId }).safeParse(raw);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  try {
+    const row = getSqlite().prepare("select coalesce(apply_url, canonical_url) as url from jobs where id = ?").get(parsed.data.jobId) as { url: string | null } | undefined;
+    if (!row?.url) return { ok: false, error: "This role has no apply link" };
+    markStaged(true);
+    await openInBrowser(row.url);
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
@@ -298,4 +320,30 @@ export async function letterApprovalAction(raw: { approve: unknown }): Promise<A
   const p = z.object({ approve: z.boolean() }).safeParse(raw);
   if (!p.success) return { ok: false, error: "Invalid input" };
   try { setLetterApproved(p.data.approve); return kitDone(); } catch (e) { return kitError(e); }
+}
+
+const FillInput = z.object({
+  url: z.string().trim().url("Paste the full form URL").refine((u) => /^https?:/i.test(u), "Use an http(s) URL"),
+  company: z.string().trim().min(1, "Company is required").max(120),
+  title: z.string().trim().min(1, "Role title is required").max(200),
+});
+
+/** "Fill a form": a minimal manual job plus a queued apply run for a form outside the sweep results (lib/runs/manual.ts). */
+export async function addManualRunAction(raw: unknown): Promise<{ ok: true; jobId: number } | { ok: false; error: string }> {
+  if (DEMO) return DEMO_READ_ONLY;
+  const parsed = FillInput.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  try {
+    const { jobId } = addManualJob(parsed.data);
+    revalidateRun(jobId);
+    return { ok: true, jobId };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+/** The /fill form: on success go to the role page (RunPanel), else back with the error. */
+export async function fillFormAction(fd: FormData): Promise<void> {
+  const r = await addManualRunAction({ url: fd.get("url"), company: fd.get("company"), title: fd.get("title") });
+  redirect(r.ok ? `/jobs/${r.jobId}` : `/fill?error=${encodeURIComponent(r.error)}`);
 }

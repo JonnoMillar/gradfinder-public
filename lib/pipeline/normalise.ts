@@ -26,10 +26,14 @@ export function companySlug(name: string): string {
 
 const TITLE_NOISE = /\b(20\d\d|19\d\d|uk|london|start|intake|entry|opportunity|opportunities|register your interest|apply now)\b/g;
 
+/** A pay tail some boards bolt onto a title: "- £50,000 + Share Options", "(£28k-£32k)". Same role as the ATS's plain title. */
+const TITLE_PAY_TAIL = /\s*[-–—|(]?\s*[£$€]\s?\d[\d,.]*\s*k?(?:\s*(?:-|–|to)\s*[£$€]?\s?\d[\d,.]*\s*k?)?(?:\s*\+\s*[a-z ]+?)?\s*\)?\s*$/;
+
 /** "2027 Graduate Programme – Technology (London)" → "graduate programme technology" */
 export function normaliseTitle(title: string): string {
   return title
     .toLowerCase()
+    .replace(TITLE_PAY_TAIL, "")
     .normalize("NFKD").replace(/[̀-ͯ]/g, "")
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9]+/g, " ")

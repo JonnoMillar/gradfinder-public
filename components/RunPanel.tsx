@@ -7,7 +7,7 @@
  */
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { answerQuestionAction, cancelRunAction, openLoginBrowserAction, requestRunAction } from "@/app/actions";
+import { answerQuestionAction, cancelRunAction, openApplyBrowserAction, openLoginBrowserAction, requestRunAction } from "@/app/actions";
 
 export interface RunView { id: number; kind: "apply" | "research"; state: string; note: string | null; error: string | null; formUrl: string | null; costUsd: number }
 export interface QuestionView { id: number; runId: number; kind: string; prompt: string; options: string[] | null; standing: boolean }
@@ -70,21 +70,39 @@ export function RunPanel({ jobId, runs, questions }: { jobId: number; runs: RunV
     return () => clearInterval(t);
   }, [watching, router]);
 
-  const go = (kind: "apply" | "research") => start(async () => {
+  const [staged, setStaged] = useState(false);
+  const go = (kind: "apply" | "research", useOpenTab = false) => start(async () => {
     setErr(null);
-    const r = await requestRunAction({ jobId, kind });
+    const r = await requestRunAction({ jobId, kind, useOpenTab });
     if (!r.ok) setErr(r.error);
-    else router.refresh();
+    else { setStaged(false); router.refresh(); }
+  });
+  // Apply step 1: open the apply page in the gradfinder Chrome window; Jonno clicks through to the form himself.
+  const stage = () => start(async () => {
+    setErr(null);
+    const r = await openApplyBrowserAction({ jobId });
+    if (!r.ok) setErr(r.error);
+    else setStaged(true);
   });
   const lastFailed = runs.find((r) => r.state === "failed" && !active(r.kind));
 
   return (
     <section className="rn" aria-label="Apply and research with Claude">
       <div className="rn-top">
-        <button type="button" className="btn btn--go" disabled={pending || !!active("apply")} onClick={() => go("apply")}
-                title="Claude fills the form in the background and asks you only for what it can't answer">
-          {active("apply") ? "Applying with Claude…" : "Apply with Claude"}
-        </button>
+        {staged && !active("apply") ? (
+          <>
+            <button type="button" className="btn btn--go" disabled={pending} onClick={() => go("apply", true)}
+                    title="Claude fills the form in the tab you last used in the gradfinder window">
+              Form is open: fill it
+            </button>
+            <button type="button" className="rn-x" disabled={pending} onClick={() => setStaged(false)}>Back</button>
+          </>
+        ) : (
+          <button type="button" className="btn btn--go" disabled={pending || !!active("apply")} onClick={stage}
+                  title="Opens the apply page in the gradfinder window so you can click through to the form">
+            {active("apply") ? "Applying with Claude…" : "Apply with Claude"}
+          </button>
+        )}
         <button type="button" className="btn" disabled={pending || !!active("research")} onClick={() => go("research")}
                 title="Sourced deep research on this role">
           {active("research") ? "Researching…" : "Research this role"}
@@ -92,9 +110,24 @@ export function RunPanel({ jobId, runs, questions }: { jobId: number; runs: RunV
         {err ? <span className="tmsg" data-err="1" role="status">{err}</span> : null}
       </div>
 
+      {staged && !active("apply") ? (
+        <p className="rn-hint">
+          The apply page is open in the gradfinder Chrome window (a separate window from your usual browser). Click through any
+          entrance or login there until the first page of the form shows, then press "Form is open: fill it".
+        </p>
+      ) : live.length === 0 ? (
+        <p className="rn-hint">
+          Apply opens the role's page in the gradfinder Chrome window for you to reach the form; Claude then fills it in that same tab.
+        </p>
+      ) : null}
+
       {live.map((r) => (
         <div key={r.id} className="rn-run" data-state={r.state}>
           <span className="rn-chip">{r.kind === "apply" ? "Apply" : "Research"} · {LABEL[r.state]}</span>
+          {r.state === "queued" || r.state === "running" ? (
+            <span className="rn-load" role="progressbar" aria-label={r.state === "queued" ? "Waiting for its turn" : "Working"} />
+          ) : null}
+          {r.state === "queued" ? <span className="rn-note">Waiting to start. Only one run goes at a time; this can take a few minutes.</span> : null}
           {r.costUsd > 0 ? <span className="rn-note" title="Subscription usage so far, priced at API rates (not a bill)">≈ ${r.costUsd.toFixed(2)} usage</span> : null}
           <span className="rn-note">{r.note ?? ""}</span>
           {r.state === "ready" && r.kind === "apply" ? (
@@ -112,7 +145,7 @@ export function RunPanel({ jobId, runs, questions }: { jobId: number; runs: RunV
 
       {lastFailed ? (
         <p className="rn-fail" role="status">
-          The last {lastFailed.kind} run failed: {lastFailed.error ?? "no reason recorded"}
+          <strong>Failed.</strong> The last {lastFailed.kind} run stopped: {lastFailed.error ?? "no reason recorded"}
         </p>
       ) : null}
 

@@ -43,7 +43,7 @@ function makeAdapter(ats: Ats): SourceAdapter {
 
 const FETCHERS: Record<Ats, (slug: string, name: string) => Promise<RawPosting[]>> = {
   async greenhouse(slug, name) {
-    interface GH { jobs: { id: number; title: string; location?: { name?: string }; absolute_url: string; content?: string; updated_at?: string; departments?: { name: string }[] }[] }
+    interface GH { jobs: { id: number; title: string; location?: { name?: string }; absolute_url: string; content?: string; updated_at?: string; first_published?: string; departments?: { name: string }[] }[] }
     const url = `https://boards-api.greenhouse.io/v1/boards/${slug}/jobs?content=true`;
     const { data, res } = await fetchJson<GH>(url, { source: "greenhouse" });
     if (!Array.isArray(data.jobs)) throw new Error("unexpected shape");
@@ -52,7 +52,7 @@ const FETCHERS: Record<Ats, (slug: string, name: string) => Promise<RawPosting[]
       return {
         source: "greenhouse" as const, sourceId: `${slug}:${j.id}`, url: j.absolute_url, title: j.title, companyName: name,
         descriptionHtml: html, descriptionText: html ? htmlToText(html) : undefined,
-        locationRaw: j.location?.name, applyUrl: j.absolute_url, datePosted: j.updated_at?.slice(0, 10),
+        locationRaw: j.location?.name, applyUrl: j.absolute_url, datePosted: (j.first_published ?? j.updated_at)?.slice(0, 10),
         roleTags: j.departments?.map((d) => d.name).join(", "), snapshotId: res.snapshotId, contentHash: res.contentHash,
       };
     });

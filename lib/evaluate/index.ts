@@ -19,6 +19,13 @@ export const WEIGHTS: Record<keyof EvalScores, number> = {
   workFit: 30, chance: 20, companyType: 15, careerPath: 15, sector: 10, pay: 10,
 };
 export const DEALBREAKER_PENALTY = -50;
+/** `outside_london` is Claude's read of a vague or multi-site posting: heavy only when London is not a listed office
+ *  (Jonno 2026-10-27: unclear locations must not be ruled out). A London-listed role keeps the flag as a note only. */
+export const OUTSIDE_LONDON_PENALTY = -25;
+/** Rank penalty for a role's dealbreakers: the heaviest one that applies, 0 when none do. `londonListed` = London is one of the posting's offices. */
+export function dealbreakerPenalty(kinds: string[], londonListed: boolean): number {
+  return Math.min(0, ...kinds.map((k) => (k === "outside_london" ? (londonListed ? 0 : OUTSIDE_LONDON_PENALTY) : DEALBREAKER_PENALTY)));
+}
 export const DEALBREAKER_KINDS = ["hours", "outside_london", "old_fashioned"] as const;
 export const FAMILIES = [
   "data_ai", "tech_consulting", "consulting", "strategy", "product", "banking_markets", "quant", "software_engineering",

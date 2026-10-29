@@ -3,7 +3,7 @@
  *
  * - **Evaluated by Claude** (lib/evaluate, a `role_evaluations` row): the six-part rubric, 0–100 —
  *   work fit 30 · realistic chance 20 · company type 15 · career path 15 · sector 10 · pay 10 —
- *   plus −50 for a dealbreaker, −5 for "register interest" (nothing to apply to yet), −30 for a role that demands a
+ *   plus −50 for a dealbreaker (−25, or nothing when London is a listed office, for the vaguer `outside_london`), −5 for "register interest" (nothing to apply to yet), −30 for a role that demands a
  *   first (Jonno is predicted a 2:1). An unconfirmed 2027 intake is a note on the page, not a rank term (Jonno,
  *   2026-09-25: it shouldn't affect the ranking).
  * - **Not evaluated yet** (new from a sweep): the v1 formula minus 100, so it always sits below every evaluated
@@ -16,7 +16,7 @@ import { eq } from "drizzle-orm";
 import { SECTOR_WEIGHTS, SPORT_COMPANIES } from "@/config/criteria";
 import { getDb, schema } from "@/lib/db/client";
 import type { Eligibility, EvalScores, JobKind } from "@/lib/db/schema";
-import { DEALBREAKER_PENALTY, evaluationPoints } from "@/lib/evaluate";
+import { dealbreakerPenalty, evaluationPoints } from "@/lib/evaluate";
 
 export interface RankInput {
   sector: string | null;
@@ -29,6 +29,8 @@ export interface RankInput {
   sport?: boolean;
   /** tech/AI work or a tech/AI company (evaluation family or company sector) */
   tech?: boolean;
+  /** London is one of the posting's listed locations (jobs.is_london). Decides how heavy an `outside_london` flag is. */
+  londonListed?: boolean;
 }
 
 /**
@@ -59,7 +61,9 @@ function evaluatedBreakdown(j: RankInput, e: NonNullable<RankInput["evaluation"]
     work_fit: p.workFit, chance: p.chance, company_type: p.companyType, career_path: p.careerPath, sector: p.sector, pay: p.pay,
   };
   if (j.sport && j.tech) b.sport_tech = SPORT_TECH_BONUS;
-  if (e.dealbreakers.length) b.dealbreaker = DEALBREAKER_PENALTY;
+  // no key when the penalty is 0: the Apply now query skips any role with a `dealbreaker` term
+  const penalty = dealbreakerPenalty(e.dealbreakers.map((d) => d.kind), !!j.londonListed);
+  if (penalty) b.dealbreaker = penalty;
   if (j.kind === "register_interest") b.register_interest = -5;
   if (requiresFirst(j.eligibility)) b.requires_first = -30;
   return b;
@@ -100,7 +104,7 @@ function requiresFirst(e: Eligibility | null): boolean {
 export function rankAll(today = new Date()): number {
   const db = getDb();
   const rows = db.select({
-    id: schema.jobs.id, kind: schema.jobs.kind, deadline: schema.jobs.deadline, eligibility: schema.jobs.eligibility,
+    id: schema.jobs.id, kind: schema.jobs.kind, londonListed: schema.jobs.isLondon, deadline: schema.jobs.deadline, eligibility: schema.jobs.eligibility,
     sector: schema.companies.sector, aiForward: schema.companies.aiForward, company: schema.companies.name,
     evalScores: schema.roleEvaluations.scores, evalDealbreakers: schema.roleEvaluations.dealbreakers,
     family: schema.roleEvaluations.family,

@@ -15,6 +15,10 @@ export function submitGuardScript(): string {
   return `(function () {
   if (window.__gfGuard) return;
   window.__gfGuard = true;
+  // A beforeunload prompt freezes every Playwright MCP call until it is answered (run 17: one 13-minute stall).
+  var addL = window.addEventListener;
+  window.addEventListener = function (t) { if (t === "beforeunload") return; return addL.apply(this, arguments); };
+  try { Object.defineProperty(window, "onbeforeunload", { get: function () { return null; }, set: function () {} }); } catch (e) {}
   var TEXT = new RegExp(${JSON.stringify(FINAL_SUBMIT_TEXT)}, "i");
   var isFinal = function (el) {
     if (!el || !el.matches) return false;

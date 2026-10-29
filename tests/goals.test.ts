@@ -20,6 +20,16 @@ describe("weekGoal", () => {
     expect(weekGoal(swamped, [], now).target).toBe(3);
   });
 
+  it("counts tests and HireVues separately, waiting and done this week", () => {
+    const apps = [app(1, "tests"), app(2, "hirevue"), app(3, "hirevue")];
+    const moves: GoalMove[] = [
+      { appId: 4, from: "tests", to: "tests_done", at: at(2026, 9, 29) },
+      { appId: 5, from: "hirevue", to: "hirevue_done", at: at(2026, 9, 30) },
+      { appId: 6, from: "hirevue", to: "hirevue_done", at: at(2026, 9, 22) },   // last week
+    ];
+    expect(weekGoal(apps, moves, now)).toMatchObject({ tests: 1, hirevues: 2, testsDone: 1, hirevuesDone: 1, load: 1 });
+  });
+
   it("raises the base when the 40-by-19-December pace needs more than 6", () => {
     const late = new Date(2026, 11, 7, 12);   // two weeks before the goal date, nothing sent
     expect(weekGoal([], [], late)).toMatchObject({ pace: 20, base: 20, target: 20 });

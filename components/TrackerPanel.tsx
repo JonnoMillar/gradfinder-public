@@ -11,11 +11,12 @@ import { saveNotes, type ActionResult } from "@/app/actions";
 
 type Activity = { from_status: string | null; to_status: string; note: string | null; at: string };
 
-export function TrackerPanel({ jobId, status, notes, activity }: {
+export function TrackerPanel({ jobId, status, notes, activity, emails }: {
   jobId: number;
   status: string | null;
   notes: string | null;
   activity: Activity[];
+  emails: { id: number; receivedAt: string; subject: string; viewUrl: string | null }[];
 }) {
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<{ text: string; err: boolean } | null>(null);
@@ -54,6 +55,20 @@ export function TrackerPanel({ jobId, status, notes, activity }: {
         </button>
         {msg ? <span className="tmsg" data-err={msg.err ? "1" : undefined} role="status">{msg.text}</span> : null}
       </div>
+
+      {emails.length ? (
+        <ul className="log">
+          {emails.map((e) => (
+            <li key={e.id}>
+              <span className="when">{fmtDateTime(e.receivedAt)}</span>
+              <span>
+                {e.subject}
+                {e.viewUrl ? <> · <a href={e.viewUrl} target="_blank" rel="noreferrer" className="link-mint">Open email</a></> : null}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       {activity.length ? (
         <ul className="log">

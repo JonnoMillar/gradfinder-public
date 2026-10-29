@@ -95,3 +95,20 @@ describe("ingest", () => {
     expect(q(`select excluded_reason from jobs where id=${id}`)[0].excluded_reason).toBeNull();
   });
 });
+
+describe("content hash and posted date", () => {
+  const job = (title: string) => q(`select content_hash h, posted_at p, first_seen f from jobs where title = '${title}'`)[0];
+  it("hashes title + description, not the fetched HTML; a real edit changes it; posted_at is stored and first_seen kept", async () => {
+    const mk = (over: Partial<RawPosting>) => posting({ source: "higherin", sourceId: "ph1", url: "https://h/ph1", title: "Hash Check Graduate 2027", companyName: "Hashco", ...over });
+    await runSweep({ log: () => {}, adapters: [adapter("higherin", [mk({ contentHash: "html-1", descriptionText: "Build  tools.\nIn London.", datePosted: "2026-10-01T09:00:00Z" })])] });
+    const first = job("Hash Check Graduate 2027");
+    expect(first.p).toBe("2026-10-01");
+    await runSweep({ log: () => {}, adapters: [adapter("higherin", [mk({ contentHash: "html-2", descriptionText: "Build tools. In London.", datePosted: "not a date" })])] });
+    const again = job("Hash Check Graduate 2027");
+    expect(again.h).toBe(first.h);          // only the HTML noise and whitespace differ
+    expect(again.p).toBe("2026-10-01");     // a bad date leaves the stored one alone
+    expect(again.f).toBe(first.f);
+    await runSweep({ log: () => {}, adapters: [adapter("higherin", [mk({ contentHash: "html-3", descriptionText: "Build tools. In Leeds." })])] });
+    expect(job("Hash Check Graduate 2027").h).not.toBe(first.h);
+  });
+});

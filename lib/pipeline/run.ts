@@ -15,6 +15,7 @@ import { getDb, schema } from "@/lib/db/client";
 import type { Source } from "@/lib/db/schema";
 import { AdapterOutput, RawPosting, SourceAdapter, SourceError, isTouch } from "./types";
 import { companySlug, dedupeKey, guessEmployerFromText, isReposter, locationBucket } from "./normalise";
+import { postingHash } from "./content-hash";
 import { excludedReason } from "./filter";
 import { rankAll } from "./rank";
 import { refilter } from "./refilter";
@@ -135,6 +136,8 @@ function upsertJob(p: RawPosting, companyId: number, runStart: string): { jobId:
     // no structured date: read one from the deadline text ("29th Sep 2026"); undefined leaves a stored one alone
     deadline: p.deadline ?? parseDeadlineText(p.deadlineText) ?? deadlineFromDescription(descriptionText) ?? undefined, deadlineText: p.deadlineText, startText: p.startText,
     applyUrl: p.applyUrl, canonicalUrl: p.url,
+    postedAt: validDate(p.datePosted),
+    contentHash: postingHash(p.title, descriptionText),
     // first pass from the posting alone; refilter() at the end of the run adds what extraction and the
     // liveness check know (entry level, function, closed) — see lib/pipeline/refilter.ts
     excludedReason: excludedReason({ title: p.title, locationRaw: p.locationRaw, kindHint: p.kindHint, kind: kindFromHint(p.kindHint), startText: p.startText, description: descriptionText, deadline: p.deadline }),
@@ -148,12 +151,12 @@ function upsertJob(p: RawPosting, companyId: number, runStart: string): { jobId:
     // excluded_reason is not re-derived here from the posting alone: that dropped the LLM's entry-level verdict
     // and function tag on every re-sweep. refilter() at the end of runSweep recomputes it from everything stored.
     const { excludedReason: _fromPostingOnly, ...rest } = base;
-    const patch: Partial<typeof schema.jobs.$inferInsert> = { ...rest, contentHash: p.contentHash ?? existing.contentHash ?? undefined };
+    const patch: Partial<typeof schema.jobs.$inferInsert> = { ...rest };
     db.update(schema.jobs).set(stripUndefined(patch)).where(eq(schema.jobs.id, existing.id)).run();
     return { jobId: existing.id, isNew: false };
   }
   const row = db.insert(schema.jobs).values({
-    ...base, companyId, dedupeKey: key, contentHash: p.contentHash, firstSeen: runStart,
+    ...base, companyId, dedupeKey: key, firstSeen: runStart,
     kind: kindFromHint(p.kindHint),
   }).returning({ id: schema.jobs.id }).get();
   return { jobId: row.id, isNew: true };
@@ -232,6 +235,11 @@ export function domainOf(url?: string): string | undefined {
     const host = url ? new URL(url).hostname.replace(/^www\./, "") : undefined;
     return host && !NOT_EMPLOYER_HOST.test(host) ? host : undefined;
   } catch { return undefined; }
+}
+/** A source's posted date as YYYY-MM-DD, or undefined (left alone on re-sweep) when it is missing or not a date. */
+function validDate(s?: string): string | undefined {
+  const d = s?.slice(0, 10);
+  return d && /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(d)) ? d : undefined;
 }
 function stripUndefined<T extends object>(o: T): T {
   return Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;

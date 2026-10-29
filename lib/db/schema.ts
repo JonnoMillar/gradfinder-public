@@ -156,6 +156,9 @@ export const jobs = sqliteTable("jobs", {
   excludedReason: text("excluded_reason"),
   /** confirmed | unknown (contradicted rows are excluded as wrong_intake). Written by refilter(). */
   intakeStatus: text("intake_status").$type<"confirmed" | "contradicted" | "unknown">(),
+  /** ISO date the source says the posting went up (Greenhouse first_published, Lever createdAt, Ashby publishedAt, JSON-LD
+   *  datePosted, jobspy date_posted). Null when the source gives none: "new" then falls back to first_seen. */
+  postedAt: text("posted_at"),
   rankScore: real("rank_score").notNull().default(0),
   rankBreakdown: text("rank_breakdown", { mode: "json" }).$type<Record<string, number>>(),
   dedupeKey: text("dedupe_key").notNull().unique(),

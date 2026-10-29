@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit",
     "query": "tsx scripts/query.ts",
     "track": "tsx scripts/track.ts",
+    "gmail": "tsx scripts/gmail.ts",
     "brief": "tsx scripts/brief.ts",
     "deep": "tsx scripts/deep.ts",
     "runner": "tsx scripts/runner.ts",

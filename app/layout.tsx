@@ -5,6 +5,7 @@ import "./globals.css";
 import { WeekPill } from "@/components/WeekPill";
 import { Celebrate } from "@/components/Celebrate";
 import { NeedsYou } from "@/components/NeedsYou";
+import { NavLinks } from "@/components/NavLinks";
 import { currentWeekGoal, weekPlan } from "@/lib/queries";
 
 const sans = Instrument_Sans({
@@ -41,12 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="brand">gradfinder</Link>
             {/* demo mode (docs/superpowers/specs/2026-10-12-public-showcase.md): fictional user, so say so on every page */}
             {process.env.NEXT_PUBLIC_DEMO === "1" && <span className="demo-tag" title="A fictional user, Alex Morgan, on real public postings">Demo data</span>}
-            <nav className="nav">
-              <Link href="/" transitionTypes={["tab"]}>Roles</Link>
-              <Link href="/applications" transitionTypes={["tab"]}>Applications</Link>
-              <Link href="/kit" transitionTypes={["tab"]}>Kit</Link>
-              <Link href="/sweeps" transitionTypes={["tab"]}>Sweeps</Link>
-            </nav>
+            <NavLinks />
             <span className="spacer" />
             <WeekPill g={g} plan={plan} />
           </div>

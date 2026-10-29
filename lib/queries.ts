@@ -235,6 +235,8 @@ export interface Suggestion extends JobListRow {
   /** whole days to the deadline; null = none published */
   days: number | null;
   priority: number;
+  /** first seen in the last two weeks: the tile wears a New tag */
+  fresh: boolean;
 }
 
 /** Points added to the rank score for a deadline, so a strong role closing soon beats a marginally better one with months left. */
@@ -243,10 +245,21 @@ export function urgencyBonus(days: number | null): number {
   return days <= 7 ? 12 : days <= 14 ? 8 : days <= 30 ? 4 : 0;
 }
 
+/** Newly listed roles get in first: a small bonus for a week, less for a fortnight. `age` = whole days since first seen. */
+export function freshBonus(age: number): number {
+  return age <= 7 ? 6 : age <= 14 ? 3 : 0;
+}
+
+/** Below this rank score a role is not worth an "apply now" slot (Jonno's rubric: 50 is mid-table). */
+export const APPLY_MIN_SCORE = 50;
+/** Roles he marked Interested himself get a nudge over equally ranked ones. */
+const INTERESTED_BONUS = 5;
+
 /**
- * "What should I start applying for now": roles Claude has evaluated (score ≥ 0), with no dealbreaker, not yet being
- * applied for, that have something to apply to (not register-interest) and haven't closed. Ordered by rank score plus
- * the deadline bonus above. `skip` = ids Jonno waved past with "Next".
+ * "What should I apply for now" (Up next, the Apply now section and the week plan): roles Claude has evaluated with a
+ * rank score of at least APPLY_MIN_SCORE, no dealbreaker, not yet being applied for, that have something to apply to
+ * (not register-interest) and haven't closed. Ordered by rank score plus bonuses for a close deadline, being new in the
+ * last two weeks, and having been marked Interested. One role per company, the best one. `skip` = ids waved past.
  */
 export function suggestNext(skip: number[] = [], n = 3): Suggestion[] {
   const rows = (getSqlite().prepare(`
@@ -257,32 +270,29 @@ export function suggestNext(skip: number[] = [], n = 3): Suggestion[] {
     left join role_evaluations e on e.job_id = j.id
     where ${KEPT("j", "a")}
       and (a.status is null or a.status in ('discovered', 'interested'))
-      and j.rank_score >= 0
+      and j.rank_score >= ${APPLY_MIN_SCORE}
       and json_extract(j.rank_breakdown, '$.dealbreaker') is null
       and j.kind <> 'register_interest'
       and (j.deadline is null or julianday(j.deadline) - julianday(date('now')) >= 0)
     order by j.rank_score desc, j.id
-    limit 80`).all() as Record<string, unknown>[]);
+    limit 200`).all() as Record<string, unknown>[]);
   const today = Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-  return rows
-    .map((r) => {
+  const ranked = rows
+    .map((r): Suggestion => {
       const row = toListRow(r);
       const days = row.deadline ? Math.round((Date.parse(row.deadline) - today) / 86_400_000) : null;
-      return { ...row, oneLine: (r.one_line as string) ?? null, days, priority: row.rankScore + urgencyBonus(days) };
+      const age = Math.max(0, Math.round((today - Date.parse(row.firstSeen.slice(0, 10))) / 86_400_000));
+      const fresh = freshBonus(Number.isNaN(age) ? 99 : age);
+      const interested = row.status === "interested";
+      return {
+        ...row, oneLine: (r.one_line as string) ?? null, days, fresh: fresh > 0,
+        priority: row.rankScore + urgencyBonus(days) + fresh + (interested ? INTERESTED_BONUS : 0),
+      };
     })
     .filter((s) => !skip.includes(s.id))
-    .sort((x, y) => y.priority - x.priority || x.id - y.id)
-    .slice(0, n);
-}
-
-export function headlineCounts() {
-  return getSqlite().prepare(`
-    select (select count(*) from jobs where is_active=1 and excluded_reason is null
-              and id not in (select job_id from applications where status in ('closed', 'dismissed'))) as kept,
-           (select count(*) from jobs where is_active=1 and excluded_reason is not null) as excluded,
-           (select count(*) from companies) as companies,
-           (select count(*) from facts) as facts`).get() as
-    { kept: number; excluded: number; companies: number; facts: number };
+    .sort((x, y) => y.priority - x.priority || x.id - y.id);
+  const seen = new Set<number>();
+  return ranked.filter((s) => (seen.has(s.companyId) ? false : (seen.add(s.companyId), true))).slice(0, n);
 }
 
 export interface FactRow {
@@ -577,6 +587,20 @@ export function listApplications(): ApplicationRow[] {
     }));
 }
 
+/**
+ * Where each rejected or closed application stood when it ended: the status it moved FROM into its final one (the last
+ * such move in the activity log). `null` = no move recorded, or it went straight from `discovered`.
+ */
+export function endedFrom(): Record<number, string | null> {
+  const rows = getSqlite().prepare(`
+    select a.id, l.from_status
+    from applications a
+    left join activity_log l on l.id = (
+      select max(id) from activity_log where application_id = a.id and to_status = a.status)
+    where a.status in ('rejected', 'closed')`).all() as { id: number; from_status: string | null }[];
+  return Object.fromEntries(rows.map((r) => [Number(r.id), r.from_status]));
+}
+
 export interface EmailUpdateRow {
   id: number; applicationId: number | null; receivedAt: string; sender: string; subject: string; kind: string;
   summary: string | null; viewUrl: string | null; companyHint: string | null; statusApplied: string | null;
@@ -723,7 +747,7 @@ export function weekPlan(left: number): PlanItem[] {
   const finishing = (getSqlite().prepare(`
     select j.id, j.title, j.deadline, c.name as company, c.logo_url, c.domain
     from applications a join jobs j on j.id = a.job_id join companies c on c.id = j.company_id
-    where a.status = 'applying' and j.is_active = 1
+    where a.status = 'applying' and (j.is_active = 1 or j.dedupe_key like 'manual|%')
     order by (j.deadline is null), j.deadline`).all() as Record<string, unknown>[]).map((r): PlanItem => ({
       jobId: Number(r.id), company: String(r.company), title: String(r.title), logoUrl: (r.logo_url as string) ?? null,
       domain: (r.domain as string) ?? null, why: "finish", days: daysTo((r.deadline as string) ?? null),

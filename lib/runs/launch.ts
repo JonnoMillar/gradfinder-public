@@ -23,6 +23,14 @@ const root = () => process.cwd();
 const fwd = (p: string) => p.replace(/\\/g, "/");
 export const runDir = (id: number) => path.join(root(), "data", "runs", String(id));
 
+/** One-off instruction from the user for a job's apply runs: data/runs/directive-job-<jobId>.md. Delete it when done. */
+function directiveFor(jobId: number): string {
+  try {
+    const t = fs.readFileSync(path.join(root(), "data", "runs", `directive-job-${jobId}.md`), "utf8").trim();
+    return t ? `\n## ${USER.name}'s instruction for this job (overrides "ask once and stop" below)\n${t}\n` : "";
+  } catch { return ""; }
+}
+
 export function applyPrompt(run: RunRow): string {
   const id = run.id;
   const who = USER.name;
@@ -30,7 +38,7 @@ export function applyPrompt(run: RunRow): string {
 
 ${who} pressed Apply in gradfinder. You are running headless: **nobody can answer you mid-run.** Fill as much of the
 application as you can, collect every gap, ask for all of them once, and stop. The run resumes when ${who} has answered.
-
+${directiveFor(run.jobId)}
 ## Read first (in this order)
 1. \`CLAUDE.md\`, \`profile/README.md\`, \`docs/automation/start-application.md\`, \`docs/automation/ats-notes.md\`
    Then \`profile/INDEX.md\` (the store's map) and \`profile/facts.yaml\`. Open any other profile file only when a question
@@ -38,16 +46,26 @@ application as you can, collect every gap, ask for all of them once, and stop. T
 2. \`${fwd(USER.voiceGuide)}\` (the voice guide) before writing any free-text answer
 3. \`npm run runq -- get ${id}\`: the job, apply URL, any form URL, and questions ${who} already answered on earlier passes
 
+## Manual jobs (a pasted form, \`runq get\` shows \`"manual": true\`)
+There is no posting text and no research brief: **skip \`npm run brief\` and every research step of the runbook.** Use only
+\`profile/facts.yaml\`, the other store files and the form itself. The role title is the one ${who} typed; the
+employer's own wording on the form wins. A "why us" question has no sourced hook: draft only from the store, or ask.
+
 ## Every pass
 - **Apply earlier answers first.** For each answered question with a \`factKey\`, add it to \`profile/facts.yaml\` (edit the
   YAML carefully, keep the comment style, cite "${who} <date>, run ${id}") when \`standing\` is true, then use it.
 - \`npm run runq -- note ${id} "<one line>"\` at each step ("Page 3 of 8: University"). It is also your heartbeat: a run
   silent for 10 minutes is killed.
-- Open \`formUrl\` if the run has one, else the job's apply URL. Employer sites (tal.net and others) may redirect first:
+- First \`browser_tabs\`. If a tab already shows \`formUrl\`, ${who} opened the form there by hand (entrance and login already
+  done): select that tab and fill it as it is. Do not navigate it away, reload it or open the apply URL again.
+- Otherwise open \`formUrl\` if the run has one, else the job's apply URL. Employer sites (tal.net and others) may redirect first:
   wait, then re-read before concluding you are logged out. If there is a login, registration or CAPTCHA wall, add a
   \`login\` question naming the site and stop. Never type a password, create an account or solve a CAPTCHA.
 
 ## Filling (tal.net; other ATSs: read the page and use the same loop)
+Oracle Recruiting Cloud (\`*.oraclecloud.com\`, e.g. WTW) has no kit adapter: read its section in \`docs/automation/ats-notes.md\`
+(one long page, radios as \`role=radio\` buttons, JET date comboboxes, per-entry education forms) and drive it with
+snapshots and click-by-text. The kit's \`dump\`/\`settle\` may not see its widgets.
 The browser has the form kit on every page as \`window.__gf\` (see \`lib/apply/ats/tal-kit.js\`). Use it:
 - \`browser_evaluate\` with \`() => window.__gf.dump()\` to read the visible fields.
 - Build rules from \`profile/facts.yaml\` and the answered questions, then \`() => window.__gf.settle([{match:"<label regex>", value:"<text>"}, …])\`.
@@ -79,6 +97,23 @@ It stays open after you exit (up to 2 hours) so ${who} can review and press Subm
   leave the window on the filled form page** (scrolled to the top is fine). You cannot use \`browser_close\`.
 - The runner releases the submit guard after you exit, so what ${who} sees is exactly the page you leave.
 
+## Optional and collapsed sections are not skippable (2026-10-28)
+"Optional" on a form means the employer will not reject it, not that you may leave it empty. Run 16 (ByteDance) skipped
+Work Experience, Internship, Projects, Awards, Language Skills, Self Introduction and SNS as "optional"; they were the
+sections that carried the application. So, before you call anything complete:
+1. **Inventory.** Read the whole form (snapshot, scrolling) and list every section heading, every "Add"/"+" control and
+   every collapsed or accordion block (\`() => window.__gf.sections()\` lists them; it clicks nothing). Click each one
+   open. Write the list in \`runq note\`.
+2. **Map.** For each section or question, search the store: \`facts.yaml\`, \`cv-cover-letter-pack.md\` (experience,
+   projects, skills; INDEX has the line ranges), \`stories.md\`, \`answers/\`. One CV entry = one form entry (employer, title,
+   dates, a short description in ${who}'s voice).
+3. **Fill** every section the store backs, including Awards, Languages and links (SNS: only profiles the store lists).
+   Free text goes through the draft/review loop below.
+4. **Gaps.** A section the store cannot back is a question in \`ask.json\` (batch them), never a guess and never silently
+   empty. A faculty, grade or date not in the store is a question too; an inference is only a suggested answer on the card.
+5. **Report.** The ready note lists each section as filled, or skipped with a reason (e.g. "SNS: no profile in store").
+   \`ready\` with an unexplained empty section is a failed run.
+
 ## Gaps: read ahead, then ask once
 A page with an unresolved required field cannot be saved, so later pages are unreachable by saving. Read them anyway
 (navigate to \`.../page/N\`, read only) to list every question that will come, then write ONE file
@@ -89,7 +124,10 @@ application (the answer will be saved to facts.yaml).
 ## CV upload
 Upload exactly \`${fwd(path.join(CV_DIR(), CURRENT_CV))}\` with \`browser_file_upload\` (the \`.docx\`
 beside it only if the form refuses PDF). Never upload any other file. If the form parses the CV into fields, check
-what it filled against \`facts.yaml\` and fix it.
+what it filled against \`facts.yaml\` and fix it. **Read that PDF yourself too** (Read tool, \`pages\`): it is newer than the
+store. A project, URL or figure on it that the store lacks is ${who}'s own and may be used (add it to \`facts.yaml\`); where
+the PDF and the store disagree, use the store's value and say so in the ready note. (Run 19 missed Ball Knowledge and the
+gradfinder demo link because only the store was read.)
 
 ## Free-text answers and cover letters
 **Look for an earlier answer first:** INDEX lists \`answers/\` (submitted) and \`cover-letters/\`. For the same or a
@@ -102,7 +140,7 @@ JSON with the Write tool). Then ask a \`review\` question: "Review and approve t
 page". On resume type **only approved answers** (\`npm run track -- answers <applicationId>\`) into the form, exactly.
 
 ## Finish
-When every section is complete except the declaration and submit: \`npm run runq -- ready ${id} --form-url "<url>"
+When every section, optional ones included, is filled or has a stated reason for staying empty, except the declaration and submit: \`npm run runq -- ready ${id} --form-url "<url>"
 --title "<the role title the employer's own pages show>" --note "<what was filled, what to check>"\`.
 **Never tick the declaration, type an e-signature or press Submit.** ${who} does that. A code guard blocks Submit anyway.
 After the form is submitted, the Gmail sync moves the tracker; you do not.

@@ -133,6 +133,12 @@ export async function openInBrowser(url: string): Promise<void> {
   if (!r.ok) throw new Error(`The run browser refused to open the page (${r.status})`);
 }
 
+/** URL of the tab Jonno last used in the run browser (Chrome lists the most recently focused page first), or null. */
+export async function frontTabUrl(): Promise<string | null> {
+  const list = (await (await fetch(`${cdpUrl()}/json/list`, { signal: AbortSignal.timeout(3000) })).json()) as { type: string; url: string }[];
+  return list.find((t) => t.type === "page" && /^https?:/.test(t.url))?.url ?? null;
+}
+
 /** Closes the run browser (Browser.close over CDP). Safe when it is already gone. */
 export async function closeBrowser(): Promise<void> {
   const v = await version();

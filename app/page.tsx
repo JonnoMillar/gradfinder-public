@@ -13,6 +13,7 @@ import { FailedSourceBanner } from "@/components/FailedSourceBanner";
 import { JobRow } from "@/components/JobRow";
 import { SuggestCard } from "@/components/SuggestCard";
 import { ActionCard } from "@/components/ActionCard";
+import { ApplyNow } from "@/components/ApplyNow";
 import { UndoToast } from "@/components/StageTrack";
 import { attention } from "@/lib/tracker/attention";
 import { WeekGlance } from "@/components/WeekGlance";
@@ -20,7 +21,7 @@ import { WeekRunway } from "@/components/WeekRunway";
 import { PageSlide } from "@/components/PageSlide";
 import { daysUntil } from "@/lib/ui/format";
 import {
-  DEFAULT_FILTERS, currentWeekGoal, failingSources, headlineCounts, listApplications, listEmailUpdates, listFacets, lastChance,
+  DEFAULT_FILTERS, currentWeekGoal, failingSources, listApplications, listEmailUpdates, listFacets, lastChance,
   listJobs, doNext, suggestNext,
   type JobListRow, type ListFilters, type SortKey,
 } from "@/lib/queries";
@@ -34,6 +35,9 @@ export const dynamic = "force-dynamic";
 const PREVIEW: Record<string, number> = {};
 const PREVIEW_REST = 3;
 const FLAT_PREVIEW = 9;
+/** the apply queue: Do this first (when nothing is dated) + Up next, then this many tiles in the Apply now section */
+const APPLY_QUEUE = 8;
+const APPLY_SHOWN = 6;
 
 const csv = (v: string | undefined) => (v ? v.split(",").filter(Boolean) : []);
 
@@ -134,15 +138,20 @@ export default async function Home({ searchParams }: {
 
   const jobs = listJobs(f);
   const facets = listFacets(f);
-  const counts = headlineCounts();
   const failing = failingSources();
   const week = currentWeekGoal();
   const skip = csv(Array.isArray(sp.skip) ? sp.skip[0] : sp.skip).map(Number).filter(Number.isInteger);
-  const [pick] = suggestNext(skip, 1);
-  const todo = doNext(pick?.id ?? null);
-  const closing = lastChance(pick?.id ?? null);
   // the most urgent dated thing on any tracked role (a test, a HireVue, his own step, a closing date): Do this first
   const { items: due } = attention(listApplications(), listEmailUpdates());
+  // Nothing dated: Do this first finishes a role he already started, else takes the head of the apply queue. Up next is
+  // the next one, and the Apply now section below the hero lists the rest.
+  const finish = due.length ? undefined : doNext(null).items.find((it) => it.status === "applying" && (it.days === null || it.days >= 0));   // a lapsed deadline is a call on /applications, not a task
+  const queue = suggestNext(skip, APPLY_QUEUE);
+  const start = due.length || finish ? undefined : queue.shift();
+  const pick = queue.shift();
+  const applyNow = queue.slice(0, APPLY_SHOWN);
+  const todo = doNext(pick?.id ?? null);
+  const closing = lastChance(pick?.id ?? null);
 
   const timeOrdered = f.sort === "deadline";
   const flat = decks(jobs);
@@ -157,21 +166,20 @@ export default async function Home({ searchParams }: {
         <h1 className="sr">Roles</h1>
         <div className="hero">
           <div className="hero-l">
-            <ActionCard items={due} />
+            <ActionCard items={due} finish={finish} start={start} />
             <SuggestCard pick={pick} skip={skip}
               skipHref={(ids) => withParam(sp, "skip", ids.length ? ids.join(",") : null)} />
           </div>
-          <WeekGlance g={week} todo={todo} closing={closing} skipJob={due[0]?.jobId ?? null} />
+          <WeekGlance g={week} todo={todo} closing={closing} skipJob={due[0]?.jobId ?? finish?.jobId ?? null} />
         </div>
+
+        <ApplyNow rows={applyNow} />
 
         <div className="lead">
           <h2>
             {timeOrdered ? "What closes soonest"
               : f.sort === "rank" ? "Best matches first" : "Newest first"}
           </h2>
-          <p className="sub">
-            {counts.kept} roles kept · {counts.excluded.toLocaleString("en-GB")} filtered out
-          </p>
         </div>
 
         <Filters f={f} facets={facets} />

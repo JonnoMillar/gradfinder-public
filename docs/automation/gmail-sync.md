@@ -49,6 +49,9 @@ STEPS
    "applicationId": ONLY if certain which tracked application it is (company AND role match), else omit,
    "jobId": if the role is not tracked, run npm run -s track -- find "<company>" and set jobId only for an unambiguous title match, else omit,
    "actionText": only if the user must do something ("Complete the SHL online assessment"), else omit,
+   (Same employer, two tracks, one application: an email naming the other track must not move it. The matcher
+   skips it only if the application's `employer_title` is set, so set it when you see two tracks, e.g. Analytics
+   vs Software Engineering.)
    "actionDue": YYYY-MM-DD only if stated or implied ("5 calendar days" → receivedAt date + 5), else omit}`
    Kinds: acknowledgement → received. Online test/game/video interview invite (HireVue, SHL, Pymetrics, Cappfinity,
    Sova…) → assessment_invite. Interview or assessment centre invite → interview_invite. Offer → offer.

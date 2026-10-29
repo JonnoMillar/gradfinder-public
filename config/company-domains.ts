@@ -8,8 +8,7 @@
  * company. `scripts/logos.ts apply` writes verified ones into `companies.domain` (blanks only), and the sweep fills
  * the same blanks for companies it creates later (lib/pipeline/run.ts).
  *
- * Deliberately missing: `pragma` (its postings are Gamma Communications: a company-name bug, not a logo problem),
- * `g-mass` (the posting doesn't say which syndicate it is), `bezos` (bezos.ai now redirects to another company,
+ * Deliberately missing: `g-mass` (the posting doesn't say which syndicate it is), `bezos` (bezos.ai now redirects to another company,
  * Gonini), `edyn` and `scale-space` (no reachable site found). Checked 2026-09-29.
  */
 
@@ -23,6 +22,7 @@ export const COMPANY_DOMAINS: Record<string, string> = {
   "axis": "axiscapital.com",
   "budweiser-brewing-and-i": "budweiserbrewinggroup.co.uk",
   "bytedance": "bytedance.com",
+  "gamma-communications": "gammagroup.co",   // www.gamma.co.uk redirects here; title "Gamma Communications" (2026-10-27)
   "catapult": "catapult.com",
   "crew-clothing": "crewclothing.co.uk",
   "decathlon": "decathlon.co.uk",

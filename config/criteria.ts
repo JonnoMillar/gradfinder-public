@@ -200,6 +200,7 @@ export const RESEARCH_TTL_DAYS = 7;
  */
 export const COMPANY_SLUG_ALIASES: Record<string, string> = {
   "edf-energy": "edf",   // "EDF Energy" (Higherin) and "EDF UK" (TARGETjobs) are one employer
+  "pragma": "gamma-communications",   // the source listed Gamma Communications' roles under "Pragma" (Dayforce board gammacomms)
 };
 
 /**

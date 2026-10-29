@@ -9,6 +9,7 @@
  *                                                       form filled as far as possible; Jonno reviews and submits
  *   npm run runq -- done <runId> [note]                 research finished
  *   npm run runq -- fail <runId> "<why>"
+ *   npm run runq -- add --url <u> --company <c> --title <t>   queue an apply run for a form that is not in the jobs table
  *   npm run runq -- list                                live runs, and everything waiting on Jonno
  *   npm run runq -- usage                               usage per run (API-equivalent $) and per application sent
  *   npm run runq -- reap                                housekeeping: stale runs fail, submitted runs close
@@ -19,6 +20,7 @@
 import fs from "node:fs";
 import { getSqlite } from "../lib/db/client";
 import { allQuestions, ask, claimNext, fail, finish, getRun, heartbeat, markReady, needsYou, reap } from "../lib/runs/runs";
+import { addManualJob } from "../lib/runs/manual";
 import { prepareRun } from "../lib/runs/launch";
 import { runUsage } from "../lib/runs/usage";
 import { USER } from "../config/user";
@@ -68,6 +70,13 @@ async function main() {
     return console.log(JSON.stringify({ claimed: true, runId: run.id, kind: run.kind, promptFile: files.promptFile, mcpConfig: files.mcpFile,
       next: `Read the prompt file and follow it. Use the Playwright browser for an apply run.` }));
   }
+  if (cmd === "add") {
+    const a = process.argv.slice(3);
+    const [url, company, title] = ["--url", "--company", "--title"].map((n) => flag(a, n));
+    if (!url || !company || !title) throw new Error("usage: runq add --url <u> --company <c> --title <t>");
+    if (!/^https?:\/\//i.test(url)) throw new Error("--url must be http(s)");
+    return console.log(JSON.stringify(addManualJob({ url, company, title })));
+  }
   const id = runIdOf(arg);
   const run = getRun(id);
   if (!run) throw new Error(`No run ${id}`);
@@ -77,7 +86,8 @@ async function main() {
     const app = run.applicationId
       ? db.prepare("select id, status, form_url as formUrl, employer_title as employerTitle from applications where id = ?").get(run.applicationId)
       : null;
-    return console.log(JSON.stringify({ run, job, application: app, questions: allQuestions(id) }, null, 2));
+    const manual = !!db.prepare("select 1 from jobs where id = ? and dedupe_key like 'manual|%'").get(run.jobId);
+    return console.log(JSON.stringify({ run, job, manual, application: app, questions: allQuestions(id) }, null, 2));
   }
   if (cmd === "note") { heartbeat(id, rest.join(" ") || undefined); return console.log("ok"); }
   if (cmd === "ask") {

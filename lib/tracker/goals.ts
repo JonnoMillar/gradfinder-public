@@ -5,8 +5,9 @@
  * - Target: at least 6 applications a week (Jonno: "more than 5", since much of each application is automated), or
  *   whatever pace the 40-by-19-December goal needs if that is higher. Live processes take time, so each role at
  *   tests costs half a slot and each at interview a whole one; never below 3.
- * - Rings, after Apple's Activity rings: Send (applications sent this week) and Line up (roles newly marked
- *   Interested or Applying this week, to keep the pipeline fed). Both aim at the same target.
+ * - Rings, after Apple's Activity rings: applications sent (the target above), online assessments sat (fixed 3 a
+ *   week) and HireVues recorded (fixed 2 a week). The last two depend on invites arriving, so a short ring can mean
+ *   "none sent to me yet" rather than "not done": the legend says how many are waiting.
  * - Streak, after Duolingo, is kept separate from the target and has a low bar: a week counts if one application
  *   went in. One quiet week is forgiven per streak (the streak freeze), so a busy exam week doesn't wipe it.
  * - Milestones at 1, 5, 10, 20, 30 and 40 applications sent.
@@ -18,7 +19,10 @@ export const GOAL_TOTAL = 40;
 export const GOAL_BY = "2026-12-19";
 export const BASE_PER_WEEK = 6;
 export const MIN_PER_WEEK = 3;
-export const MILESTONES = [1, 5, 10, 20, 30, 40] as const;
+/** Fixed weekly targets for the other two rings (Jonno 2026-10-27): online assessments sat, HireVues recorded. */
+export const TESTS_PER_WEEK = 3;
+export const HIREVUES_PER_WEEK = 2;
+export const MILESTONES =[1, 5, 10, 20, 30, 40] as const;
 const SUBMITTED = new Set(["applied", "tests", "tests_done", "hirevue", "hirevue_done", "interview", "interview_done", "offer"]);
 const DAY = 86_400_000;
 
@@ -32,8 +36,10 @@ export interface WeekGoal {
   target: number;
   base: number;
   load: number;                 // slots taken by live tests/interviews
-  tests: number;                // online tests to sit now (status tests)
+  tests: number;                // online tests waiting to be sat now (status tests)
   testsDone: number;            // online tests sat this week (moves to tests_done)
+  hirevues: number;             // HireVues waiting to be recorded now (status hirevue)
+  hirevuesDone: number;         // HireVues recorded this week (moves to hirevue_done)
   interviews: number;
   pace: number;                 // per week, to reach GOAL_TOTAL by GOAL_BY
   sent: number;                 // this week
@@ -74,11 +80,14 @@ export function weekGoal(apps: GoalApp[], moves: GoalMove[], now = new Date()): 
       && (m.from === null || m.from === "discovered" || m.from === "interested")).map((m) => m.appId),
   ).size;
 
-  // a HireVue to record weighs like an online test
-  const tests = apps.filter((a) => a.status === "tests" || a.status === "hirevue").length;
-  const testsDone = new Set(moves.filter((m) => m.to === "tests_done" && inWeek(m.at)).map((m) => m.appId)).size;
+  const tests = apps.filter((a) => a.status === "tests").length;
+  const hirevues = apps.filter((a) => a.status === "hirevue").length;
+  const doneIn = (to: string) => new Set(moves.filter((m) => m.to === to && inWeek(m.at)).map((m) => m.appId)).size;
+  const testsDone = doneIn("tests_done");
+  const hirevuesDone = doneIn("hirevue_done");
   const interviews = apps.filter((a) => a.status === "interview").length;
-  const load = Math.floor(tests * 0.5 + interviews);
+  // a HireVue to record weighs like an online test
+  const load = Math.floor((tests + hirevues) * 0.5 + interviews);
 
   const [gy, gm, gd] = GOAL_BY.split("-").map(Number);
   const weeksLeft = Math.max(1, Math.ceil((new Date(gy, gm - 1, gd).getTime() - start.getTime()) / (7 * DAY)));
@@ -112,7 +121,7 @@ export function weekGoal(apps: GoalApp[], moves: GoalMove[], now = new Date()): 
   return {
     weekStart: ymd(start), weekEnd: ymd(addDays(start, 6)),
     daysLeft: Math.round((end.getTime() - new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()) / DAY),
-    target, base, load, tests, testsDone, interviews, pace, sent, linedUp, sentTotal,
+    target, base, load, tests, testsDone, hirevues, hirevuesDone, interviews, pace, sent, linedUp, sentTotal,
     streak: { weeks, restUsed, thisWeekCounts, history },
     milestone: { prev, next },
   };

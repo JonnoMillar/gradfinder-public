@@ -13,7 +13,7 @@
  */
 import Link from "next/link";
 import { PageSlide } from "@/components/PageSlide";
-import { listApplications, listEmailUpdates, type ApplicationRow, type EmailUpdateRow } from "@/lib/queries";
+import { endedFrom, listApplications, listEmailUpdates, type ApplicationRow, type EmailUpdateRow } from "@/lib/queries";
 import { daysUntil, fmtDate } from "@/lib/ui/format";
 import { attention, callFor, FINISHED, PRE_SUBMIT, SUBMITTED, whenLabel, type AttentionItem, type Call } from "@/lib/tracker/attention";
 import { Logo } from "@/components/primitives";
@@ -143,6 +143,7 @@ function WeekRow({ i }: { i: AttentionItem }) {
         <span>{i.kind === "deadline" ? "applications close" : i.text}</span>
       </span>
       <Icon width={13} height={13} className="wk-i" label={KIND_WORD[i.kind]} />
+      {i.email?.viewUrl ? <a href={i.email.viewUrl} target="_blank" rel="noreferrer" className="link-mint">Open email</a> : null}
     </li>
   );
 }
@@ -229,7 +230,8 @@ function Lane({ id, title, hint, rows, latest, empty }: {
 
 // ------------------------------------------------------------------------------------------------ page
 
-export default async function ApplicationsPage() {
+export default async function ApplicationsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const sp = await searchParams;
   const now = new Date();
   const all = listApplications();
   const emails = listEmailUpdates();
@@ -260,7 +262,7 @@ export default async function ApplicationsPage() {
         <h1 className="ap-h1">Applications</h1>
         <p className="empty">
           <b>Nothing tracked yet.</b>
-          Open a role from the <Link href="/" className="link-mint">Roles</Link> list and press Interested to start its track here.
+          Open a role from the <Link href="/" className="link-mint">Roles</Link> list and press Interested to start its track here, or <Link href="/fill" className="link-mint">fill a form</Link> directly.
         </p>
       </main></PageSlide>
     );
@@ -272,11 +274,12 @@ export default async function ApplicationsPage() {
         <h1 className="ap-h1">Applications</h1>
         <p className="ap-say">
           {say.length ? <><b data-hot={nowItems.length ? "1" : undefined}>{say.join(", ")}.</b> </> : <b>Nothing due this week. </b>}
-          {plural(toApply.length, "role")} to apply for, {submitted.length} submitted.
+          {plural(toApply.length, "role")} to apply for, {submitted.length} submitted.{" "}
+          <Link href="/fill" className="link-mint">Fill a form</Link>
         </p>
       </header>
 
-      <Climb apps={all} />
+      <Climb apps={all} endedFrom={endedFrom()} />
 
       <Runway items={items} now={now} />
 

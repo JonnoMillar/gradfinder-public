@@ -83,7 +83,9 @@ export function startRunner(opts: { driver?: string; pollMs?: number } = {}): ()
     log(`run ${run.id} (${run.kind}, job ${run.jobId}) starting; log ${logFile}`);
     const bin = process.env.CLAUDE_BIN ?? "claude";
     const pre: string[] = process.env.CLAUDE_BIN_ARGS ? JSON.parse(process.env.CLAUDE_BIN_ARGS) : [];
-    const p = spawn(bin, [...pre, ...claudeArgs(run, files)], { cwd: process.cwd(), stdio: ["ignore", out, out], windowsHide: true });
+    // turbopackIgnore: a spawn with `cwd: process.cwd()` makes `next build` trace the whole project, data/ included, and
+    // the build then fails on the run Chrome's locked profile files whenever that browser is open
+    const p = spawn(/* turbopackIgnore: true */ bin, [...pre, ...claudeArgs(run, files)], { cwd: process.cwd(), stdio: ["ignore", out, out], windowsHide: true });
     child = p;
     starting = false;
     const beat = setInterval(() => heartbeat(run.id), 30_000);

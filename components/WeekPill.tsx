@@ -17,7 +17,7 @@ import { Rings, Rolling, weekRings } from "./Rings";
 import { Logo } from "./primitives";
 import { StartButton } from "./StartButton";
 import { readSeen, weekStore, writeSeen } from "./motion";
-import type { WeekGoal } from "@/lib/tracker/goals";
+import { HIREVUES_PER_WEEK, TESTS_PER_WEEK, type WeekGoal } from "@/lib/tracker/goals";
 import type { PlanItem } from "@/lib/queries";
 
 const fmt = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
@@ -34,7 +34,7 @@ export function WeekPill({ g, plan }: { g: WeekGoal; plan: PlanItem[] }) {
     el.addEventListener("toggle", h);
     return () => el.removeEventListener("toggle", h);
   }, []);
-  const zero = { send: 0, tests: 0 };
+  const zero = { send: 0, tests: 0, video: 0 };
   // the Roles page shows the week in its hero, so the pill would only repeat it there (the panel stays: the hero opens it)
   const home = usePathname() === "/";
 
@@ -51,7 +51,7 @@ export function WeekPill({ g, plan }: { g: WeekGoal; plan: PlanItem[] }) {
   const done = g.sent >= g.target;
   const why = [
     `${g.base} a week`,
-    g.load ? `${g.load} fewer while ${[g.tests && `${g.tests} at tests`, g.interviews && `${g.interviews} at interview`].filter(Boolean).join(" and ")}` : null,
+    g.load ? `${g.load} fewer while ${[(g.tests + g.hirevues) && `${g.tests + g.hirevues} at tests or HireVue`, g.interviews && `${g.interviews} at interview`].filter(Boolean).join(" and ")}` : null,
   ].filter(Boolean).join(", ");
   const ms = g.milestone;
   const msPct = ms.next ? Math.round(((g.sentTotal - ms.prev) / (ms.next - ms.prev)) * 100) : 100;
@@ -59,16 +59,16 @@ export function WeekPill({ g, plan }: { g: WeekGoal; plan: PlanItem[] }) {
   return (
     <>
       <button type="button" className="wkp" popoverTarget="week-panel" data-done={done ? "1" : undefined} hidden={home}
-              aria-label={`This week: ${g.sent} of ${g.target} applications sent. Open the weekly goal`}>
+              aria-label={`This week's goals: ${g.sent} of ${g.target} applications sent. Open the weekly goals`}>
         <Rings rings={weekRings(g)} size={22} from={from} burst={false} className="rings--mini" />
         <span className="wkp-n"><b><Rolling value={g.sent} from={from?.send} /></b><span className="wkp-of"> of </span>{g.target}</span>
         {g.streak.weeks > 0 ? <span className="wkp-streak" title={`${g.streak.weeks}-week streak`}>{g.streak.weeks} wk</span> : null}
       </button>
 
-      <div id="week-panel" popover="auto" className="wkpop" aria-label="This week" ref={panel}
+      <div id="week-panel" popover="auto" className="wkpop" aria-label="This week's goals" ref={panel}
            onClick={(e) => { if ((e.target as HTMLElement).closest("a")) e.currentTarget.hidePopover(); }}>
         <header className="wkpop-h">
-          <h2>This week</h2>
+          <h2>This week&apos;s goals</h2>
           <span>{fmt(g.weekStart)} to {fmt(g.weekEnd)} · {g.daysLeft === 1 ? "last day" : `${g.daysLeft} days left`}</span>
         </header>
 
@@ -80,10 +80,14 @@ export function WeekPill({ g, plan }: { g: WeekGoal; plan: PlanItem[] }) {
               <dd><Rolling key={opened} value={g.sent} from={opened ? 0 : null} /><span>/ {g.target}</span></dd>
             </div>
             <div data-ring="tests">
-              <dt>Online tests</dt>
-              {g.tests + g.testsDone
-                ? <dd><Rolling key={opened} value={g.testsDone} from={opened ? 0 : null} /><span>/ {g.tests + g.testsDone}</span></dd>
-                : <dd className="wkpop-none">none to sit</dd>}
+              <dt>Online assessments</dt>
+              <dd><Rolling key={opened} value={g.testsDone} from={opened ? 0 : null} /><span>/ {TESTS_PER_WEEK}</span></dd>
+              <p className="wkpop-none">{g.tests ? `${g.tests} waiting to sit` : "none waiting"}</p>
+            </div>
+            <div data-ring="video">
+              <dt>HireVues</dt>
+              <dd><Rolling key={opened} value={g.hirevuesDone} from={opened ? 0 : null} /><span>/ {HIREVUES_PER_WEEK}</span></dd>
+              <p className="wkpop-none">{g.hirevues ? `${g.hirevues} waiting to record` : "none waiting"}</p>
             </div>
           </dl>
         </div>

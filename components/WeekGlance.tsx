@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * The right half of the Roles page hero, beside Do this first + Up next (Jonno 2026-09-29, rings labelled 2026-10-02):
  *  1. The week: Apple-style rings, one per kind of task, each with a legend line saying what it counts and how far it
@@ -9,13 +7,13 @@
  *     test", his own step, or what a recruiter email asked for), with when that step is due on the right. Company only:
  *     the role is on the tile it links to.
  *  3. Last chance: roles worth applying for that close within two days, one row per company.
- *  4. One line of where every tracked role stands, linking to the Applications page.
+ *  4. "N more in progress" when the list is cut short, linking to the Applications page.
  */
 import Link from "next/link";
-import { Rings, Rolling, weekRings } from "./Rings";
 import { Logo } from "./primitives";
-import type { WeekGoal } from "@/lib/tracker/goals";
+import { WeekRings } from "./WeekRings";
 import type { CloseRole, DoItem, DoNext } from "@/lib/queries";
+import type { WeekGoal } from "@/lib/tracker/goals";
 
 /** rows per list: the column has to sit beside the square Up next card; the rest are on the Applications page */
 const SHOW = 3;
@@ -60,45 +58,16 @@ function Closing({ r }: { r: CloseRole }) {
   );
 }
 
-const RING_DOT: Record<string, string> = { send: "var(--mint)", tests: "oklch(0.79 0.12 245)" };
-
 export function WeekGlance({ g, todo, closing, skipJob = null }: {
   g: WeekGoal; todo: DoNext; closing: CloseRole[];
   /** the role Do this first already shows, so it isn't listed twice */
   skipJob?: number | null;
 }) {
-  const done = g.sent >= g.target;
-  const p = todo.pipeline;
-  const stands = [
-    p.interested && `${p.interested} interested`,
-    p.applying && `${p.applying} applying`,
-    p.waiting && `${p.waiting} waiting to hear`,
-    p.tests && `${p.tests} at tests`,
-    p.hirevues && `${p.hirevues} at HireVue`,
-    p.interviews && `${p.interviews} at interview`,
-    p.offers && `${p.offers} offer${p.offers === 1 ? "" : "s"}`,
-  ].filter(Boolean);
-  const rings = weekRings(g);
   const steps = todo.items.filter((it) => it.jobId !== skipJob);
 
   return (
     <div className="nx">
-      <button type="button" className="nx-week" popoverTarget="week-panel" data-done={done ? "1" : undefined}
-              aria-label={`This week: ${g.sent} of ${g.target} applications sent. Open the weekly goal`}>
-        <Rings rings={rings} size={96} from={{ send: 0, tests: 0 }} burst={false} className="nx-rings" />
-        <span className="nx-legend">
-          <span className="nx-cap">This week</span>
-          {rings.map((r) => (
-            <span key={r.key} className="nx-lg" data-empty={r.target ? undefined : "1"} style={{ ["--rc" as string]: RING_DOT[r.key] }}>
-              <i aria-hidden="true" />
-              {r.key === "send"
-                ? <b><Rolling value={r.value} from={0} /><span>/ {r.target}</span></b>
-                : <b>{r.value}<span>/ {r.target}</span></b>}
-              <span>{r.key === "send" ? "applications sent" : r.target ? "online tests done" : "online tests (none set)"}</span>
-            </span>
-          ))}
-        </span>
-      </button>
+      <WeekRings g={g} />
 
       {steps.length ? (
         <section className="nx-sec" aria-labelledby="nx-fin">
@@ -114,10 +83,13 @@ export function WeekGlance({ g, todo, closing, skipJob = null }: {
         </section>
       ) : null}
 
-      <Link href="/applications" transitionTypes={["tab"]} className="nx-all">
-        <span>{steps.length > SHOW ? `${steps.length - SHOW} more steps · ` : ""}{stands.length ? stands.join(" · ") : "Nothing tracked yet"}</span>
-        <span aria-hidden="true">→</span>
-      </Link>
+      {/* the pipeline tally ("1 applying · 8 waiting to hear") lived here; the Applications tab has it (Jonno 2026-10-28) */}
+      {steps.length > SHOW ? (
+        <Link href="/applications" transitionTypes={["tab"]} className="nx-all">
+          <span>{steps.length - SHOW} more in progress</span>
+          <span aria-hidden="true">→</span>
+        </Link>
+      ) : null}
     </div>
   );
 }

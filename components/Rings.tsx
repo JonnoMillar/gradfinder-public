@@ -9,6 +9,7 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { EASE_OUT, reducedMotion } from "./motion";
+import { HIREVUES_PER_WEEK, TESTS_PER_WEEK } from "@/lib/tracker/goals";
 
 export type RingKey = "send" | "tests" | "video" | "interview";
 export interface RingSpec { key: RingKey; value: number; target: number; label: string }
@@ -73,11 +74,12 @@ export function Rings({ rings, size = 120, from, className, burst = true }: {
   );
 }
 
-/** The rings for a week: sent, then online tests (only once there is a test to sit or one was sat this week). */
-export function weekRings(g: { sent: number; target: number; testsDone: number; tests: number }): RingSpec[] {
+/** The rings for a week, outside in: applications sent, online assessments sat, HireVues recorded. Each against its own target. */
+export function weekRings(g: { sent: number; target: number; testsDone: number; hirevuesDone: number }): RingSpec[] {
   return [
     { key: "send", value: g.sent, target: g.target, label: "Applications sent" },
-    { key: "tests", value: g.testsDone, target: g.testsDone + g.tests, label: "Online tests done" },
+    { key: "tests", value: g.testsDone, target: TESTS_PER_WEEK, label: "Online assessments done" },
+    { key: "video", value: g.hirevuesDone, target: HIREVUES_PER_WEEK, label: "HireVues done" },
   ];
 }
 
