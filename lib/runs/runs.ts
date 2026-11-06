@@ -136,12 +136,19 @@ export function markStaged(on: boolean) {
 }
 const stagedRecently = (now: number) => { try { return now - fs.statSync(STAGED()).mtimeMs < WINDOW_MS; } catch { return false; } };
 
-/** Should the run browser be open now? Yes while an apply run is working, queued, or waiting/ready within WINDOW_MS, or while staged. */
+/**
+ * Should the run browser be open now? Yes while an apply run is working, queued, or waiting/ready/failed within WINDOW_MS,
+ * or while staged. A failed pass keeps the window: the filled form lives only there, and a retry resumes it.
+ */
 export function browserWanted(now = Date.now()): boolean {
   if (stagedRecently(now)) return true;
-  const rows = getSqlite().prepare("select state, heartbeat_at, created_at from agent_runs where kind = 'apply' and state in ('queued','running','needs_you','ready')").all() as
-    { state: string; heartbeat_at: string | null; created_at: string }[];
-  return rows.some((r) => r.state === "queued" || r.state === "running" || now - new Date(r.heartbeat_at ?? r.created_at).getTime() < WINDOW_MS);
+  const rows = getSqlite().prepare("select state, heartbeat_at, finished_at, created_at from agent_runs where kind = 'apply' and state in ('queued','running','needs_you','ready','failed')").all() as
+    { state: string; heartbeat_at: string | null; finished_at: string | null; created_at: string }[];
+  return rows.some((r) => {
+    if (r.state === "queued" || r.state === "running") return true;
+    const since = r.state === "failed" ? r.finished_at ?? r.heartbeat_at ?? r.created_at : r.heartbeat_at ?? r.created_at;
+    return now - new Date(since).getTime() < WINDOW_MS;
+  });
 }
 
 export function heartbeat(runId: number, note?: string, now = new Date().toISOString()) {

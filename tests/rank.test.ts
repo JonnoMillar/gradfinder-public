@@ -18,8 +18,9 @@ describe("scoreJob — evaluated by Claude", () => {
     expect(scoreJob({ ...base, evaluation: evaluated(5) }, today).score).toBe(100);
     expect(scoreJob({ ...base, evaluation: evaluated(1) }, today).score).toBe(0);
   });
-  it("weights the parts 30/20/15/15/10/10", () => {
-    expect(evaluationPoints({ workFit: 5, chance: 1, companyType: 1, careerPath: 1, sector: 1, pay: 1 }).workFit).toBe(30);
+  it("weights the parts 35/20/15/20/10 (rubric v2)", () => {
+    expect(evaluationPoints({ workFit: 5, chance: 1, companyType: 1, careerPath: 1, sector: 1, pay: 1 }).workFit).toBe(35);
+    expect(evaluationPoints({ workFit: 1, chance: 1, companyType: 1, careerPath: 5, sector: 1, pay: 1 }).careerPath).toBe(20);
     expect(evaluationPoints({ workFit: 1, chance: 5, companyType: 1, careerPath: 1, sector: 1, pay: 1 }).chance).toBe(20);
     expect(evaluationPoints(scores(3)).companyType).toBe(7.5);
   });
@@ -28,8 +29,11 @@ describe("scoreJob — evaluated by Claude", () => {
     expect(scoreJob({ ...base, sport: true, tech: false, evaluation: evaluated(3) }, today).breakdown.sport_tech).toBeUndefined();
     expect(scoreJob({ ...base, sport: false, tech: true, evaluation: evaluated(3) }, today).breakdown.sport_tech).toBeUndefined();
   });
-  it("treats unknown pay as neutral (3), never as a penalty", () => {
-    expect(scoreJob({ ...base, evaluation: evaluated(5, { pay: null }) }, today).breakdown.pay).toBe(5);
+  it("pay is shown, not scored: a stated salary and a silent posting score the same", () => {
+    const silent = scoreJob({ ...base, evaluation: evaluated(3, { pay: null }) }, today);
+    expect(silent.breakdown.pay).toBeUndefined();
+    expect(scoreJob({ ...base, evaluation: evaluated(3, { pay: 5 }) }, today).score).toBe(silent.score);
+    expect(scoreJob({ ...base, evaluation: evaluated(3, { pay: 1 }) }, today).score).toBe(silent.score);
   });
   it("a dealbreaker sinks the role by 50, visibly", () => {
     const r = scoreJob({ ...base, evaluation: evaluated(5, { dealbreakers: [{ kind: "hours" }] }) }, today);

@@ -15,6 +15,7 @@
     "evaluate": "tsx scripts/evaluate.ts",
     "research": "tsx scripts/research.ts",
     "liveness": "tsx scripts/liveness.ts",
+    "discover": "tsx scripts/discover.ts",
     "refilter": "tsx scripts/refilter.ts",
     "typecheck": "tsc --noEmit",
     "query": "tsx scripts/query.ts",

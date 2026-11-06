@@ -111,4 +111,14 @@ describe("content hash and posted date", () => {
     await runSweep({ log: () => {}, adapters: [adapter("higherin", [mk({ contentHash: "html-3", descriptionText: "Build tools. In Leeds." })])] });
     expect(job("Hash Check Graduate 2027").h).not.toBe(first.h);
   });
+  it("a source left out of the run keeps its jobs alive (sweep --source of only the other one)", async () => {
+    await runSweep({ log: () => {}, adapters: [
+      adapter("higherin", [posting({ source: "higherin", sourceId: "h9", url: "https://h/9", title: "Shared Scheme" })]),
+      adapter("linkedin", [posting({ source: "linkedin", sourceId: "l9", url: "https://l/9", title: "Shared Scheme" })]),
+    ] });
+    // only LinkedIn runs and has dropped it; Higherin, which still listed it last time, didn't run
+    await runSweep({ log: () => {}, adapters: [adapter("linkedin", [posting({ source: "linkedin", sourceId: "l10", url: "https://l/10", title: "Another Role" })])] });
+    expect(q("select is_active from jobs where title='Shared Scheme'")[0].is_active).toBe(1);
+  });
+
 });

@@ -25,6 +25,7 @@ const HOST_MIN_GAP_MS: Record<string, number> = {
   "higherin.com": 350,
   "en.wikipedia.org": 1000,      // REST summary endpoint 429s at ~1 req/s bursts (2026-09-21)
   "html.duckduckgo.com": 6000,   // bursts of ~4 in a few minutes earned a 202 challenge (2026-09-21)
+  "www.welcometothejungle.com": 4000, // AWS WAF challenge after ~15 pages even at this gap (2026-11-04); the adapter stops on the first one
 };
 const DEFAULT_GAP_MS = 250;
 const lastRequestAt = new Map<string, number>();

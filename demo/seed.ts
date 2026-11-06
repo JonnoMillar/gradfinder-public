@@ -97,6 +97,12 @@ export async function seedDemo(log: (s: string) => void = console.log) {
         .run(`demo-${i + 1}`, isoTime(m.day, 9), m.sender, m.subject, m.kind, m.summary, appId, m.statusApplied ?? null,
           m.action ?? null, m.due == null ? null : isoDate(m.due));
     });
+    // the move each email made, and only the newest forward one left as news (the demo can't mark it seen: it replays)
+    sqlite.exec(`update email_updates set status_from = (select l.from_status from activity_log l
+        where l.application_id = email_updates.application_id and l.to_status = email_updates.status_applied
+        order by l.id desc limit 1) where status_applied is not null;
+      update email_updates set seen_at = received_at where id is not (select id from email_updates
+        where status_applied is not null and status_applied <> 'rejected' order by received_at desc limit 1);`);
   })();
 
   const f = refilter();

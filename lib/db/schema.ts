@@ -15,6 +15,7 @@ const now = sql`(strftime('%Y-%m-%dT%H:%M:%fZ','now'))`;
 export const SOURCES = [
   "higherin", "targetjobs", "brightnetwork", "linkedin", "indeed",
   "greenhouse", "lever", "ashby", "gradcracker",
+  "workday", "smartrecruiters", "workable", "teamtailor", "pinpoint", "wttj",
 ] as const;
 export type Source = (typeof SOURCES)[number];
 
@@ -370,6 +371,10 @@ export const emailUpdates = sqliteTable("email_updates", {
   applicationId: integer("application_id").references(() => applications.id, { onDelete: "set null" }),
   /** the status this email moved the application to, or null if it moved nothing */
   statusApplied: text("status_applied"),
+  /** the status it moved the application from (with statusApplied: the move the app replays on /applications) */
+  statusFrom: text("status_from"),
+  /** when Jonno saw that move play out; null = still news (the platinum badge and the Roles cube) */
+  seenAt: text("seen_at"),
   actionText: text("action_text"),
   actionDue: text("action_due"),
   actionDone: integer("action_done", { mode: "boolean" }).notNull().default(false),

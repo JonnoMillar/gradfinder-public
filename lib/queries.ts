@@ -56,16 +56,19 @@ const KEPT = (j: string, a: string) =>
   `${j}.is_active = 1 and ${j}.excluded_reason is null and (${a}.status is null or ${a}.status not in ('closed', 'dismissed'))`;
 const SPORT_NAMES = SPORT_COMPANIES.map((n) => `'${n.toLowerCase().replace(/'/g, "''")}'`).join(",") || "''";
 
+/** Every kept role's 1-based rank position, computed once per query. A correlated count per row (the old way) was O(n²):
+ *  46 s for the Roles list once employer boards took the kept set past 1,500 (2026-11-04). Prefix any query using LIST_COLS. */
+const RANKED = `with rank_pos as materialized (
+  select j2.id, row_number() over (order by j2.rank_score desc, j2.id) as pos
+  from jobs j2 left join applications a2 on a2.job_id = j2.id where ${KEPT("j2", "a2")})`;
+
 const LIST_COLS = `
   j.id, j.title, j.kind, j.rank_score, j.deadline, j.deadline_text, j.salary_text,
   j.location_raw, j.work_mode, j.excluded_reason, j.intake_status, j.first_seen,
   c.id as company_id, c.name as company, c.slug as company_slug, c.logo_url, c.domain,
   c.sector, c.ai_forward, a.status,
   (select group_concat(s.source) from (select distinct source from job_sources where job_id = j.id) s) as sources,
-  case when ${KEPT("j", "a")} then (
-    select count(*) + 1 from jobs j2 left join applications a2 on a2.job_id = j2.id
-    where ${KEPT("j2", "a2")} and (j2.rank_score > j.rank_score or (j2.rank_score = j.rank_score and j2.id < j.id))
-  ) end as rank_pos,
+  case when ${KEPT("j", "a")} then (select pos from rank_pos where rank_pos.id = j.id) end as rank_pos,
   (c.sector = 'sport' or lower(c.name) in (${SPORT_NAMES})
     or exists (select 1 from role_evaluations e where e.job_id = j.id and e.family = 'sport')) as is_sport,
   is_london(j.location_raw) as in_london`;
@@ -142,6 +145,8 @@ function whereFor(f: ListFilters): { sql: string; params: unknown[] } {
   // Applications archive and only shows here when the status filter asks for it.
   const hide = ["closed", "dismissed"].filter((s) => !f.statuses.includes(s));
   if (hide.length) where.push(`(a.status is null or a.status not in (${hide.map((s) => `'${s}'`).join(", ")}))`);
+  // "Best matches" is where to find something to apply to: a role already sent (or rejected) is not a match any more.
+  if (f.sort === "rank" && !f.statuses.length) where.push("(a.status is null or a.status in ('discovered', 'interested', 'applying'))");
   if (f.statuses.length) {
     const hasNew = f.statuses.includes("__none__");
     const named = f.statuses.filter((s) => s !== "__none__");
@@ -171,6 +176,7 @@ const ORDER: Record<SortKey, string> = {
 export function listJobs(f: ListFilters): JobListRow[] {
   const { sql, params } = whereFor(f);
   return (getSqlite().prepare(`
+    ${RANKED}
     select ${LIST_COLS}
     from jobs j
     join companies c on c.id = j.company_id
@@ -263,6 +269,7 @@ const INTERESTED_BONUS = 5;
  */
 export function suggestNext(skip: number[] = [], n = 3): Suggestion[] {
   const rows = (getSqlite().prepare(`
+    ${RANKED}
     select ${LIST_COLS}, e.one_line
     from jobs j
     join companies c on c.id = j.company_id
@@ -345,6 +352,7 @@ export interface JobDetail extends JobListRow {
 export function getJob(id: number): JobDetail | null {
   const db = getSqlite();
   const r = db.prepare(`
+    ${RANKED}
     select ${LIST_COLS}, j.function as fn, j.description_text, j.start_text, j.salary_min, j.salary_max,
            j.apply_url, j.canonical_url, j.eligibility, j.application_requirements, j.process_stages,
            j.rank_breakdown, j.extraction_meta,
@@ -479,6 +487,7 @@ export function getCompanyBySlug(slug: string): CompanyDetail | null {
 
 export function jobsForCompany(companyId: number): JobListRow[] {
   return (getSqlite().prepare(`
+    ${RANKED}
     select ${LIST_COLS} from jobs j
     join companies c on c.id = j.company_id
     left join applications a on a.job_id = j.id
@@ -626,6 +635,30 @@ export function listEmailUpdates(): EmailUpdateRow[] {
       actionDone: Number(r.action_done) === 1,
       company: (r.company as string) ?? null, title: (r.title as string) ?? null,
       jobId: r.job_id_resolved == null ? null : Number(r.job_id_resolved),
+    }));
+}
+
+export interface NewsMove {
+  emailId: number; applicationId: number; jobId: number; company: string;
+  from: string | null; to: string; receivedAt: string;
+}
+
+/**
+ * Stage moves the Gmail sync made that Jonno hasn't watched play yet, oldest first (the order they happened). Feeds the
+ * platinum badge on the Applications tab, the cube on Roles and the replay on the Climb; a rejection is in here too,
+ * and every one of those shows it quietly. Moves he made himself never land here: only email rows carry a move.
+ */
+export function unseenMoves(): NewsMove[] {
+  return (getSqlite().prepare(`
+    select e.id, e.application_id, j.id as job_id, c.name as company, e.status_from, e.status_applied, e.received_at
+    from email_updates e
+    join applications a on a.id = e.application_id
+    join jobs j on j.id = a.job_id
+    join companies c on c.id = j.company_id
+    where e.status_applied is not null and e.seen_at is null
+    order by e.received_at, e.id`).all() as Record<string, unknown>[]).map((r) => ({
+      emailId: Number(r.id), applicationId: Number(r.application_id), jobId: Number(r.job_id), company: String(r.company),
+      from: (r.status_from as string) ?? null, to: String(r.status_applied), receivedAt: String(r.received_at),
     }));
 }
 

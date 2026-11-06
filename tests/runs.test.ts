@@ -166,6 +166,16 @@ describe("the filled-form window (single-page forms)", () => {
     expect(R.getRun(apply.id)?.note).toMatch(/closed after 2 hours/);
     expect(R.readyApplyRun()).toBeNull();
   });
+  it("a failed apply run keeps the window for 2 hours so a retry can resume the form", () => {
+    const T1 = T0 + 10_000_000;
+    const id = R.requestRun(jobA, "apply", at(T1)).runId;
+    R.claimNext(at(T1 + 10));
+    R.fail(id, "Playwright MCP init times out", at(T1 + 20));
+    expect(R.getRun(id)?.state).toBe("failed");
+    const t = (ms: number) => new Date(at(T1 + ms)).getTime();
+    expect(R.browserWanted(t(60 * 60_000))).toBe(true);
+    expect(R.browserWanted(t(3 * 60 * 60_000))).toBe(false);
+  });
 });
 
 describe("fill a form (manual jobs)", () => {

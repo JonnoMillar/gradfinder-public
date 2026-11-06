@@ -13,7 +13,7 @@
  */
 import Link from "next/link";
 import { PageSlide } from "@/components/PageSlide";
-import { endedFrom, listApplications, listEmailUpdates, type ApplicationRow, type EmailUpdateRow } from "@/lib/queries";
+import { endedFrom, listApplications, listEmailUpdates, unseenMoves, type ApplicationRow, type EmailUpdateRow } from "@/lib/queries";
 import { daysUntil, fmtDate } from "@/lib/ui/format";
 import { attention, callFor, FINISHED, PRE_SUBMIT, SUBMITTED, whenLabel, type AttentionItem, type Call } from "@/lib/tracker/attention";
 import { Logo } from "@/components/primitives";
@@ -279,7 +279,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
         </p>
       </header>
 
-      <Climb apps={all} endedFrom={endedFrom()} />
+      <Climb apps={all} endedFrom={endedFrom()} moves={unseenMoves()} />
 
       <Runway items={items} now={now} />
 

@@ -14,6 +14,8 @@ describe("companySlug", () => {
     // COMPANY_SLUG_ALIASES: one employer listed under two trading names by two sources
     ["EDF Energy", "edf"],
     ["EDF UK", "edf"],
+    ["Alpha FMC", "alpha-financial-markets-consulting"],
+    ["Alpha Financial Markets Consulting", "alpha-financial-markets-consulting"],
   ])("%s → %s", (input, expected) => expect(companySlug(input)).toBe(expected));
 });
 

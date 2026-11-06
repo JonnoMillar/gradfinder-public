@@ -1,10 +1,11 @@
 import type { SourceAdapter } from "../types";
 import { higherin } from "./higherin";
 import { targetjobs } from "./targetjobs";
-import { greenhouse, lever, ashby } from "./ats";
+import { greenhouse, lever, ashby, workday, smartrecruiters, workable, teamtailor, pinpoint } from "./ats";
+import { wttj } from "./wttj";
 
 /** Order matters a little: cheap API sources first, throttled scrapers last. */
-export const ALL_ADAPTERS: SourceAdapter[] = [greenhouse, ashby, lever, targetjobs, higherin];
+export const ALL_ADAPTERS: SourceAdapter[] = [greenhouse, ashby, lever, smartrecruiters, workable, teamtailor, pinpoint, workday, targetjobs, higherin, wttj];
 
 export function pickAdapters(names?: string[]): SourceAdapter[] {
   if (!names?.length) return ALL_ADAPTERS;

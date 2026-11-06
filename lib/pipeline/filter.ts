@@ -10,7 +10,7 @@
 import {
   COMBINED_INTERNSHIP_PATTERN, EXCLUDED_FUNCTIONS, EXCLUDED_JOB_KINDS, EXCLUDED_KINDS_PATTERNS, FULL_TIME_TITLE_PATTERN,
   INTAKE_YEAR, REQUIRED_LANGUAGE_EXCLUSIONS,
-  SENIOR_OVERRIDE_PATTERNS, SENIOR_TITLE_PATTERNS, SOFTWARE_TITLE_PATTERN,
+  RANK_TITLE_PATTERN, SENIOR_OVERRIDE_PATTERNS, SENIOR_TITLE_PATTERNS, SOFTWARE_TITLE_PATTERN, WEAK_SENIOR_OVERRIDES,
 } from "@/config/criteria";
 import { isLondonish } from "./normalise";
 
@@ -61,10 +61,8 @@ export function excludedReason(j: FilterInput): string | null {
   const lang = requiredLanguage(j.title, j.description);
   if (lang) return `language_required:${lang}`;
 
-  if (!SENIOR_OVERRIDE_PATTERNS.some((p) => p.test(j.title))) {
-    const hit = SENIOR_TITLE_PATTERNS.find((p) => p.test(j.title));
-    if (hit) return `not_entry_level:title:${hit.source}`;
-  }
+  const senior = seniorTitle(j.title);
+  if (senior) return `not_entry_level:title:${senior.source}`;
   if (j.isEntryLevel === false) return "not_entry_level:description";
   if (j.gradRole?.verdict === "no") return `claude_not_grad:${j.gradRole.reason.slice(0, 120)}`;
 
@@ -80,6 +78,15 @@ export function excludedReason(j: FilterInput): string | null {
 }
 
 // ---------- intake year ----------
+
+/** The pattern that makes a title clearly not entry-level, or null. Also used by the ATS/WTTJ adapters to skip a
+ *  per-role request for a role this filter would drop anyway. */
+export function seniorTitle(title: string): RegExp | null {
+  const strong = SENIOR_OVERRIDE_PATTERNS.some((p) => !WEAK_SENIOR_OVERRIDES.includes(p) && p.test(title));
+  if (strong) return null;
+  if (WEAK_SENIOR_OVERRIDES.some((p) => p.test(title))) return RANK_TITLE_PATTERN.test(title) ? RANK_TITLE_PATTERN : null;
+  return SENIOR_TITLE_PATTERNS.find((p) => p.test(title)) ?? null;
+}
 
 export type IntakeStatus = { status: "confirmed" | "contradicted" | "unknown"; why: string };
 

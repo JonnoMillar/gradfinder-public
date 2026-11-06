@@ -38,7 +38,7 @@ export type EmailUpdate = z.infer<typeof EmailUpdateInput>;
 
 export type RecordOutcome =
   | { gmailMessageId: string; result: "duplicate" }
-  | { gmailMessageId: string; result: "recorded"; applicationId: number | null; matchedBy: string; statusFrom?: string; statusTo?: string };
+  | { gmailMessageId: string; result: "recorded"; applicationId: number | null; matchedBy: string; statusFrom?: string; statusTo?: string; closedAsks?: number };
 
 /**
  * How far along each status is. rejected/dismissed/closed are terminal and handled separately. `interview_done` sits
@@ -62,6 +62,44 @@ export function nextStatus(current: string, kind: EmailKind, text = ""): Applica
   if (!target || TERMINAL.has(current) || current === target) return null;
   if (target === "rejected") return current === "offer" ? null : "rejected";
   return (STAGE[target] ?? -1) > (STAGE[current] ?? -1) ? target : null;
+}
+
+/** The stage an email's ask belongs to (a test, a video interview, an interview), or null when it can't be told. */
+function askStage(kind: string, text: string): number | null {
+  if (kind === "assessment_invite") return VIDEO.test(text) ? STAGE.hirevue : STAGE.tests;
+  if (kind === "interview_invite") return STAGE.interview;
+  return null;
+}
+
+const sameCompany = (a: string, b: string) => a === b || a.startsWith(`${b}-`) || b.startsWith(`${a}-`);
+
+/**
+ * Closes open asks a new email has made stale, so "Action needed" doesn't keep a stage Jonno has already passed.
+ * Candidates are older open asks linked to this application, plus unlinked ones at the same company: an invite that
+ * names no role can't be matched while two roles are tracked, and nothing would ever close it. An ask goes when
+ *  - the application just moved past its stage (the test invite, once the video interview invite arrives), or
+ *  - this email repeats it (same stage): the newest copy carries the task, older reminders only repeat it.
+ * Asks of unknown stage (questionnaires, "complete your next steps") are left alone. Returns how many closed.
+ */
+function closeSuperseded(db: ReturnType<typeof getSqlite>, u: EmailUpdate, applicationId: number, statusFrom: string | undefined): number {
+  const mine = u.actionText ? askStage(u.kind, `${u.subject} ${u.actionText}`) : null;
+  const passed = statusFrom ? (STAGE[statusFrom] ?? null) : null;
+  if (mine === null && passed === null) return 0;
+  const slug = (db.prepare(`select c.slug from applications a join jobs j on j.id = a.job_id join companies c on c.id = j.company_id
+                            where a.id = ?`).get(applicationId) as { slug: string } | undefined)?.slug;
+  if (!slug) return 0;
+  const open = db.prepare(`select id, kind, subject, action_text as actionText, application_id as applicationId, company_hint as company
+                           from email_updates where action_done = 0 and action_text is not null and received_at < ?
+                           and (application_id = ? or application_id is null)`)
+    .all(u.receivedAt, applicationId) as { id: number; kind: string; subject: string; actionText: string; applicationId: number | null; company: string | null }[];
+  let closed = 0;
+  for (const e of open) {
+    if (e.applicationId === null && !(e.company && sameCompany(companySlug(e.company), slug))) continue;
+    const st = askStage(e.kind, `${e.subject} ${e.actionText}`);
+    if (st === null || !((passed !== null && st <= passed) || st === mine)) continue;
+    closed += db.prepare("update email_updates set action_done = 1 where id = ?").run(e.id).changes;
+  }
+  return closed;
 }
 
 const words = (s: string | null | undefined) =>
@@ -142,12 +180,13 @@ export function recordEmailUpdate(raw: unknown, now = new Date().toISOString()):
     }
 
     db.prepare(`insert into email_updates (gmail_message_id, thread_id, view_url, received_at, sender, subject, kind, summary,
-                company_hint, role_hint, application_id, status_applied, action_text, action_due, created_at)
-                values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+                company_hint, role_hint, application_id, status_applied, status_from, action_text, action_due, created_at)
+                values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
       .run(u.gmailMessageId, u.threadId ?? null, u.viewUrl ?? null, u.receivedAt, u.sender, u.subject, u.kind, u.summary ?? null,
-        u.company ?? null, u.role ?? null, applicationId, statusTo ?? null, u.actionText ?? null, u.actionDue ?? null, now);
+        u.company ?? null, u.role ?? null, applicationId, statusTo ?? null, statusFrom ?? null, u.actionText ?? null, u.actionDue ?? null, now);
 
-    return { gmailMessageId: u.gmailMessageId, result: "recorded", applicationId, matchedBy: by, statusFrom, statusTo };
+    const closedAsks = applicationId ? closeSuperseded(db, u, applicationId, statusFrom) : 0;
+    return { gmailMessageId: u.gmailMessageId, result: "recorded", applicationId, matchedBy: by, statusFrom, statusTo, closedAsks };
   })();
 }
 

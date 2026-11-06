@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>G opening options</title>
+<style>
+  body { font: 14px system-ui, sans-serif; margin: 32px; background: #fff; color: #000; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .card { border: 1px solid #ccc; padding: 16px; text-align: center; width: 160px; }
+  .sizes { display: flex; gap: 12px; justify-content: center; align-items: center; margin: 12px 0 8px; }
+  b { display: block; }
+  small { color: #555; }
+</style>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="a" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#000"/><path d="M18.6 9.4A6.5 6.5 0 1 0 20.5 14H14" fill="none" stroke="#fff" stroke-width="3.5"/><path d="M19 19l6.5 6.5" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></symbol>
+<symbol id="b" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#000"/><path d="M17.73 8.68A6.5 6.5 0 1 0 20.5 14H14" fill="none" stroke="#fff" stroke-width="3.5"/><path d="M19 19l6.5 6.5" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></symbol>
+<symbol id="c" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#000"/><path d="M18.18 9.02A6.5 6.5 0 1 0 20.5 14H15.5" fill="none" stroke="#fff" stroke-width="3.5"/><path d="M19 19l6.5 6.5" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></symbol>
+<symbol id="d" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#000"/><path d="M16.75 8.11A6.5 6.5 0 1 0 20.5 14H14" fill="none" stroke="#fff" stroke-width="3.5"/><path d="M19 19l6.5 6.5" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></symbol>
+</defs></svg>
+<div class="row">
+  <div class="card"><svg width="96" height="96"><use href="#a"/></svg><div class="sizes"><svg width="32" height="32"><use href="#a"/></svg><svg width="16" height="16"><use href="#a"/></svg></div><b>A · Slightly wider</b><small>arc starts at 45°</small></div>
+  <div class="card"><svg width="96" height="96"><use href="#b"/></svg><div class="sizes"><svg width="32" height="32"><use href="#b"/></svg><svg width="16" height="16"><use href="#b"/></svg></div><b>B · Wider</b><small>arc starts at 55°</small></div>
+  <div class="card"><svg width="96" height="96"><use href="#c"/></svg><div class="sizes"><svg width="32" height="32"><use href="#c"/></svg><svg width="16" height="16"><use href="#c"/></svg></div><b>C · Short bar</b><small>50°, bar stops short</small></div>
+  <div class="card"><svg width="96" height="96"><use href="#d"/></svg><div class="sizes"><svg width="32" height="32"><use href="#d"/></svg><svg width="16" height="16"><use href="#d"/></svg></div><b>D · Widest</b><small>arc starts at 65°</small></div>
+</div>

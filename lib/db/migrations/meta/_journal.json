@@ -71,6 +71,13 @@
       "when": 1793071399699,
       "tag": "0009_posted_at",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1793759612995,
+      "tag": "0010_email_updates_seen",
+      "breakpoints": true
     }
   ]
 }

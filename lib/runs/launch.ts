@@ -194,16 +194,19 @@ export function prepareRun(run: RunRow) {
 
 // `Edit(...)` is the rule that covers Write too: `Write(path)` allow rules stopped matching (checked 2026-09-30 with
 // `claude -p`: Write(data/runs/**) denied the agent's absolute-path Write, Edit(data/runs/**) allowed it).
-const EDIT_RULES = ["Edit(data/runs/**)"];
-const APPLY_TOOLS = [
+// Absolute (`//c/...`), never relative: a relative rule resolves against the agent's *current* directory, and run 25
+// (2026-11-02) lost its ask.json write after a Bash `cd profile` (profile/data/runs/** matches nothing). Checked with
+// `claude -p` after a `cd`: `Edit(data/runs/**)` and `Edit(//C:/...)` denied, `Edit(//c/Users/.../data/runs/**)` allowed.
+const editRule = (dir: string) => `Edit(/${fwd(path.join(root(), dir)).replace(/^([A-Za-z]):/, (_, d: string) => `/${d.toLowerCase()}`)}/**)`;
+const applyTools = () => [
   "mcp__playwright", "Read", "Bash(npm run runq:*)", "Bash(npm run track:*)", "Bash(npm run brief:*)", "Bash(npm run query:*)",
-  EDIT_RULES, "Edit(profile/**)", "Skill",
-].flat();
+  editRule("data/runs"), editRule("profile"), "Skill",
+];
 const APPLY_DENIED = ["mcp__playwright__browser_close", "mcp__playwright__browser_run_code", "mcp__playwright__browser_run_code_unsafe"];
-const RESEARCH_TOOLS = [
+const researchTools = () => [
   "Read", "WebSearch", "WebFetch", "Bash(npm run runq:*)", "Bash(npm run brief:*)", "Bash(npm run query:*)", "Bash(npm run deep:*)",
-  EDIT_RULES,
-].flat();
+  editRule("data/runs"),
+];
 
 /** Arguments for `claude`. The prompt is a file, so no shell quoting is involved (Windows shells mangle it). */
 export function claudeArgs(run: RunRow, files: ReturnType<typeof prepareRun>, opts: { model?: string; maxTurns?: number } = {}): string[] {
@@ -215,7 +218,7 @@ export function claudeArgs(run: RunRow, files: ReturnType<typeof prepareRun>, op
     // Project settings only, no plugins/skills/hooks: a headless run's context drops from ~80k to ~24k tokens
     // (measured 2026-09-30). The voice guide is read from its file, so nothing needs the Skill tool.
     "--setting-sources", "project", "--disable-slash-commands",
-    "--allowedTools", ...(run.kind === "apply" ? APPLY_TOOLS : RESEARCH_TOOLS),
+    "--allowedTools", ...(run.kind === "apply" ? applyTools() : researchTools()),
   ];
   // The runner owns the window: closing it would throw away a filled single-page form. Arbitrary Playwright code
   // could also bypass the submit guard's page hooks.

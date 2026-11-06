@@ -42,6 +42,13 @@ describe("seniority", () => {
     expect(excludedReason({ title: "Graduate Management Trainee", locationRaw: "London" })).toBeNull();
     expect(excludedReason({ title: "Junior Data Analyst", locationRaw: "London" })).toBeNull();
     expect(excludedReason({ title: "Associate, Strategy & Operations", locationRaw: "London" })).toBeNull();
+    expect(excludedReason({ title: "Partner Analyst", locationRaw: "London" })).toBeNull();
+    expect(excludedReason({ title: "Graduate Senior Analyst Programme", locationRaw: "London" })).toBeNull();
+  });
+  it("associate/analyst don't rescue a rank (employer boards, 2026-11-03)", () => {
+    expect(excludedReason({ title: "Associate Director - Cost Management", locationRaw: "London" })).toMatch(/^not_entry_level:title/);
+    expect(excludedReason({ title: "Revenue Senior Analyst", locationRaw: "London" })).toMatch(/^not_entry_level:title/);
+    expect(excludedReason({ title: "Principal Business Analyst, Core Banking", locationRaw: "London" })).toMatch(/^not_entry_level:title/);
   });
   it("leaves ambiguous titles to the LLM, then honours its judgement", () => {
     expect(excludedReason({ title: "Software Engineer", locationRaw: "London" })).toBeNull();

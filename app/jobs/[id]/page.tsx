@@ -30,6 +30,7 @@ import {
   ScoreBars, Snippets, SourcesDrawer, Timeline, type KeyFact, type TimelineItem,
 } from "@/components/RoleVisuals";
 import { listAnswers } from "@/lib/apply/answers";
+import { hasPrep } from "@/lib/prep";
 import {
   IconBriefcase, IconBuilding, IconChart, IconHeart, IconChevron, IconClock, IconExternal, IconFolder, IconMode, IconNews,
   IconPay, IconPin, IconRoute, IconSpark, IconStart, IconTarget, IconTrain, IconTrend, IconWarn, REQ_ICON,
@@ -227,6 +228,11 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
           <div className="rp-next">
             <NextStep jobId={job.id} text={job.nextAction} due={job.nextActionDue} status={job.status} appliedAt={job.appliedAt ?? null} />
           </div>
+        ) : null}
+        {hasPrep(job.id) ? (
+          <Link className="rp-prep" href={`/prep/${job.id}`} transitionTypes={["nav-forward"]}>
+            <b>Open the prep hub</b><span>Values, tests, HireVue practice</span><IconChevron />
+          </Link>
         ) : null}
         <RunPanel
           jobId={job.id}

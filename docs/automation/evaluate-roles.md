@@ -1,4 +1,4 @@
-# Evaluating roles (rubric v1)
+# Evaluating roles (rubric v2)
 
 Used by Claude (Sonnet subagents) to evaluate each kept role. Input: a batch file from `npm run evaluate -- export`.
 Output: a JSON array, imported with `npm run evaluate -- import`. First read `profile/evaluation-profile.md` (gitignored):
@@ -31,23 +31,32 @@ who the user is, and the **preferences** section you judge against.
 - **unsure**: the posting doesn't say enough. Keep it; say what's missing.
 Do not judge fit here; that's the scores. A great-fit role that needs 3 years' experience is still "no".
 
-## Scores (1–5). Anchors:
-- **workFit (30%)**: 5 = building tools/automation, data or AI work, tech mixed with business (e.g. data & AI grad
-  scheme, tech/AI consulting, analytics at a tech firm, product analytics, solutions/deployment roles that are mostly
-  business + data). 3 = broad consulting/business graduate programme with some data. 1 = maths-heavy quant research,
-  pure software engineering, investment banking M&A/pitch work, client-relationship-first roles, pure operations.
+## Scores (1–5). Anchors (rubric v2, Jonno 2026-11-04):
+- **workFit (35%)**: 5 = business + AI/tech: building tools/automation, AI adoption, solutions / forward-deployed
+  roles (embedded with customers, building AI or data workflows), data & AI grad schemes, tech/AI consulting.
+  4 = business-facing data analysis (insight, dashboards, forecasting for decisions), product.
+  3 = numbers-first work (statistics, modelling, data science, econometrics) or a broad business/consulting programme
+  with some data. 2 = pure software engineering. 1 = maths-heavy quant research, investment banking M&A/pitch work,
+  client-relationship-first roles, pure operations. (Jonno: "I don't mind data but I'm not a numbers freak".)
+  **Innovation counts as 5** (Jonno 2026-11-05: "entrepreneurship and building new things, coming up with new products
+  and ideas"): emerging tech (piloting new tech such as gen AI inside a business), new-product work (shaping, prototyping
+  and launching products), venture building (starting new businesses). Judge it from what the graduate actually does,
+  never from the word "innovation" in the advert. Not "transformation" (programme/process change at a big firm) and
+  not non-tech product development (e.g. food ranges).
 - **chance (20%)**: realistic odds given profile/evaluation-profile.md. 5 = the candidate meets every requirement and the bar is
   normal for a Russell Group 2:1 with a strong placement. 3 = competitive but plausible (e.g. top-tier brand). 1 = needs
   a maths/CS/engineering degree, a first, strong coding interviews, or a Palantir/Jane-Street-level bar.
 - **companyType (15%)**: 5 = modern scale-up / tech or AI company known for strong people and modern tools.
-  3 = large, well-run structured employer (Big 4, big bank tech scheme). 1 = slow, legacy, old-fashioned.
-  Use general knowledge honestly; if you don't know the company, score 3 and say so.
-- **careerPath (15%)**: 5 = clearly builds deep AI/data skills or startup-relevant experience with good exits.
-  3 = solid generic grad path. 1 = narrow or dead-end.
-- **sector (10%)**: 5 = sport (esp. football) or tech/AI company. 3 = neutral (consulting across industries, fintech,
-  banks, energy, retail). 1 = a sector the candidate would likely find dull and that isn't tech (e.g. insurance back office).
-- **pay (10%)**: only if the posting states pay. London grad benchmarks: 5 ≥ £50k, 4 = £40–50k, 3 = £32–40k,
-  2 = £27–32k, 1 < £27k. **No pay stated → null** (neutral; never guess). Reason says where the figure came from.
+  4 = large, well-run structured employer (Big 4, Sky, big bank tech scheme). 3 = a company you don't know (say so),
+  or middling. 1 = slow, legacy, old-fashioned. Use general knowledge honestly.
+- **careerPath (20%)**: 5 = clearly builds deep AI/data skills or startup-relevant experience with good exits, or a
+  business role that puts him close to AI. 3 = solid generic grad path. 1 = narrow or dead-end.
+- **sector (10%)**: 5 = sport (esp. football) or tech/AI company. 4 = fintech (Zopa, Lendable, Stripe, Monzo).
+  3 = neutral (consulting across industries, banks, energy, retail). 1 = a sector the candidate would likely find dull
+  and that isn't tech (e.g. insurance back office).
+- **pay (shown, not scored)**: only if the posting states pay. London grad benchmarks: 5 ≥ £50k, 4 = £40–50k,
+  3 = £32–40k, 2 = £27–32k, 1 < £27k. **No pay stated → null** (never guess). Reason says where the figure came from.
+  Weight 0 since v2: most postings don't state pay, so scoring it penalised roles for silence.
 
 ## Dealbreakers (only with evidence in the posting or widely known about the role)
 - `hours`: IB-style / trading-floor hours culture stated or well known (e.g. front-office M&A).

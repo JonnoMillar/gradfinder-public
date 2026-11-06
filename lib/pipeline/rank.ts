@@ -2,7 +2,7 @@
  * Ranking v2 (2026-09-24). Two regimes, every term kept in `rank_breakdown` so the UI can show why:
  *
  * - **Evaluated by Claude** (lib/evaluate, a `role_evaluations` row): the six-part rubric, 0–100 —
- *   work fit 30 · realistic chance 20 · company type 15 · career path 15 · sector 10 · pay 10 —
+ *   work fit 35 · realistic chance 20 · company type 15 · career path 20 · sector 10 (rubric v2; pay is shown, not scored) —
  *   plus −50 for a dealbreaker (−25, or nothing when London is a listed office, for the vaguer `outside_london`), −5 for "register interest" (nothing to apply to yet), −30 for a role that demands a
  *   first (Jonno is predicted a 2:1). An unconfirmed 2027 intake is a note on the page, not a rank term (Jonno,
  *   2026-09-25: it shouldn't affect the ranking).
@@ -58,7 +58,7 @@ export function scoreJob(j: RankInput, today = new Date()): { score: number; bre
 function evaluatedBreakdown(j: RankInput, e: NonNullable<RankInput["evaluation"]>): RankBreakdown {
   const p = evaluationPoints(e.scores);
   const b: RankBreakdown = {
-    work_fit: p.workFit, chance: p.chance, company_type: p.companyType, career_path: p.careerPath, sector: p.sector, pay: p.pay,
+    work_fit: p.workFit, chance: p.chance, company_type: p.companyType, career_path: p.careerPath, sector: p.sector,
   };
   if (j.sport && j.tech) b.sport_tech = SPORT_TECH_BONUS;
   // no key when the penalty is 0: the Apply now query skips any role with a `dealbreaker` term

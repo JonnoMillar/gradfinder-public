@@ -33,7 +33,11 @@ function stubFetch(script: Record<string, Reply[]>) {
   return calls;
 }
 const openai = (content: string) => ({ choices: [{ message: { content } }] });
-const chain = () => buildChain({ OPENROUTER_API_KEY: "or", GROQ_API_KEY: "gq", OLLAMA_URL: "http://ollama.test", LLM_PROVIDER_ORDER: "openrouter,groq,ollama" });
+// Three models pinned: these tests are about the fall-through mechanics, not OpenRouter's current free list.
+const chain = () => buildChain({
+  OPENROUTER_API_KEY: "or", OPENROUTER_MODELS: "a/one:free,b/two:free,c/three:free", GROQ_API_KEY: "gq",
+  OLLAMA_URL: "http://ollama.test", LLM_PROVIDER_ORDER: "openrouter,groq,ollama",
+});
 
 afterEach(() => vi.unstubAllGlobals());
 /** cooldowns are keyed per model; this reads the longest one for a provider */

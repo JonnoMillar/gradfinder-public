@@ -10,7 +10,7 @@
  */
 import { deadlineFromDescription, parseDeadlineText } from "./parse/deadline";
 import { COMPANY_DOMAINS } from "@/config/company-domains";
-import { and, eq, inArray, lt, sql } from "drizzle-orm";
+import { and, eq, inArray, lt, notInArray, or, sql } from "drizzle-orm";
 import { getDb, schema } from "@/lib/db/client";
 import type { Source } from "@/lib/db/schema";
 import { AdapterOutput, RawPosting, SourceAdapter, SourceError, isTouch } from "./types";
@@ -207,9 +207,11 @@ function markStale(okSources: Source[], runStart: string): number {
     .where(and(inArray(schema.jobSources.source, okSources), lt(schema.jobSources.lastSeen, runStart))).all();
   const candidateIds = [...new Set(stale.map((s) => s.jobId))];
   if (!candidateIds.length) return 0;
-  // a job is inactive only if NONE of its sources saw it this run
+  // a job is inactive only if NONE of its sources saw it this run, and every one of them ran: a source left out of this
+  // run (`sweep --source workday`) can't have dropped it. Without the second rule a partial sweep switched off
+  // TARGETjobs-listed grad schemes whose employer board had stopped being read (2026-11-03).
   const stillSeen = db.select({ jobId: schema.jobSources.jobId }).from(schema.jobSources)
-    .where(and(inArray(schema.jobSources.jobId, candidateIds), sql`${schema.jobSources.lastSeen} >= ${runStart}`)).all();
+    .where(and(inArray(schema.jobSources.jobId, candidateIds), or(sql`${schema.jobSources.lastSeen} >= ${runStart}`, notInArray(schema.jobSources.source, okSources)))).all();
   const seenSet = new Set(stillSeen.map((s) => s.jobId));
   const toDeactivate = candidateIds.filter((id) => !seenSet.has(id));
   if (toDeactivate.length) db.update(schema.jobs).set({ isActive: false }).where(inArray(schema.jobs.id, toDeactivate)).run();

@@ -89,6 +89,15 @@ describe("recordEmailUpdate", () => {
     expect(statusOf(northQuant)).toBe("tests");
     const log = db().prepare("select note from activity_log where application_id = ?").get(northQuant) as { note: string };
     expect(log.note).toContain("Gmail: Invitation to complete an online assessment");
+    // the move is news until the Climb plays it (platinum badge, Roles cube)
+    const row = db().prepare("select status_from, status_applied, seen_at from email_updates where gmail_message_id = 'msg-0001'").get();
+    expect(row).toEqual({ status_from: "applied", status_applied: "tests", seen_at: null });
+  });
+  it("lists an unseen move as news until it is marked seen", async () => {
+    const { unseenMoves } = await import("@/lib/queries");
+    expect(unseenMoves().map((m) => [m.applicationId, m.from, m.to])).toContainEqual([northQuant, "applied", "tests"]);
+    db().prepare("update email_updates set seen_at = '2026-09-23' where gmail_message_id = 'msg-0001'").run();
+    expect(unseenMoves().some((m) => m.applicationId === northQuant)).toBe(false);
   });
   it("is idempotent: the same message twice changes nothing", () => {
     expect(recordEmailUpdate(email({ gmailMessageId: "msg-0001" }))).toEqual({ gmailMessageId: "msg-0001", result: "duplicate" });
@@ -159,5 +168,34 @@ describe("employer's own role title", () => {
     // the same track, worded a little differently, or no role at all, still links
     expect(recordEmailUpdate(email({ company: "Rockbank", kind: "other", role: "Technology - Data and Insights - London" }))).toMatchObject({ applicationId: am });
     expect(recordEmailUpdate(email({ company: "Rockbank", kind: "other", subject: "Rockbank | Update" }))).toMatchObject({ applicationId: am });
+  });
+});
+
+describe("superseded asks", () => {
+  // Alpha FMC 2026-10/11: two roles tracked, the "Online Assessments" invite names no role (unlinked), and its card stayed
+  // on the dashboard after the tests were sat and the video interview was invited.
+  let alphaA = 0, alphaB = 0;
+  const open = (id: string) => (db().prepare("select action_done as d from email_updates where gmail_message_id = ?").get(id) as { d: number }).d === 0;
+  beforeAll(() => {
+    const c = Number(db().prepare("insert into companies (slug, name) values ('alpha-financial-markets-consulting','Alpha Financial Markets Consulting')").run().lastInsertRowid);
+    alphaA = track(job(c, "Insurance Consulting Graduate Analyst 2027", "a1"), "applied");
+    alphaB = track(job(c, "Data, AI, & Digital Engineering Analyst Graduate", "a2"), "applied");
+  });
+  const alpha = (over: Record<string, unknown>) => email({ company: "Alpha FMC", sender: "recruit@alpha.example", ...over });
+
+  it("a video invite closes the earlier unlinked test ask and its own older duplicate, and keeps the questionnaire", () => {
+    const invite = { subject: "Next Steps: Online Assessments", actionText: "Complete Criteria CCAT and EPP assessments", actionDue: "2026-11-06" };
+    expect(recordEmailUpdate(alpha({ gmailMessageId: "tests-invite", receivedAt: "2026-10-30T10:41:00Z", ...invite }) as never)).toMatchObject({ applicationId: null });
+    recordEmailUpdate(alpha({ gmailMessageId: "form", kind: "action_required", receivedAt: "2026-10-29T02:51:00Z", subject: "Please complete", actionText: "Complete the equal-opportunities questionnaire" }) as never);
+    const video = { subject: "Next Steps: Video Interview", actionText: "Complete the one-way video interview", actionDue: "2026-11-10" };
+    recordEmailUpdate(alpha({ gmailMessageId: "video-1", receivedAt: "2026-11-03T14:05:00Z", ...video }) as never);
+    db().prepare("update applications set status = 'tests_done' where id = ?").run(alphaA);
+    const out = recordEmailUpdate(alpha({ gmailMessageId: "video-2", receivedAt: "2026-11-04T15:46:00Z", role: "Insurance Graduate", ...video }) as never);
+    expect(out).toMatchObject({ applicationId: alphaA, statusFrom: "tests_done", statusTo: "hirevue", closedAsks: 2 });
+    expect(open("tests-invite")).toBe(false);   // test stage passed
+    expect(open("video-1")).toBe(false);        // repeated by video-2
+    expect(open("video-2")).toBe(true);         // the live task
+    expect(open("form")).toBe(true);            // unknown stage: left alone
+    expect(statusOf(alphaB)).toBe("applied");
   });
 });

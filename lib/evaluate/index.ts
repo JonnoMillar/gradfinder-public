@@ -3,9 +3,10 @@
  * providers"). A Claude session (Sonnet subagents, in batches) reads each posting against Jonno's preferences and the
  * rubric in docs/automation/evaluate-roles.md, and writes a JSON file; `npm run evaluate -- import` validates it here.
  *
- * Scoring (RUBRIC_VERSION 1), from the ranking Q&A in chat on 2026-09-24:
- *   work fit 30 · realistic chance 20 · company type 15 · career path 15 · sector 10 · pay 10  → 0–100
- * Each part is 1–5 and maps linearly to 0–weight. Pay unknown = 3 (neutral: missing information is never a penalty).
+ * Scoring (RUBRIC_VERSION 2), from the ranking Q&A with Jonno on 2026-11-04 (v1: 2026-09-24):
+ *   work fit 35 · realistic chance 20 · company type 15 · career path 20 · sector 10  → 0–100
+ * Each part is 1–5 and maps linearly to 0–weight. Pay is still judged and shown but weighs 0: only ~1 in 5 postings
+ * state a salary, so scoring it made two roles on the same salary differ by up to 5 points (Jonno: drop it).
  * A dealbreaker (heavy hours, mostly outside London, old-fashioned employer) subtracts 50 so the role sinks, visibly.
  */
 import { eq, inArray } from "drizzle-orm";
@@ -13,10 +14,10 @@ import { z } from "zod";
 import { getDb, schema } from "@/lib/db/client";
 import type { EvalScores } from "@/lib/db/schema";
 
-export const RUBRIC_VERSION = 1;
+export const RUBRIC_VERSION = 2;
 
 export const WEIGHTS: Record<keyof EvalScores, number> = {
-  workFit: 30, chance: 20, companyType: 15, careerPath: 15, sector: 10, pay: 10,
+  workFit: 35, chance: 20, companyType: 15, careerPath: 20, sector: 10, pay: 0,
 };
 export const DEALBREAKER_PENALTY = -50;
 /** `outside_london` is Claude's read of a vague or multi-site posting: heavy only when London is not a listed office

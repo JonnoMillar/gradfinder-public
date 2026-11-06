@@ -11,7 +11,7 @@
  * The debugging port binds 127.0.0.1 only. There is no auth on it: any local process could drive this browser (it holds
  * employer logins), which is the same exposure as the app itself (no auth, loopback only).
  */
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -49,9 +49,59 @@ export const browserAlive = async () => (await version()) !== null;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Opens the run browser if it is not already up. Resolves once its debugging port answers. */
+const within = <T>(p: Promise<T>, ms: number, fallback: T) => Promise.race([p, new Promise<T>((r) => setTimeout(() => r(fallback), ms))]);
+
+/** Does every open page answer a trivial script? A port that answers /json/version can still sit on a hung page, and then the Playwright MCP's attach times out. */
+async function pagesRespond(): Promise<boolean> {
+  try {
+    const list = (await (await fetch(`${cdpUrl()}/json/list`, { signal: AbortSignal.timeout(3000) })).json()) as
+      { type: string; webSocketDebuggerUrl?: string }[];
+    for (const t of list.filter((x) => x.type === "page" && x.webSocketDebuggerUrl)) {
+      const s = session(t.webSocketDebuggerUrl!);
+      try {
+        if (!(await within(s.opened.then(() => true, () => false), 3000, false))) return false;
+        const r = await s.send("Runtime.evaluate", { expression: "1" });
+        if (r.error) return false;
+      } finally {
+        s.close();
+      }
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Checked twice, 2 s apart: restarting wipes a filled form, so one slow answer must not trigger it. */
+export async function browserHealthy(): Promise<boolean> {
+  if (await pagesRespond()) return true;
+  await sleep(2000);
+  return pagesRespond();
+}
+
+/** Closes a browser that has stopped answering; force-kills whatever still holds the run profile. */
+async function restartBrowser(): Promise<void> {
+  await within(closeBrowser(), 8000, undefined);
+  if (!(await browserAlive())) return;
+  if (process.platform === "win32") {
+    spawnSync("powershell", ["-NoProfile", "-Command",
+      `Get-CimInstance Win32_Process | Where-Object { $_.Name -in 'chrome.exe','msedge.exe' -and $_.CommandLine -like '*browser-profile-chrome*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`],
+      { windowsHide: true, timeout: 15000 });
+  } else {
+    spawnSync("pkill", ["-f", PROFILE_DIR], { timeout: 15000 });
+  }
+  for (let i = 0; i < 20 && (await browserAlive()); i++) await sleep(250);
+}
+
+/**
+ * Opens the run browser if it is not already up. Resolves once its debugging port answers. A browser that is up but
+ * not responding is restarted (its form state is lost, but the pass would have failed on it anyway).
+ */
 export async function ensureBrowser(): Promise<void> {
-  if (await browserAlive()) return;
+  if (await browserAlive()) {
+    if (await browserHealthy()) return;
+    await restartBrowser();
+  }
   const exe = chromePath();
   if (!exe) throw new Error("No Chrome or Edge found for the run browser. Set CHROME_PATH to its executable.");
   fs.mkdirSync(PROFILE_DIR, { recursive: true });

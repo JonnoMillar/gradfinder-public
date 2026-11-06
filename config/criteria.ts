@@ -63,7 +63,7 @@ export const EXCLUDED_FUNCTIONS: { key: string; patterns: RegExp[]; unlessSoftwa
  * OpenAI "Network Engineer", Maven "Graduate Infrastructure Engineer"). A title matching this overrides that
  * key alone; an explicit physical-engineering title pattern above still wins.
  */
-export const SOFTWARE_TITLE_PATTERN = /\b(software|back-?end|front-?end|full-?stack|infrastructure|platform|network|security|linux|devops|cloud|data|machine learning|ML|AI|site reliability|SRE|developer|automation engineer|design engineer, brand)\b/i;
+export const SOFTWARE_TITLE_PATTERN = /\b(software|back-?end|front-?end|full-?stack|infrastructure|platform|network|security|linux|devops|cloud|data|machine learning|ML|AI|site reliability|SRE|developer|automation engineer|design engineer, brand|digital engineer(ing)?|technology engineer(ing)?|solutions? engineer(ing)?|forward[- ]deployed engineer)\b/i;
 
 /** Postings that aren't jobs at all. Excluded before anything else. */
 export const EXCLUDED_KINDS_PATTERNS: RegExp[] = [
@@ -108,8 +108,12 @@ export const SENIOR_TITLE_PATTERNS: RegExp[] = [
   /\bVP\b/, /\bvice president\b/i, /\bchief\b/i, /\bexecutive\b/i, /\bpartner\b/i, /\barchitect\b/i, /\bfellow\b/i,
   /\b(II|III|IV|V)\b/, /\bexperienced\b/i, /\bmid-?level\b/i,
 ];
+/** "Associate"/"analyst" only rescue ambiguous words ("Partner Analyst", "Analyst – Executive Search"), not a rank:
+ *  "Associate Director" and "Senior Analyst" stay senior. Employer ATS boards brought in 103 of these (2026-11-03). */
+export const WEAK_SENIOR_OVERRIDES: RegExp[] = [/\bassociate\b/i, /\banalyst\b/i];
 /** …but these override the above (e.g. "Graduate Manager Programme" is a scheme name). */
-export const SENIOR_OVERRIDE_PATTERNS: RegExp[] = [/\bgraduate\b/i, /\bgrad\b/i, /\bearly careers?\b/i, /\bentry[- ]level\b/i, /\bnew grad\b/i, /\bjunior\b/i, /\bassociate\b/i, /\banalyst\b/i, /\btrainee\b/i];
+export const SENIOR_OVERRIDE_PATTERNS: RegExp[] = [/\bgraduate\b/i, /\bgrad\b/i, /\bearly careers?\b/i, /\bentry[- ]level\b/i, /\bnew grad\b/i, /\bjunior\b/i, ...WEAK_SENIOR_OVERRIDES, /\btrainee\b/i];
+export const RANK_TITLE_PATTERN = /\b(senior|sr\.?|director|head of|vice president|VP|principal)\b/i;
 
 /** Location strings that count as London (or hybrid with a London office). */
 export const LONDON_PATTERNS: RegExp[] = [
@@ -142,12 +146,21 @@ export const SECTOR_WEIGHTS: Record<string, number> = {
  */
 export const SPORT_COMPANIES: string[] = [
   "Genius Sports", "Hudl", "Catapult", "Sportradar", "Decathlon",
+  "Arsenal", "Premier League", "The Football Association", "England and Wales Cricket Board", "Kitman Labs", "Zwift", "Strava",
 ];
 
-/** Company career pages on public ATS APIs. Add slugs here; the sweep picks them up. */
-export const ATS_WATCHLIST: { ats: "greenhouse" | "lever" | "ashby"; slug: string; name: string; sector: string }[] = [
+/** ATS kinds with a public, keyless job feed (lib/pipeline/sources/ats.ts). Slug formats:
+ *  greenhouse/lever/ashby/smartrecruiters/workable/pinpoint = the board id in the URL; workday = "<host>/<site>"
+ *  (acme.wd3.myworkdayjobs.com/External_Career_Site); teamtailor = the careers host. */
+export const ATS_KINDS = ["greenhouse", "lever", "ashby", "workday", "smartrecruiters", "workable", "teamtailor", "pinpoint"] as const;
+export type AtsKind = (typeof ATS_KINDS)[number];
+export interface AtsBoard { ats: AtsKind; slug: string; name: string; sector?: string }
+
+/** Company career pages on public ATS APIs, hand-picked. Add slugs here; the sweep picks them up. Boards found
+ *  automatically (`npm run discover`) live in config/ats-boards.json and are swept the same way. */
+export const ATS_WATCHLIST: (AtsBoard & { sector: string })[] = [
   { ats: "greenhouse", slug: "anthropic", name: "Anthropic", sector: "ai" },
-  { ats: "greenhouse", slug: "wayve", name: "Wayve", sector: "ai" },
+  // Wayve left Greenhouse (404 on 2026-11-03); its Ashby board comes in through discovery (config/ats-boards.json)
   { ats: "greenhouse", slug: "isomorphiclabs", name: "Isomorphic Labs", sector: "ai" },
   { ats: "greenhouse", slug: "monzo", name: "Monzo", sector: "fintech" },
   { ats: "greenhouse", slug: "janestreet", name: "Jane Street", sector: "quant" },
@@ -184,8 +197,37 @@ export const ATS_WATCHLIST: { ats: "greenhouse" | "lever" | "ashby"; slug: strin
   { ats: "greenhouse", slug: "geniussports", name: "Genius Sports", sector: "sport" },
   { ats: "greenhouse", slug: "hudl", name: "Hudl", sector: "sport" },
   { ats: "greenhouse", slug: "catapultsports", name: "Catapult", sector: "sport" },
-  { ats: "greenhouse", slug: "sportradar", name: "Sportradar", sector: "sport" },
+  // sport boards on the newer feeds. Sportradar moved from Greenhouse (404) to SmartRecruiters.
+  { ats: "smartrecruiters", slug: "Sportradar", name: "Sportradar", sector: "sport" },
+  { ats: "teamtailor", slug: "arsenalfc.teamtailor.com", name: "Arsenal", sector: "sport" },
+  { ats: "pinpoint", slug: "premierleague", name: "Premier League", sector: "sport" },
+  { ats: "pinpoint", slug: "thefa", name: "The Football Association", sector: "sport" },
+  { ats: "pinpoint", slug: "ecb", name: "England and Wales Cricket Board", sector: "sport" },
+  { ats: "lever", slug: "kitmanlabs", name: "Kitman Labs", sector: "sport" },
+  { ats: "greenhouse", slug: "zwift", name: "Zwift", sector: "sport" },
+  { ats: "ashby", slug: "strava", name: "Strava", sector: "sport" },
 ];
+
+/** Boards `npm run discover` must not add (or the sweep read), as "<ats>|<slug lowercased>". Discovery takes any board
+ *  behind a URL we hold, so it also finds employers outside your sectors; their whole boards are noise. */
+export const ATS_SKIP_BOARDS = new Set([
+  "greenhouse|privateequityinsights", "greenhouse|hrtechx", "greenhouse|axiomtalentplatform", // recruiters: other firms' jobs
+  "greenhouse|monzoreferrals", // Monzo's referrals-only board; its public board is in the watchlist
+  "greenhouse|bakerhicks", "greenhouse|convene", // engineering design, hospitality
+  // construction, engineering consultancies, property, architecture
+  "smartrecruiters|aecom2", "smartrecruiters|assystem", "smartrecruiters|ramboll3", "smartrecruiters|turnertownsend",
+  "greenhouse|langanengineeringandenvironmentalservicesllc", "workday|ferrovial.wd3.myworkdayjobs.com/ferrovial_career_site",
+  "workday|grosvenor.wd3.myworkdayjobs.com/external_careers_site_grosvenor", "workday|knightfrank.wd103.myworkdayjobs.com/kf",
+  "workday|surbanajurong.wd3.myworkdayjobs.com/sj_careers",
+  // energy and utilities
+  "workday|shell.wd3.myworkdayjobs.com/shellcareers", "workday|hitachi.wd1.myworkdayjobs.com/hitachi", "workday|awg.wd3.myworkdayjobs.com/aw",
+  // law firms, small accountancy practices, insurance underwriting
+  "greenhouse|gibsondunn", "workday|nrf.wd3.myworkdayjobs.com/graduates", "pinpoint|dixonwilson", "pinpoint|mooreks",
+  "workday|tmhcc.wd108.myworkdayjobs.com/external",
+  // nurseries, housing, buses, a health regulator, a Teamtailor demo board
+  "workday|brighthorizons.wd5.myworkdayjobs.com/external-unitedkingdom", "workday|clarionhg.wd3.myworkdayjobs.com/clarion_external_careers",
+  "workday|arriva.wd3.myworkdayjobs.com/careers", "pinpoint|nmc", "teamtailor|standardx-demo.teamtailor.com", "teamtailor|lrgcareers.teamtailor.com",
+]);
 
 /** Known reposters/aggregators that appear as the "company" on LinkedIn/Indeed. */
 export const REPOSTER_NAMES = ["targetjobs uk", "targetjobs", "gradcracker", "bright network", "milkround", "higherin", "ratemyplacement"];
@@ -200,6 +242,7 @@ export const RESEARCH_TTL_DAYS = 7;
  */
 export const COMPANY_SLUG_ALIASES: Record<string, string> = {
   "edf-energy": "edf",   // "EDF Energy" (Higherin) and "EDF UK" (TARGETjobs) are one employer
+  "alpha-fmc": "alpha-financial-markets-consulting",   // Bright Network says "Alpha FMC", the Greenhouse board the full name
   "pragma": "gamma-communications",   // the source listed Gamma Communications' roles under "Pragma" (Dayforce board gammacomms)
 };
 

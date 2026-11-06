@@ -5,11 +5,12 @@
 import { modelList, Provider } from "../types";
 import { openAiCompat } from "./openai-compat";
 
-// Non-reasoning models first: nemotron wraps its JSON in "We need to..." prose and takes 30-75s a call.
+// Non-reasoning models only: nemotron wraps its JSON in "We need to..." prose and takes 30-75s a call.
+// 2026-11-04: qwen3.8-27b:free and nemotron-3-super:free went paid-only (404 "unavailable for free"); gemma-4-26b-a4b
+// is the remaining free non-reasoning model on /api/v1/models.
 export const OPENROUTER_DEFAULT_MODELS = [
   "google/gemma-4-31b-it:free",
-  "qwen/qwen3.8-27b:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
+  "google/gemma-4-26b-a4b-it:free",
 ];
 
 export function openrouter(apiKey: string, models = modelList(process.env.OPENROUTER_MODELS, OPENROUTER_DEFAULT_MODELS)): Provider {

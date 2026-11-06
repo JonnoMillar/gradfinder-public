@@ -17,12 +17,13 @@ import { ApplyNow } from "@/components/ApplyNow";
 import { UndoToast } from "@/components/StageTrack";
 import { attention } from "@/lib/tracker/attention";
 import { WeekGlance } from "@/components/WeekGlance";
+import { MovedCube } from "@/components/MovedCube";
 import { WeekRunway } from "@/components/WeekRunway";
 import { PageSlide } from "@/components/PageSlide";
 import { daysUntil } from "@/lib/ui/format";
 import {
   DEFAULT_FILTERS, currentWeekGoal, failingSources, listApplications, listEmailUpdates, listFacets, lastChance,
-  listJobs, doNext, suggestNext,
+  listJobs, doNext, suggestNext, unseenMoves,
   type JobListRow, type ListFilters, type SortKey,
 } from "@/lib/queries";
 
@@ -152,6 +153,7 @@ export default async function Home({ searchParams }: {
   const applyNow = queue.slice(0, APPLY_SHOWN);
   const todo = doNext(pick?.id ?? null);
   const closing = lastChance(pick?.id ?? null);
+  const moved = unseenMoves().filter((m) => m.to !== "rejected");   // rejections never get the cube
 
   const timeOrdered = f.sort === "deadline";
   const flat = decks(jobs);
@@ -170,7 +172,8 @@ export default async function Home({ searchParams }: {
             <SuggestCard pick={pick} skip={skip}
               skipHref={(ids) => withParam(sp, "skip", ids.length ? ids.join(",") : null)} />
           </div>
-          <WeekGlance g={week} todo={todo} closing={closing} skipJob={due[0]?.jobId ?? finish?.jobId ?? null} />
+          <WeekGlance g={week} todo={todo} closing={closing} skipJob={due[0]?.jobId ?? finish?.jobId ?? null}
+            news={moved.length ? <MovedCube moves={moved} /> : null} />
         </div>
 
         <ApplyNow rows={applyNow} />

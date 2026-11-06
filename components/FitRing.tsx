@@ -1,7 +1,7 @@
 /**
- * The fit score out of 100 in a ring whose arc fills to the score, coloured by medal tier (lib/ui/fit.ts): bronze,
- * silver, gold, and platinum for the few best fits, which also carries a slow sheen. The colour is the point: it makes
- * a grid of role tiles read at a glance, and the rare platinum ones stand out.
+ * The fit score out of 100 in a ring whose arc fills to the score. Its colour is a continuous ramp of the score (dull
+ * blue-grey → ice blue → near white; app/globals.css .fring), so it reads at a glance with no jumps. The few best fits
+ * (platinum, lib/ui/fit.ts) also get a slow sheen.
  */
 import { fitScore, fitTier } from "@/lib/ui/fit";
 

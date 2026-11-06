@@ -38,7 +38,9 @@
     ".next-demo/types/**/*.ts",
     ".next-demo/dev/types/**/*.ts",
     ".next-hosted/types/**/*.ts",
-    ".next-hosted/dev/types/**/*.ts"
+    ".next-hosted/dev/types/**/*.ts",
+    ".next-dryrun/types/**/*.ts",
+    ".next-dryrun/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

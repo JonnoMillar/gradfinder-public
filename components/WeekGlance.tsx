@@ -58,10 +58,12 @@ function Closing({ r }: { r: CloseRole }) {
   );
 }
 
-export function WeekGlance({ g, todo, closing, skipJob = null }: {
+export function WeekGlance({ g, todo, closing, skipJob = null, news = null }: {
   g: WeekGoal; todo: DoNext; closing: CloseRole[];
   /** the role Do this first already shows, so it isn't listed twice */
   skipJob?: number | null;
+  /** the platinum cube (MovedCube) when the Gmail sync moved a role: it sits at the end of the In progress heading */
+  news?: React.ReactNode;
 }) {
   const steps = todo.items.filter((it) => it.jobId !== skipJob);
 
@@ -69,9 +71,9 @@ export function WeekGlance({ g, todo, closing, skipJob = null }: {
     <div className="nx">
       <WeekRings g={g} />
 
-      {steps.length ? (
+      {steps.length || news ? (
         <section className="nx-sec" aria-labelledby="nx-fin">
-          <h2 id="nx-fin">In progress</h2>
+          <div className="nx-hd"><h2 id="nx-fin">In progress</h2>{news}</div>
           <ul>{steps.slice(0, SHOW).map((it) => <Step key={it.jobId} it={it} />)}</ul>
         </section>
       ) : null}

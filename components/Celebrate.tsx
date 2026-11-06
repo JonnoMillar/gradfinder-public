@@ -8,6 +8,10 @@
  *
  * Mounted once in the layout; listens for `emitMoved` (components/motion.ts). Backward moves and endings (rejected,
  * dismissed, closed) are never celebrated. Reduced motion: the card fades in and out, nothing flies.
+ *
+ * The Climb's replay of Gmail moves (components/ClimbReveal.tsx) uses it too: an invite to tests or a HireVue is
+ * stamped in platinum, the colour of news from outside. Interview and Offer, the real milestones, add a short burst of
+ * confetti from the stamp; nothing else does, so it still means something when it comes.
  */
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { EASE_OUT, onMoved, reducedMotion, weekStore, type Moved } from "./motion";
@@ -16,6 +20,8 @@ import { Rolling } from "./Rings";
 const STAMP: Record<string, { word: string; tone: string }> = {
   applying: { word: "Started", tone: "warm" },
   applied: { word: "Sent", tone: "mint" },
+  tests: { word: "Tests", tone: "plat" },
+  hirevue: { word: "HireVue", tone: "plat" },
   tests_done: { word: "Tests done", tone: "mint" },
   hirevue_done: { word: "HireVue done", tone: "mint" },
   interview: { word: "Interview", tone: "vio" },
@@ -24,6 +30,36 @@ const STAMP: Record<string, { word: string; tone: string }> = {
 };
 const ORDER = ["discovered", "interested", "applying", "applied", "tests", "tests_done", "hirevue", "hirevue_done", "interview", "interview_done", "offer"];
 const HOLD_MS = 2600;
+const CONFETTI = new Set(["interview", "offer"]);
+
+/**
+ * Confetti from the stamp: a few dozen bits thrown up and out, falling back with a tumble, gone in under two seconds.
+ * Three shapes and three lightnesses (the stage's tone, platinum, near-white), so it reads without hue. Pieces live on
+ * <body> for the length of their flight only.
+ */
+function burst(from: HTMLElement, tone: string) {
+  const r = from.getBoundingClientRect();
+  const x0 = r.left + r.width / 2, y0 = r.top + r.height / 2;
+  const colours = [tone, "var(--plat)", "oklch(0.98 0.01 240)"];
+  const sizes = [[8, 8], [6, 13], [4, 15]];
+  for (let n = 0; n < 40; n++) {
+    const el = document.createElement("i");
+    const [w, h] = sizes[n % 3];
+    el.className = "cel-bit";
+    el.style.cssText = `left:${x0}px;top:${y0}px;width:${w}px;height:${h}px;background:${colours[n % 3]};border-radius:${n % 3 === 0 ? "50%" : "1px"}`;
+    document.body.appendChild(el);
+    const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.4;   // mostly upwards, fanned out
+    const v = 140 + Math.random() * 190;
+    const dx = Math.cos(a) * v, dy = Math.sin(a) * v;
+    const spin = (Math.random() - 0.5) * 900;
+    el.animate([
+      { transform: "translate(-50%, -50%) rotate(0) scale(.4)", opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx * 0.8}px), calc(-50% + ${dy * 0.8}px)) rotate(${spin * 0.5}deg) scale(1)`, opacity: 1, offset: 0.35 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy + 260}px)) rotate(${spin}deg) scale(.9)`, opacity: 0 },
+    ], { duration: 1300 + Math.random() * 600, easing: "cubic-bezier(.2, .7, .4, 1)", fill: "forwards" })
+      .finished.then(() => el.remove(), () => el.remove());
+  }
+}
 
 export function Celebrate() {
   const [m, setM] = useState<(Moved & { n: number; sentBefore: number | null }) | null>(null);
@@ -42,6 +78,7 @@ export function Celebrate() {
     const c = card.current, s = stamp.current;
     const calm = reducedMotion();
     const anims: Animation[] = [];
+    let confetti: ReturnType<typeof setTimeout> | undefined;
     if (calm) {
       anims.push(c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "both" }));
     } else {
@@ -61,6 +98,7 @@ export function Celebrate() {
         [{ transform: "translate(-50%, 0) scale(1)" }, { transform: "translate(-50%, 2px) scale(.985)" }, { transform: "translate(-50%, 0) scale(1)" }],
         { duration: 220, delay: 510, easing: EASE_OUT, composite: "replace" },
       ));
+      if (CONFETTI.has(m.to)) confetti = setTimeout(() => burst(s, getComputedStyle(c).getPropertyValue("--tone").trim() || "var(--plat)"), 540);
       const ink = s.querySelector<HTMLElement>(".cel-ink");
       if (ink) anims.push(ink.animate(
         [{ opacity: 0.7, transform: "translate(-50%, -50%) scale(.6)" }, { opacity: 0, transform: "translate(-50%, -50%) scale(1.6)" }],
@@ -75,7 +113,7 @@ export function Celebrate() {
       );
       leave.finished.then(() => setM((cur) => (cur?.n === m.n ? null : cur)), () => {});
     }, HOLD_MS);
-    return () => { clearTimeout(out); anims.forEach((a) => a.cancel()); };
+    return () => { clearTimeout(out); clearTimeout(confetti); anims.forEach((a) => a.cancel()); };
   }, [m]);
 
   if (!m) return null;
@@ -98,6 +136,7 @@ export function Celebrate() {
             ? landed
               ? <>{closedWeek ? "Week done: " : ""}<Rolling value={sentNow!} from={m.sentBefore} /> of {week!.target} this week</>
               : "Application sent"
+            : m.to === "tests" ? "Invited to the online tests" : m.to === "hirevue" ? "Invited to a HireVue"
             : m.to === "applying" ? "Lined up. Go get it" : ["tests_done", "hirevue_done", "interview_done"].includes(m.to) ? "Now it's their move" : m.to === "interview" ? "You're through to interview" : "An offer"}
         </span>
       </span>

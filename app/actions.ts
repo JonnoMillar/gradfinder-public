@@ -166,6 +166,23 @@ export async function setEmailActionDone(raw: { id: unknown; done: unknown }): P
   }
 }
 
+/** The Climb has played these Gmail stage moves to Jonno: they stop being news (badge, Roles cube). Email rows only. */
+export async function markMovesSeen(raw: { ids: unknown }): Promise<ActionResult> {
+  if (DEMO) return DEMO_READ_ONLY;
+  const parsed = z.object({ ids: z.array(z.coerce.number().int().positive()).min(1).max(200) }).safeParse(raw);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  try {
+    const db = getSqlite();
+    const mark = db.prepare("update email_updates set seen_at = ? where id = ? and seen_at is null");
+    const at = nowIso();
+    db.transaction(() => parsed.data.ids.forEach((id) => mark.run(at, id)))();
+    revalidatePath("/", "layout");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 /** Save Jonno's edit to a drafted answer, or approve exactly this text for the form-filler. */
 export async function reviewAnswerAction(raw: { id: unknown; text: unknown; approve: unknown; jobId: unknown }): Promise<ActionResult> {
   if (DEMO) return DEMO_READ_ONLY;

@@ -152,12 +152,11 @@ export const reqWord = (s: ReqState) => (s === "yes" ? "Required" : s === "no" ?
 /** rank.ts applies these in this order; the factfile shows them as a ledger that sums to rank_score. */
 export const RANK_LABELS: Record<string, string> = {
   // v2: Claude's evaluation (lib/evaluate), max 100
-  work_fit: "Work fit (of 30)",
+  work_fit: "Work fit (of 35)",
   chance: "Realistic chance (of 20)",
   company_type: "Company type (of 15)",
-  career_path: "Career path (of 15)",
+  career_path: "Career path (of 20)",
   sector: "Sector (of 10)",
-  pay: "Pay (of 10)",
   sport_tech: "Sport and tech together",
   dealbreaker: "Dealbreaker",
   register_interest: "Register interest only",
