@@ -18,8 +18,8 @@
  *    (`endedFrom()` in lib/queries.ts says which stage). Same size as the roles piled on a stage, piled the same way.
  *
  *  - News (Jonno 2026-11-04): a Gmail stage move he hasn't seen yet replays here (components/ClimbReveal.tsx). Each moved
- *    mini carries `data-hop`, its offset back to the stage it left; the client hops it up the stairs in platinum and
- *    stamps it. Rejections get one quiet line in the head instead.
+ *    mini carries `data-hop="from>to"` (stage indexes); the client bounces it up the stairs in platinum, a happy cube
+ *    that crashes into the pile it joins. Rejections get one quiet line in the head instead.
  *
  * Pure SVG from the server, plus CSS: the cubes rise in sequence, the small ones drop onto them, the lights come up.
  * All of it is off under reduced motion. A fixed 960×430 drawing; below ~800px it scrolls sideways rather than shrinking.
@@ -28,7 +28,7 @@ import type { ApplicationRow, NewsMove } from "@/lib/queries";
 import { GOAL_BY, GOAL_TOTAL } from "@/lib/tracker/goals";
 import { SUBMITTED } from "@/lib/tracker/attention";
 import { fmtDate } from "@/lib/ui/format";
-import { cube, faces, r1, ICON, STAIRS, type Cube } from "@/lib/ui/cubes";
+import { cube, faces, r1, ICON, STAIRS, stageOf, type Cube } from "@/lib/ui/cubes";
 import { ClimbStage } from "./ClimbStage";
 import { ClimbReveal } from "./ClimbReveal";
 
@@ -48,8 +48,8 @@ const PEAK_CELLS = CELLS.filter(([u, v]) => u + v > 0);
 /** a list row: where a mini's centre lands when its stage is in focus, and its company name beside it */
 type Row = { x: number; y: number };
 type Pt = { x: number; y: number };
-/** where a role that just moved (a Gmail stage move not yet seen) starts its hop: application id → a mini's top vertex */
-type Hops = Map<number, Pt>;
+/** the journey of a role that just moved (a Gmail stage move not yet seen): application id → stage it left (-1 = off the climb) and stage it reached */
+type Hops = Map<number, { from: number; to: number }>;
 /**
  * Where a stage's list may go: the open sky above and left of its cube, which no other stage reaches because the stairs
  * climb to the right. `right`/`bottom` bound it; `high` is the lower edge to use instead when a long list has to be
@@ -59,11 +59,11 @@ type Sky = { right: number; bottom: number; high: number };
 const ROW_H = 21, COL_W = 160, NAME_MAX = 21;
 const clip = (s: string) => (s.length > NAME_MAX ? `${s.slice(0, NAME_MAX - 1)}…` : s);
 
-function Mini({ x, y, app, i, j, row, hop }: { x: number; y: number; app: ApplicationRow; i: number; j: number; row: Row; hop?: Pt }) {
+function Mini({ x, y, app, i, j, row, hop, cell }: { x: number; y: number; app: ApplicationRow; i: number; j: number; row: Row; hop?: { from: number; to: number }; cell: string }) {
   const f = faces(x, y, MINI);
   const cy = y + MINI.h + MINI.H / 2;   // the mini's centre, which travels to the row's bullet
   return (
-    <a href={`/jobs/${app.jobId}`} className="cl-mini" data-app={app.id} data-hop={hop ? `${r1(hop.x - x)},${r1(hop.y - y)}` : undefined}
+    <a href={`/jobs/${app.jobId}`} className="cl-mini" data-app={app.id} data-cell={cell} data-hop={hop ? `${hop.from}>${hop.to}` : undefined}
        style={{ ["--i" as string]: i, ["--j" as string]: j, ["--dx" as string]: `${r1(row.x - x)}px`, ["--dy" as string]: `${r1(row.y - cy)}px` }}>
       <title>{`${app.company}: ${app.title}`}</title>
       <g className="cl-cube">
@@ -106,7 +106,7 @@ function Pile({ x, y, c, apps, i, hops, cells = CELLS, layers = 3, sky = { right
     const [u, v] = cells[n % per];
     const cx = x + ((u + 0.5) / 3) * c.a - ((v + 0.5) / 3) * c.a;
     const cy = y + ((u + 0.5) / 3) * c.h + ((v + 0.5) / 3) * c.h - layer * MINI.H;
-    return { app, layer, depth: u + v, x: cx, y: cy - MINI.h - MINI.H, n };
+    return { app, layer, depth: u + v, x: cx, y: cy - MINI.h - MINI.H, n, cell: `${u},${v},${layer}` };
   }).sort((p, q) => p.layer - q.layer || p.depth - q.depth);
   if (!shown) return null;
   const more = rowAt(shown);
@@ -117,7 +117,7 @@ function Pile({ x, y, c, apps, i, hops, cells = CELLS, layers = 3, sky = { right
     <>
       <rect x={r1(listX)} y={r1(top - 6)} width={r1(right + 6 - listX)} height={r1(rows * ROW_H + 12)} className="cl-hit" />
       <rect x={r1(x - c.a - 16)} y={r1(bottom)} width={r1(2 * c.a + 32)} height={r1(y + 2 * c.h + c.H + 44 - bottom)} className="cl-hit" />
-      {minis.map((m) => <Mini key={m.app.id} x={m.x} y={m.y} app={m.app} i={i} j={m.n} row={rowAt(m.n)} hop={hops.get(m.app.id)} />)}
+      {minis.map((m) => <Mini key={m.app.id} x={m.x} y={m.y} app={m.app} i={i} j={m.n} row={rowAt(m.n)} hop={hops.get(m.app.id)} cell={m.cell} />)}
       {extra > 0 ? <text x={x + c.a + 4} y={y - 2 * MINI.H} className="cl-more">+{extra}</text> : null}
       {extra > 0 ? <text x={r1(more.x + 13)} y={r1(more.y + 4.3)} className="cl-name cl-name--more" style={{ ["--j" as string]: shown }}>+{extra} more</text> : null}
     </>
@@ -233,13 +233,9 @@ function Peak({ apps, hops }: { apps: ApplicationRow[]; hops: Hops }) {
   );
 }
 
-/** which stage a status sits on: 0..4 on the stairs, 5 = the summit, -1 = not on the climb (discovered, an ending) */
-const stageOf = (status: string | null) =>
-  status === "offer" ? 5 : STAIRS.findIndex((s) => (s.statuses as readonly string[]).includes(status ?? ""));
-
 /**
- * The start of each new move's hop: the top of the stage it left, or the floor in front of the stairs when it came from
- * off the climb. Only for a role still on the stage the email moved it to (if he has moved it since, nothing to replay).
+ * Each new move's journey: the stage it left (-1 = came from off the climb, it starts on the floor before the stairs) and
+ * the one it reached. Only for a role still on the stage the email moved it to (if he has moved it since, nothing to replay).
  */
 function hopsFor(moves: NewsMove[], apps: ApplicationRow[]): Hops {
   const hops: Hops = new Map();
@@ -247,9 +243,7 @@ function hopsFor(moves: NewsMove[], apps: ApplicationRow[]): Hops {
     const app = apps.find((a) => a.id === m.applicationId);
     const from = stageOf(m.from), to = stageOf(m.to);
     if (!app || to < 0 || stageOf(app.status) !== to || from === to) continue;
-    hops.set(app.id, from < 0
-      ? { x: X0 - 74, y: Y0 + 2 * STEP.h + STEP.H - MINI.h - MINI.H }
-      : { x: X0 + from * DX, y: Y0 - from * DY + STEP.h - MINI.h - MINI.H });
+    hops.set(app.id, { from, to });
   }
   return hops;
 }

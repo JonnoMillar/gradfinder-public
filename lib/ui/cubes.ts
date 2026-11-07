@@ -43,3 +43,7 @@ export const STAIRS = [
   { key: "hirevue", label: "HireVue", statuses: ["hirevue", "hirevue_done"] },
   { key: "interview", label: "Interview", statuses: ["interview", "interview_done"] },
 ] as const;
+
+/** which stage a status sits on: 0..4 on the stairs, 5 = the summit (offer), -1 = not on the climb (discovered, an ending) */
+export const stageOf = (status: string | null | undefined) =>
+  status === "offer" ? 5 : STAIRS.findIndex((s) => (s.statuses as readonly string[]).includes(status ?? ""));

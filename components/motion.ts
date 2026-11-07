@@ -13,7 +13,8 @@ export const reducedMotion = () =>
 
 // ------------------------------------------------------------------ "a role moved forward"
 
-export interface Moved { jobId: number; company: string; from: string; to: string }
+/** `replay`: the Climb has just played this move itself (its cube bounced up the stairs), so the toast must not hop it again */
+export interface Moved { jobId: number; company: string; from: string; to: string; replay?: boolean }
 const MOVED = "gf:moved";
 
 /** Called after a stage move is saved. The celebration listens; nothing else depends on it. */

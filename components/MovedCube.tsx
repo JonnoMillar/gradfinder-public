@@ -2,8 +2,9 @@
 
 /**
  * News on Roles (Jonno 2026-11-04): when the Gmail sync has moved roles forward that he hasn't watched yet, a platinum
- * cube sits at the end of the In progress heading (the list of his applications) and hops now and then, like a present
- * in a game lobby waiting to be opened. No label beside it (Jonno 2026-11-05): the count is engraved on its side and
+ * cube sits at the end of the In progress heading (the list of his applications) and puts on an excited show every few
+ * seconds (Jonno 2026-11-07: "jump and spins and rocks"): it rocks, hops, hops higher with a full spin, hops again, rigid
+ * throughout (lib/ui/bounce.ts `excitedTrack`), like a present in a game lobby waiting to be opened. No label beside it (Jonno 2026-11-05): the count is engraved on its side and
  * the hover title says what moved. Same cube as the Climb's. Click it and it flies up into the Applications tab, then
  * the page follows and the Climb plays each move (components/ClimbReveal.tsx).
  *
@@ -12,7 +13,8 @@
  */
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { excitedTrack, toKeyframes } from "@/lib/ui/bounce";
 import { cube, faces, r1 } from "@/lib/ui/cubes";
 import { reducedMotion } from "./motion";
 import type { NewsMove } from "@/lib/queries";
@@ -28,7 +30,23 @@ export function MovedCube({ moves }: { moves: NewsMove[] }) {
   const router = useRouter();
   const box = useRef<HTMLAnchorElement>(null);
   const flying = useRef(false);
-  if (!forward.length) return null;
+  const news = forward.length > 0;
+
+  // the idle: an excited show on a loop (rock, hop, hop with a spin, hop), the shadow shrinking as it leaves the ground
+  useEffect(() => {
+    const el = box.current?.querySelector<HTMLElement>(".mc-cube"), shadow = box.current?.querySelector<HTMLElement>(".mc-shadow");
+    if (!news || !el || reducedMotion()) return;
+    const tr = excitedTrack(19);
+    const opts = { duration: tr.duration * 1000, iterations: Infinity, delay: 900, easing: "linear" };
+    const run = [el.animate(toKeyframes(tr.frames, tr.duration), opts)];
+    if (shadow) run.push(shadow.animate(tr.frames.map((f) => {
+      const s = Math.min(1, Math.max(0.5, 1 + f.y / 90));
+      return { offset: Math.min(1, f.t / tr.duration), transform: `translateX(${(f.x * 0.4).toFixed(1)}px) scale(${s.toFixed(2)})`, opacity: (0.3 + 0.7 * s).toFixed(2), easing: "linear" };
+    }), opts));
+    return () => run.forEach((a) => a.cancel());
+  }, [news]);
+
+  if (!news) return null;
 
   const one = forward.length === 1 ? forward[0] : null;
   const k = (1.375 * C.a) / 44;
@@ -50,7 +68,7 @@ export function MovedCube({ moves }: { moves: NewsMove[] }) {
     box.current?.classList.add("mc--off");
     const fly = el.animate([
       { transform: "none" },
-      { transform: "translateY(4px) scale(1.08, .88)", offset: 0.16 },
+      { transform: "translateY(3px)", offset: 0.16 },
       { transform: `translate(${r1(dx * 0.45)}px, ${r1(dy * 0.55 - 70)}px) rotate(-14deg) scale(.8)`, offset: 0.55 },
       { transform: `translate(${r1(dx)}px, ${r1(dy)}px) rotate(0) scale(${s})`, opacity: 0.9 },
     ], { duration: 700, easing: "cubic-bezier(.55, 0, .25, 1)", fill: "forwards" });
