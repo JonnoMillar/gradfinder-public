@@ -25,6 +25,12 @@ const nextConfig: NextConfig = {
     outputFileTracingIncludes: {
       "/**": ["./demo/catalogue.json", "./demo/profile/**/*", "./lib/db/migrations/**/*"],
     },
+    // The demo is read-only and the same for everyone, but its pages are force-dynamic, so Next sends no-store and every
+    // crawler hit cost a function run plus origin transfer (ClaudeBot at ~11 req/s used the Hobby quota, 2026-11-11).
+    // Vercel-CDN-Cache-Control is read by Vercel's CDN only; browsers still see Next's own Cache-Control.
+    async headers() {
+      return [{ source: "/((?!_next/).*)", headers: [{ key: "Vercel-CDN-Cache-Control", value: "max-age=3600, stale-while-revalidate=86400" }] }];
+    },
   }),
 };
 
