@@ -157,18 +157,19 @@ const parts = (ms: number) => {
   return { mon: `${l({ month: "short" })} ${d.getFullYear()}`.toUpperCase(), day: String(d.getDate()), wd: l({ weekday: "long" }) };
 };
 const dayKey = (ms: number) => new Date(ms).toDateString();
-const CAL = { w: 96, h: 108, strip: 28 };   // a page, in drawing units; its top edge is the binding
+const CAL = { w: 84, h: 96, strip: 33 };   // a page, in drawing units; its top edge is the binding
 
-/** a page of the calendar: paper, month strip, big day, weekday (the words are rewritten by `Calendar`) */
+/** a page of the calendar: month and year, a rule, the big day, the weekday (the words are rewritten by `calendar`) */
 function Page({ ms }: { ms: number }) {
   const p = parts(ms), x = -CAL.w / 2;
   return (
     <>
-      <rect x={x} y={0} width={CAL.w} height={CAL.h} rx={9} className="rp-paper" />
-      <path d={`M${x} ${CAL.strip} V9 a9 9 0 0 1 9 -9 H${-x - 9} a9 9 0 0 1 9 9 V${CAL.strip} Z`} className="rp-strip" />
-      <text y={19} textAnchor="middle" className="rp-mon" data-f="mon">{p.mon}</text>
-      <text y={78} textAnchor="middle" className="rp-day" data-f="day">{p.day}</text>
-      <text y={99} textAnchor="middle" className="rp-wd" data-f="wd">{p.wd}</text>
+      <rect x={x} y={0} width={CAL.w} height={CAL.h} rx={10} className="rp-paper" />
+      <path d={`M${x} ${CAL.strip} V10 a10 10 0 0 1 10 -10 H${-x - 10} a10 10 0 0 1 10 10 V${CAL.strip} Z`} className="rp-strip" />
+      <text y={23} textAnchor="middle" className="rp-mon" data-f="mon">{p.mon}</text>
+      <line x1={x} x2={-x} y1={CAL.strip} y2={CAL.strip} className="rp-rule" />
+      <text y={74} textAnchor="middle" className="rp-day" data-f="day">{p.day}</text>
+      <text y={89} textAnchor="middle" className="rp-wd" data-f="wd">{p.wd}</text>
     </>
   );
 }
@@ -460,16 +461,23 @@ export function ClimbReplay({ moves }: { moves: ReplayMove[] }) {
       <text x={BAR.x} y={42} className="rp-eye">Replay</text>
       <Roll v={shown.sent} x={BAR.x} y={112} className="rp-big" />
       <text x={BAR.x} y={136} className="rp-big-l">application{shown.sent === 1 ? "" : "s"} sent</text>
-      <g className="rp-cal" ref={cal} transform="translate(480 30)">
-        <rect x={-CAL.w / 2 + 6} y={6} width={CAL.w - 12} height={CAL.h} rx={9} className="rp-pad rp-pad-2" />
-        <rect x={-CAL.w / 2 + 3} y={3} width={CAL.w - 6} height={CAL.h} rx={9} className="rp-pad" />
+      <g className="rp-cal" ref={cal} transform="translate(318 38)">
+        <rect x={-CAL.w / 2 + 5} y={8} width={CAL.w - 10} height={CAL.h} rx={10} className="rp-pad" />
+        <rect x={-CAL.w / 2 + 2.5} y={4} width={CAL.w - 5} height={CAL.h} rx={10} className="rp-pad" />
         <g data-pg="under" className="rp-pg"><Page ms={t0} /></g>
         <g data-pg="front" className="rp-pg">
           <Page ms={t0} />
-          <rect x={-CAL.w / 2} y={0} width={CAL.w} height={CAL.h} rx={9} className="rp-shade" />
+          <rect x={-CAL.w / 2} y={0} width={CAL.w} height={CAL.h} rx={10} className="rp-shade" />
         </g>
-        <g data-pg="back" className="rp-pg"><rect x={-CAL.w / 2} y={0} width={CAL.w} height={CAL.h} rx={9} className="rp-back" /></g>
-        {[-24, 24].map((x) => <rect key={x} x={x - 3} y={-5} width={6} height={15} rx={3} className="rp-ring" />)}
+        <g data-pg="back" className="rp-pg"><rect x={-CAL.w / 2} y={0} width={CAL.w} height={CAL.h} rx={10} className="rp-back" /></g>
+        {/* the binding: a punched hole in the strip and a wire loop standing up out of it */}
+        {[-18, 18].map((x) => (
+          <g key={x}>
+            <circle cx={x} cy={8} r={3.6} className="rp-hole" />
+            <path d={`M${x - 3.2} 8.5 V-1 a3.2 3.2 0 0 1 6.4 0 V8.5`} className="rp-wire-back" />
+            <path d={`M${x - 3.2} 8.5 V-1 a3.2 3.2 0 0 1 6.4 0 V8.5`} className="rp-wire" />
+          </g>
+        ))}
       </g>
       <text x={BAR.x} y={164} className="rp-line">
         <tspan className="rp-b">{liveN}</tspan> live
