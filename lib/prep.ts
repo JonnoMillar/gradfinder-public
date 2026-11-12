@@ -23,7 +23,8 @@ export const Question = z.object({
   from: z.string(),
   /** ready = every fact is in the store; partial = one gap Jonno must fill; gap = no usable story yet */
   status: z.enum(["ready", "partial", "gap"]),
-  chain: z.array(z.string()),
+  /** numbered bullets; a plain string is a bullet with no sub-bullets, an object adds sub-bullets (Jonno 2026-11-09) */
+  chain: z.array(z.union([z.string(), z.object({ point: z.string(), sub: z.array(z.string()).optional() })])),
   evidence: z.string(),
   value: z.string().optional(),
   gap: z.string().optional(),

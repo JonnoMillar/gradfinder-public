@@ -166,6 +166,32 @@ export async function setEmailActionDone(raw: { id: unknown; done: unknown }): P
   }
 }
 
+/**
+ * One of Jonno's 1-5 ratings on an application (0 = Skip): how much he wants it when he sends it (StageTrack), and on
+ * its grave how much he wanted it and how much effort it took (components/GraveRate.tsx). A rating overwrites the last.
+ */
+const RATING_COLUMN = { wantedSent: "wanted_sent", wantedEnd: "wanted_end", effort: "effort" } as const;
+export async function rateApplication(raw: { jobId: unknown; field: unknown; value: unknown }): Promise<ActionResult> {
+  if (DEMO) return DEMO_READ_ONLY;
+  const parsed = z.object({
+    jobId: JobId,
+    field: z.enum(["wantedSent", "wantedEnd", "effort"]),
+    value: z.coerce.number().int().min(0).max(5),
+  }).safeParse(raw);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  const { jobId, field, value } = parsed.data;
+  try {
+    const r = getSqlite().prepare(`update applications set ${RATING_COLUMN[field]} = ?, updated_at = ? where job_id = ?`)
+      .run(value, nowIso(), jobId);
+    if (!r.changes) return { ok: false, error: `No application for job ${jobId}` };
+    revalidatePath(`/jobs/${jobId}`);
+    revalidatePath("/applications");
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 /** The Climb has played these Gmail stage moves to Jonno: they stop being news (badge, Roles cube). Email rows only. */
 export async function markMovesSeen(raw: { ids: unknown }): Promise<ActionResult> {
   if (DEMO) return DEMO_READ_ONLY;

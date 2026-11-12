@@ -12,38 +12,29 @@
  *  - Live applications (sent and still in play) glow: a mint light under each live stage that has roles, and the count
  *    beside the headline. The headline itself is the total sent (a rejection still counts as one made); the 40 target
  *    is one quiet line (Jonno: "I don't really care about it that much").
- *  - Rejections (the only ending worth a glance; closed and binned roles live in the archive below): one quiet control at
- *    the foot, "2 rejected". Hover it, or click to keep it open (components/ClimbStage.tsx), and a dashed outline of a
- *    mini cube per rejected role appears on top of the stage it had reached, then falls to the floor beneath it
- *    (`endedFrom()` in lib/queries.ts says which stage). Same size as the roles piled on a stage, piled the same way.
+ *  - Rejections (the only ending worth a glance; closed and binned roles live in the archive below) are buried in the
+ *    graveyard under the stairs (components/Graveyard.tsx). "View graveyard" at the foot pans down to it
+ *    (components/ClimbStage.tsx); a new rejection falls off its stage into its grave (ClimbReveal).
  *
  *  - News (Jonno 2026-11-04): a Gmail stage move he hasn't seen yet replays here (components/ClimbReveal.tsx). Each moved
  *    mini carries `data-hop="from>to"` (stage indexes); the client bounces it up the stairs in platinum, a happy cube
- *    that crashes into the pile it joins. Rejections get one quiet line in the head instead.
+ *    that crashes into the pile it joins. A new rejection's cube (`data-fall`) waits on the stage it reached, then falls
+ *    off it into its grave, and the head says who said no and what to apply for next.
  *
  * Pure SVG from the server, plus CSS: the cubes rise in sequence, the small ones drop onto them, the lights come up.
- * All of it is off under reduced motion. A fixed 960×430 drawing; below ~800px it scrolls sideways rather than shrinking.
+ * All of it is off under reduced motion. A fixed 960-wide drawing, 430 tall in shot (730 with the graveyard under it);
+ * below ~800px it scrolls sideways rather than shrinking.
  */
-import type { ApplicationRow, NewsMove } from "@/lib/queries";
+import type { ApplicationRow, HistoryMove, NewsMove, Suggestion } from "@/lib/queries";
 import { GOAL_BY, GOAL_TOTAL } from "@/lib/tracker/goals";
 import { SUBMITTED } from "@/lib/tracker/attention";
 import { fmtDate } from "@/lib/ui/format";
-import { cube, faces, r1, ICON, STAIRS, stageOf, type Cube } from "@/lib/ui/cubes";
+import { faces, r1, ICON, STAIRS, stageOf, STEP, MINI, PEAK, X0, DX, Y0, DY, PEAK_X, CELLS, PEAK_CELLS, pileSpot, type Cube } from "@/lib/ui/cubes";
 import { ClimbStage } from "./ClimbStage";
 import { ClimbReveal } from "./ClimbReveal";
-
-// ------------------------------------------------------------------------------------------- geometry
-const STEP = cube(42);
-const MINI = cube(9.5);
-const PEAK = cube(62);
-const X0 = 70, DX = 142, Y0 = 290, DY = 28;
-const PEAK_X = 826;
-
-// ------------------------------------------------------------------------------------------- stages
-/** the first layer fills from the middle out, so a few roles look like a heap and not a row */
-const CELLS = [[1, 1], [0, 1], [1, 0], [2, 1], [1, 2], [0, 0], [2, 2], [0, 2], [2, 0]] as const;
-/** on the summit the back cell holds the flag */
-const PEAK_CELLS = CELLS.filter(([u, v]) => u + v > 0);
+import { ClimbReplay } from "./ClimbReplay";
+import { Graveyard, WORLD_H, type Buried } from "./Graveyard";
+import { GraveRate } from "./GraveRate";
 
 /** a list row: where a mini's centre lands when its stage is in focus, and its company name beside it */
 type Row = { x: number; y: number };
@@ -59,11 +50,11 @@ type Sky = { right: number; bottom: number; high: number };
 const ROW_H = 21, COL_W = 160, NAME_MAX = 21;
 const clip = (s: string) => (s.length > NAME_MAX ? `${s.slice(0, NAME_MAX - 1)}…` : s);
 
-function Mini({ x, y, app, i, j, row, hop, cell }: { x: number; y: number; app: ApplicationRow; i: number; j: number; row: Row; hop?: { from: number; to: number }; cell: string }) {
+function Mini({ x, y, app, i, j, row, hop, cell, fall }: { x: number; y: number; app: ApplicationRow; i: number; j: number; row: Row; hop?: { from: number; to: number }; cell: string; fall?: boolean }) {
   const f = faces(x, y, MINI);
   const cy = y + MINI.h + MINI.H / 2;   // the mini's centre, which travels to the row's bullet
   return (
-    <a href={`/jobs/${app.jobId}`} className="cl-mini" data-app={app.id} data-cell={cell} data-hop={hop ? `${hop.from}>${hop.to}` : undefined}
+    <a href={`/jobs/${app.jobId}`} className="cl-mini" data-app={app.id} data-cell={cell} data-hop={hop ? `${hop.from}>${hop.to}` : undefined} data-fall={fall ? app.id : undefined}
        style={{ ["--i" as string]: i, ["--j" as string]: j, ["--dx" as string]: `${r1(row.x - x)}px`, ["--dy" as string]: `${r1(row.y - cy)}px` }}>
       <title>{`${app.company}: ${app.title}`}</title>
       <g className="cl-cube">
@@ -82,8 +73,8 @@ function Mini({ x, y, app, i, j, row, hop, cell }: { x: number; y: number; app: 
  * the pile into a bulleted list of company names in the sky above it. The list never covers another stage, so the
  * pointer can walk up the stairs stage by stage (Jonno 2026-10-23: a list to the right sat on the next cube).
  */
-function Pile({ x, y, c, apps, i, hops, cells = CELLS, layers = 3, sky = { right: x + 60, bottom: y - 50, high: y - 85 } }: {
-  x: number; y: number; c: Cube; apps: ApplicationRow[]; i: number; hops: Hops; cells?: readonly (readonly [number, number])[]; layers?: number; sky?: Sky;
+function Pile({ x, y, c, apps, i, hops, falling = new Set(), cells = CELLS, layers = 3, sky = { right: x + 60, bottom: y - 50, high: y - 85 } }: {
+  x: number; y: number; c: Cube; apps: ApplicationRow[]; i: number; hops: Hops; falling?: Set<number>; cells?: readonly (readonly [number, number])[]; layers?: number; sky?: Sky;
 }) {
   const per = cells.length;
   const shown = Math.min(apps.length, per * layers);
@@ -101,13 +92,7 @@ function Pile({ x, y, c, apps, i, hops, cells = CELLS, layers = 3, sky = { right
   const top = bottom - rows * ROW_H;
   const rowAt = (n: number): Row => ({ x: right - (Math.floor(n / rows) + 1) * COL_W + 6, y: top + (n % rows) * ROW_H + ROW_H / 2 });
 
-  const minis = apps.slice(0, shown).map((app, n) => {
-    const layer = Math.floor(n / per);
-    const [u, v] = cells[n % per];
-    const cx = x + ((u + 0.5) / 3) * c.a - ((v + 0.5) / 3) * c.a;
-    const cy = y + ((u + 0.5) / 3) * c.h + ((v + 0.5) / 3) * c.h - layer * MINI.H;
-    return { app, layer, depth: u + v, x: cx, y: cy - MINI.h - MINI.H, n, cell: `${u},${v},${layer}` };
-  }).sort((p, q) => p.layer - q.layer || p.depth - q.depth);
+  const minis = apps.slice(0, shown).map((app, n) => ({ app, n, ...pileSpot(x, y, c, cells, n) })).sort((p, q) => p.layer - q.layer || p.depth - q.depth);
   if (!shown) return null;
   const more = rowAt(shown);
   // the hover target while focused: the list's box plus the cube's own column under it, so the pointer can go from cube
@@ -117,50 +102,10 @@ function Pile({ x, y, c, apps, i, hops, cells = CELLS, layers = 3, sky = { right
     <>
       <rect x={r1(listX)} y={r1(top - 6)} width={r1(right + 6 - listX)} height={r1(rows * ROW_H + 12)} className="cl-hit" />
       <rect x={r1(x - c.a - 16)} y={r1(bottom)} width={r1(2 * c.a + 32)} height={r1(y + 2 * c.h + c.H + 44 - bottom)} className="cl-hit" />
-      {minis.map((m) => <Mini key={m.app.id} x={m.x} y={m.y} app={m.app} i={i} j={m.n} row={rowAt(m.n)} hop={hops.get(m.app.id)} cell={m.cell} />)}
+      {minis.map((m) => <Mini key={m.app.id} x={m.x} y={m.y} app={m.app} i={i} j={m.n} row={rowAt(m.n)} hop={hops.get(m.app.id)} cell={m.cell} fall={falling.has(m.app.id)} />)}
       {extra > 0 ? <text x={x + c.a + 4} y={y - 2 * MINI.H} className="cl-more">+{extra}</text> : null}
       {extra > 0 ? <text x={r1(more.x + 13)} y={r1(more.y + 4.3)} className="cl-name cl-name--more" style={{ ["--j" as string]: shown }}>+{extra} more</text> : null}
     </>
-  );
-}
-
-/** A rejected application and whether the stage it had reached is recorded. An unrecorded one sits at Sent: it must have been sent. */
-type Ended = { app: ApplicationRow; known: boolean };
-
-/**
- * The rejections at a stage, shown on hover or when locked (ClimbStage): one dashed outline per role, the same size as
- * the roles piled on the stage. Each starts on the stage's top face and falls to the floor under its label. The heap
- * grows the way a stage's own does (3 x 3 a layer, three layers, then "+n"), so a long run of rejections still reads, and
- * a count in words sits under it. Shape and words carry the meaning, never hue.
- */
-function Fallen({ x, y, stage, ends }: { x: number; y: number; stage: (typeof STAIRS)[number]; ends: Ended[] }) {
-  const per = CELLS.length, layers = 3;
-  const shown = Math.min(ends.length, per * layers);
-  const extra = ends.length - shown;
-  const { a, h, H } = MINI;
-  const gy = y + 2 * STEP.h + STEP.H + 66;   // back corner of the floor heap, below the stage's label
-  const cubes = ends.slice(0, shown).map((e, n) => {
-    const layer = Math.floor(n / per);
-    const [u, v] = CELLS[n % per];
-    return { e, n, layer, depth: u + v, x: x + (u - v) * a, y: gy + (u + v) * h - layer * H };
-  }).sort((p, q) => p.layer - q.layer || p.depth - q.depth);
-  return (
-    <g className="cl-fall">
-      {cubes.map((c, k) => {
-        const f = faces(c.x, c.y, MINI);
-        // where it starts: on the stage's top face, spread a little so they don't begin as one
-        const sx = x + ((c.n % 3) - 1) * 8, sy = y + STEP.h - MINI.h - MINI.H * 1.4;
-        return (
-          <a key={c.e.app.id} href={`/jobs/${c.e.app.jobId}`} className="cl-ghost"
-             style={{ ["--n" as string]: k, ["--fx" as string]: `${r1(sx - c.x)}px`, ["--fy" as string]: `${r1(sy - c.y)}px` }}>
-            <title>{`${c.e.app.company}: rejected${c.e.known ? ` at ${stage.label}` : " (stage not recorded)"}`}</title>
-            <polygon points={f.left} /><polygon points={f.right} /><polygon points={f.top} />
-          </a>
-        );
-      })}
-      {extra > 0 ? <text x={x + 3 * a + 6} y={gy + 3 * h} className="cl-more cl-fall-lab">+{extra}</text> : null}
-      <text x={x} y={gy + 6 * h + H + 17} className="cl-sub cl-fall-lab" textAnchor="middle">{ends.length} rejected</text>
-    </g>
   );
 }
 
@@ -180,7 +125,7 @@ function Engraving({ f, c, n, icon }: { f: ReturnType<typeof faces>; c: Cube; n:
   );
 }
 
-function Step({ i, stage, apps, live, ended, hops }: { i: number; stage: (typeof STAIRS)[number]; apps: ApplicationRow[]; live: boolean; ended: boolean; hops: Hops }) {
+function Step({ i, stage, apps, live, falling, hops }: { i: number; stage: (typeof STAIRS)[number]; apps: ApplicationRow[]; live: boolean; falling: ApplicationRow[]; hops: Hops }) {
   const x = X0 + i * DX, y = Y0 - i * DY;
   const f = faces(x, y, STEP);
   const { h, H } = STEP;
@@ -190,7 +135,7 @@ function Step({ i, stage, apps, live, ended, hops }: { i: number; stage: (typeof
     : stage.key === "applying" ? [done && `${done} interested`, apps.length - done && `${apps.length - done} applying`].filter(Boolean).join(" · ")
     : `${apps.length - done} to ${stage.key === "tests" ? "sit" : "do"} · ${done} ${stage.key === "tests" ? "sat" : "done"}`;
   return (
-    <g className="cl-step" data-s={stage.key} data-empty={apps.length ? undefined : "1"} data-pile={apps.length ? "1" : undefined} data-ends={ended ? "1" : undefined}
+    <g className="cl-step" data-s={stage.key} data-empty={apps.length ? undefined : "1"} data-pile={apps.length + falling.length ? "1" : undefined}
        style={{ ["--i" as string]: i, transformOrigin: `${x}px ${r1(y + h + H / 2)}px` }}>
       <title>{`${stage.label}: ${apps.length} role${apps.length === 1 ? "" : "s"}`}</title>
       {live && apps.length ? <polygon points={f.floor} className="cl-glow" filter="url(#cl-blur)" /> : null}
@@ -198,7 +143,7 @@ function Step({ i, stage, apps, live, ended, hops }: { i: number; stage: (typeof
       <polygon points={f.right} className="cl-r" />
       <polygon points={f.top} className="cl-t" />
       <Engraving f={f} c={STEP} n={apps.length} icon={stage.key} />
-      <Pile x={x} y={y} c={STEP} apps={apps} i={i} hops={hops} />
+      <Pile x={x} y={y} c={STEP} apps={[...apps, ...falling]} i={i} hops={hops} falling={new Set(falling.map((a) => a.id))} />
       <text x={x} y={y + 2 * h + H + 24} className="cl-lab" textAnchor="middle">{stage.label}</text>
       {sub ? <text x={x} y={y + 2 * h + H + 40} className="cl-sub" textAnchor="middle">{sub}</text> : null}
     </g>
@@ -248,45 +193,63 @@ function hopsFor(moves: NewsMove[], apps: ApplicationRow[]): Hops {
   return hops;
 }
 
-export function Climb({ apps, endedFrom = {}, moves = [] }: {
+export function Climb({ apps, endedFrom = {}, moves = [], nextUp = null, history = [] }: {
   apps: ApplicationRow[];
   /** status each rejected application moved from into its end (`endedFrom()` in lib/queries.ts) */
   endedFrom?: Record<number, string | null>;
-  /** Gmail stage moves not yet seen (`unseenMoves()`): forward ones hop up the stairs, rejections get one quiet line */
+  /** Gmail stage moves not yet seen (`unseenMoves()`): forward ones hop up the stairs, rejections fall into their graves */
   moves?: NewsMove[];
+  /** the role to apply for next (`suggestNext()`), offered after a rejection */
+  nextUp?: Suggestion | null;
+  /** every stage move, oldest first (`climbHistory()`): the replay, and the order graves were dug */
+  history?: HistoryMove[];
 }) {
   const at = (statuses: readonly string[]) => apps.filter((a) => statuses.includes(a.status));
-  const ends = at(["rejected"]).map((app) => {
-    const reached = STAIRS.find((s) => (s.statuses as readonly string[]).includes(endedFrom[app.id] ?? ""));
-    return { app, known: !!reached, stage: reached ?? STAIRS[1] };
+  const freshNo = new Set(moves.filter((m) => m.to === "rejected").map((m) => m.applicationId));
+  const buried: Buried[] = at(["rejected"]).map((app) => {
+    const reached = STAIRS.findIndex((s) => (s.statuses as readonly string[]).includes(endedFrom[app.id] ?? ""));
+    return { app, known: reached >= 0, stage: reached >= 0 ? reached : 1, fresh: freshNo.has(app.id) };
   });
+  // oldest burial first: it goes at the back of its column
+  const noAt = new Map(history.filter((m) => m.to === "rejected").map((m) => [m.appId, m.at]));
+  buried.sort((p, q) => (noAt.get(p.app.id) ?? p.app.updatedAt).localeCompare(noAt.get(q.app.id) ?? q.app.updatedAt));
   const sent = apps.filter((a) => a.appliedAt || SUBMITTED.includes(a.status)).length;
   const live = at(SUBMITTED).length;
   const offers = at(["offer"]);
   const hops = hopsFor(moves, apps);
+  const xs = STAIRS.map((_, i) => X0 + i * DX);
+  // the grave to rate: a fresh one first, then the newest still missing a rating
+  const toRate = buried.filter((b) => b.app.wantedEnd == null || b.app.effort == null)
+    .sort((p, q) => Number(q.fresh) - Number(p.fresh) || q.app.id - p.app.id)
+    .map((b) => ({ jobId: b.app.jobId, company: b.app.company, title: b.app.title, wantedEnd: b.app.wantedEnd, effort: b.app.effort }));
 
   return (
     <section className="cl" aria-labelledby="cl-h">
       <div className="cl-scroll">
-        <ClimbStage rejected={ends.length}>
-          <div className="cl-head">
-            <h2 id="cl-h" className="cl-eye">The climb</h2>
-            <p className="cl-big"><b>{sent}</b><span>application{sent === 1 ? "" : "s"} sent</span></p>
-            <p className="cl-live"><i aria-hidden="true" /><b>{live}</b> live <span>sent and still in play</span></p>
-            <p className="cl-target">Target {GOAL_TOTAL} by {fmtDate(GOAL_BY)}</p>
-            <ClimbReveal moves={moves} />
-          </div>
+        <ClimbStage buried={buried.length} canReplay={history.length > 0}>
+          <div className="cl-world">
+            <div className="cl-head">
+              <h2 id="cl-h" className="cl-eye">The climb</h2>
+              <p className="cl-big"><b>{sent}</b><span>application{sent === 1 ? "" : "s"} sent</span></p>
+              <p className="cl-live"><i aria-hidden="true" /><b>{live}</b> live <span>sent and still in play</span></p>
+              <p className="cl-target">Target {GOAL_TOTAL} by {fmtDate(GOAL_BY)}</p>
+              <ClimbReveal moves={moves} nextUp={nextUp ? { jobId: nextUp.id, company: nextUp.company } : null} />
+            </div>
 
-          <svg viewBox={`0 0 960 ${ends.length ? 500 : 430}`} className="cl-svg" role="img"
-               aria-label={`${STAIRS.map((s) => `${at(s.statuses).length} ${s.label.toLowerCase()}`).join(", ")}, ${offers.length} offers. ${sent} sent, ${live} live.`}>
-            <defs><filter id="cl-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7" /></filter></defs>
-            {STAIRS.map((s, i) => <Step key={s.key} i={i} stage={s} apps={at(s.statuses)} live={SUBMITTED.some((x) => (s.statuses as readonly string[]).includes(x))} ended={ends.some((e) => e.stage.key === s.key)} hops={hops} />)}
-            {STAIRS.map((s, i) => {
-              const here = ends.filter((e) => e.stage.key === s.key);
-              return here.length ? <Fallen key={s.key} x={X0 + i * DX} y={Y0 - i * DY} stage={s} ends={here} /> : null;
-            })}
-            <Peak apps={offers} hops={hops} />
-          </svg>
+            <svg viewBox={`0 0 960 ${WORLD_H}`} className="cl-svg" role="img"
+                 aria-label={`${STAIRS.map((s) => `${at(s.statuses).length} ${s.label.toLowerCase()}`).join(", ")}, ${offers.length} offers. ${sent} sent, ${live} live. ${buried.length} in the graveyard.`}>
+              <defs><filter id="cl-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7" /></filter></defs>
+              <Graveyard buried={buried} xs={xs} />
+              {STAIRS.map((s, i) => (
+                <Step key={s.key} i={i} stage={s} apps={at(s.statuses)} live={SUBMITTED.some((x) => (s.statuses as readonly string[]).includes(x))}
+                      falling={buried.filter((b) => b.fresh && b.stage === i).map((b) => b.app)} hops={hops} />
+              ))}
+              <Peak apps={offers} hops={hops} />
+              <ClimbReplay moves={history.map((m) => ({ appId: m.appId, to: m.to, at: m.at }))} />
+            </svg>
+
+            <GraveRate graves={toRate} />
+          </div>
         </ClimbStage>
       </div>
     </section>

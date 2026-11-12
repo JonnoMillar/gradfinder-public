@@ -13,7 +13,7 @@
  */
 import Link from "next/link";
 import { PageSlide } from "@/components/PageSlide";
-import { endedFrom, listApplications, listEmailUpdates, unseenMoves, type ApplicationRow, type EmailUpdateRow } from "@/lib/queries";
+import { climbHistory, endedFrom, listApplications, listEmailUpdates, suggestNext, unseenMoves, type ApplicationRow, type EmailUpdateRow } from "@/lib/queries";
 import { daysUntil, fmtDate } from "@/lib/ui/format";
 import { attention, callFor, FINISHED, PRE_SUBMIT, SUBMITTED, whenLabel, type AttentionItem, type Call } from "@/lib/tracker/attention";
 import { Logo } from "@/components/primitives";
@@ -203,7 +203,7 @@ function RoleRow({ a, mail }: { a: ApplicationRow; mail?: EmailUpdateRow }) {
         ) : (
           <NextStep jobId={a.jobId} text={a.nextAction} due={a.nextActionDue} status={a.status} appliedAt={a.appliedAt} />
         )}
-        <StageTrack jobId={a.jobId} status={a.status} company={a.company} />
+        <StageTrack jobId={a.jobId} status={a.status} company={a.company} wantedSent={a.wantedSent} />
         {mail ? (
           <p className="role-mail">
             <IconLetter width={12} height={12} />
@@ -234,6 +234,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
   const sp = await searchParams;
   const now = new Date();
   const all = listApplications();
+  const moves = unseenMoves();
   const emails = listEmailUpdates();
   const latest = new Map<number, EmailUpdateRow>();
   for (const e of emails) if (e.applicationId && !latest.has(e.applicationId)) latest.set(e.applicationId, e);   // newest first
@@ -279,7 +280,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
         </p>
       </header>
 
-      <Climb apps={all} endedFrom={endedFrom()} moves={unseenMoves()} />
+      <Climb apps={all} endedFrom={endedFrom()} moves={moves} history={climbHistory()} nextUp={moves.some((m) => m.to === "rejected") ? suggestNext([], 1)[0] ?? null : null} />
 
       <Runway items={items} now={now} />
 

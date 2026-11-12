@@ -697,12 +697,16 @@ details.disc .cnt { margin-left: auto; font-size: 11.5px; color: var(--ink-3); f
  * tomorrow or late; warm = this week. Each stage has its own hue, shown on the row's track.
  * The one moving thing on the page is the pulse on "Due now" (off under reduced motion).
  */
-[data-s="discovered"], [data-s="interested"] { --st: var(--cool); }
-[data-s="applying"] { --st: var(--warm); }
-[data-s="applied"], [data-s="tests"], [data-s="tests_done"] { --st: var(--mint); }
-[data-s="hirevue"], [data-s="hirevue_done"] { --st: oklch(0.78 0.12 355); }
-[data-s="interview"], [data-s="interview_done"] { --st: var(--vio); }
-[data-s="offer"] { --st: oklch(0.86 0.15 95); }
+/* The stages climb the fit ring's medal scale (Jonno 2026-11-10: "match the gradient in our grading (poo-platinum)"):
+   poo → bronze → silver → gold → platinum, and the summit brighter still. Lightness rises every step (.60 → .96), so the
+   stages tell apart by lightness as well as hue. */
+[data-s="discovered"] { --st: var(--cool); }
+[data-s="interested"], [data-s="applying"] { --st: oklch(0.62 0.085 62); }            /* poo */
+[data-s="applied"] { --st: oklch(0.71 0.115 47); }                                     /* bronze */
+[data-s="tests"], [data-s="tests_done"] { --st: oklch(0.80 0.03 250); }               /* silver */
+[data-s="hirevue"], [data-s="hirevue_done"] { --st: oklch(0.86 0.135 88); }           /* gold */
+[data-s="interview"], [data-s="interview_done"] { --st: oklch(0.90 0.06 222); }       /* platinum */
+[data-s="offer"] { --st: oklch(0.96 0.035 200); }                                      /* diamond */
 [data-s="rejected"], [data-s="dismissed"], [data-s="closed"] { --st: var(--ink-3); }
 
 .ap-head { padding-top: 6px; }
@@ -1293,15 +1297,15 @@ h3.sub-h { font-size: 12px; font-weight: 600; color: var(--ink-3); margin: 22px 
 
 /* ------------------------------------------------------ applications: the climb */
 /* The pipeline as rising cubes (components/Climb.tsx). Each stage takes its colour from --st; a stage with nobody on it
-   is a faint dashed ghost, so the stairs light up as roles move along. The summit is the Offer: bigger, gold even when
+   is a faint dashed ghost, so the stairs light up as roles move along. The summit is the Offer: bigger, diamond even when
    empty, with a halo and the flag. Live stages have a mint light under them, keyed to the "live" count in the headline.
    A fixed 960×430 drawing: below ~800px it scrolls sideways instead of shrinking its type. */
-.cl { margin: 20px 0 8px; --gold: oklch(0.86 0.15 95); --live: var(--mint); }
+.cl { margin: 20px 0 8px; --peak: oklch(0.96 0.035 200); --live: var(--mint); }
 .cl-scroll { overflow-x: auto; scrollbar-width: thin; }
 .cl-stage { position: relative; min-width: 800px; aspect-ratio: 960 / 430; border-radius: 28px; overflow: hidden;
             border: 1px solid var(--line-soft);
             background:
-              radial-gradient(50% 60% at 88% 18%, color-mix(in oklch, var(--gold) 9%, transparent), transparent 70%),
+              radial-gradient(50% 60% at 88% 18%, color-mix(in oklch, var(--peak) 9%, transparent), transparent 70%),
               radial-gradient(60% 70% at 8% 100%, color-mix(in oklch, var(--mint) 5%, transparent), transparent 70%),
               color-mix(in oklch, var(--surf) 40%, var(--bg)); }
 .cl-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; font-family: inherit; }
@@ -1311,9 +1315,12 @@ h3.sub-h { font-size: 12px; font-weight: 600; color: var(--ink-3); margin: 22px 
 .cl-step > .cl-l { fill: color-mix(in oklch, var(--st) 30%, var(--surf)); }
 .cl-step > .cl-r { fill: color-mix(in oklch, var(--st) 17%, var(--bg)); }
 .cl-step > polygon:not(.cl-glow) { stroke: color-mix(in oklch, var(--st) 55%, transparent); stroke-width: 1; }
-.cl-step[data-empty] { --st: var(--open); }
-.cl-step[data-empty] > polygon, .cl-step[data-empty] > g { opacity: .38; }
-.cl-step[data-empty] > polygon { stroke-dasharray: 3 3; }
+/* empty: dim and dashed. In the replay a stage goes by the replay's own count instead (data-rp-on, ClimbReplay) */
+.cl-stage:not([data-view="all"]) .cl-step[data-empty] { --st: var(--open); }
+.cl-stage:not([data-view="all"]) .cl-step[data-empty] > :is(polygon, g),
+.cl-stage[data-view="all"] .cl-step:not([data-rp-on]) > :is(polygon, g) { opacity: .34; }
+.cl-stage:not([data-view="all"]) .cl-step[data-empty] > polygon,
+.cl-stage[data-view="all"] .cl-step:not([data-rp-on]) > polygon { stroke-dasharray: 3 3; }
 .cl-n { font-weight: 700; letter-spacing: -0.04em; fill: color-mix(in oklch, var(--st) 55%, white); }
 .cl-ico path { fill: none; stroke: color-mix(in oklch, var(--st) 75%, white); stroke-width: 1.15; stroke-linecap: round; stroke-linejoin: round; }
 .cl-lab { font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; fill: var(--ink); }
@@ -1325,20 +1332,20 @@ h3.sub-h { font-size: 12px; font-weight: 600; color: var(--ink-3); margin: 22px 
 .cl-glow { fill: var(--live); opacity: .5; animation: cl-glow 1s ease both, cl-breathe 4.5s ease-in-out 2s infinite; }
 
 /* the summit: the grad offer */
-.cl-peak > .cl-t { fill: color-mix(in oklch, var(--gold) 72%, var(--surf-2)); }
-.cl-peak > .cl-l { fill: color-mix(in oklch, var(--gold) 50%, var(--surf)); }
-.cl-peak > .cl-r { fill: color-mix(in oklch, var(--gold) 30%, var(--bg)); }
-.cl-peak > polygon:not(.cl-glow) { stroke: color-mix(in oklch, var(--gold) 85%, white); stroke-width: 1.3; }
+.cl-peak > .cl-t { fill: color-mix(in oklch, var(--peak) 72%, var(--surf-2)); }
+.cl-peak > .cl-l { fill: color-mix(in oklch, var(--peak) 50%, var(--surf)); }
+.cl-peak > .cl-r { fill: color-mix(in oklch, var(--peak) 30%, var(--bg)); }
+.cl-peak > polygon:not(.cl-glow) { stroke: color-mix(in oklch, var(--peak) 85%, white); stroke-width: 1.3; }
 .cl-peak .cl-n { fill: oklch(0.25 0.05 85); }
 .cl-peak .cl-ico path { stroke: oklch(0.97 0.05 95); stroke-width: 1.3; }
-.cl-peak[data-empty] > .cl-t { fill: color-mix(in oklch, var(--gold) 34%, var(--surf-2)); }
-.cl-peak[data-empty] > .cl-l { fill: color-mix(in oklch, var(--gold) 22%, var(--surf)); }
-.cl-peak[data-empty] > .cl-r { fill: color-mix(in oklch, var(--gold) 13%, var(--bg)); }
-.cl-peak[data-empty] .cl-n { fill: color-mix(in oklch, var(--gold) 80%, white); }
-.cl-halo { fill: color-mix(in oklch, var(--gold) 12%, transparent); filter: blur(22px); opacity: .9; }
+.cl-peak[data-empty] > .cl-t { fill: color-mix(in oklch, var(--peak) 34%, var(--surf-2)); }
+.cl-peak[data-empty] > .cl-l { fill: color-mix(in oklch, var(--peak) 22%, var(--surf)); }
+.cl-peak[data-empty] > .cl-r { fill: color-mix(in oklch, var(--peak) 13%, var(--bg)); }
+.cl-peak[data-empty] .cl-n { fill: color-mix(in oklch, var(--peak) 80%, white); }
+.cl-halo { fill: color-mix(in oklch, var(--peak) 12%, transparent); filter: blur(22px); opacity: .9; }
 .cl-pole { stroke: var(--ink-2); stroke-width: 2.2; stroke-linecap: round; }
-.cl-flag { fill: var(--gold); transform-box: fill-box; transform-origin: 0 50%; animation: cl-wave 3.4s ease-in-out infinite; }
-.cl-lab--peak { font-size: 16px; fill: var(--gold); }
+.cl-flag { fill: var(--peak); transform-box: fill-box; transform-origin: 0 50%; animation: cl-wave 3.4s ease-in-out infinite; }
+.cl-lab--peak { font-size: 16px; fill: var(--peak); }
 
 /* one small cube per role, piled on its stage; hover lifts it, click opens the role */
 .cl-mini { cursor: pointer; transition: translate .2s var(--ease), filter .2s var(--ease); }
@@ -1374,8 +1381,8 @@ h3.sub-h { font-size: 12px; font-weight: 600; color: var(--ink-3); margin: 22px 
 [data-pile]:is(:hover, :focus-within) .cl-mini:hover { translate: 3px 0; }
 .cl-more { transition: opacity .2s ease; }
 [data-pile]:is(:hover, :focus-within) .cl-more { opacity: 0; }
-.cl-head, .cl-endbtn { transition: opacity .4s var(--ease), filter .4s var(--ease); }
-.cl-stage:has([data-pile]:is(:hover, :focus-within)) :is(.cl-head, .cl-endbtn) { opacity: .15; filter: blur(2px); }
+.cl-head, .cl-ctl { transition: opacity .4s var(--ease), filter .4s var(--ease); }
+.cl-stage:has([data-pile]:is(:hover, :focus-within)) :is(.cl-head, .cl-ctl) { opacity: .15; filter: blur(2px); }
 
 /* the words: total sent and live (top left), what fell off the stairs (bottom right) */
 .cl-head { position: absolute; left: 30px; top: 26px; max-width: 380px; }
@@ -1389,35 +1396,154 @@ h3.sub-h { font-size: 12px; font-weight: 600; color: var(--ink-3); margin: 22px 
 .cl-live b { font-size: 22px; font-weight: 700; letter-spacing: -0.03em; }
 .cl-live span { font-size: 12.5px; font-weight: 500; color: var(--ink-3); }
 .cl-target { margin-top: 8px; font-size: 12px; color: var(--ink-3); }
-/* rejections (ClimbStage + Fallen), the same focus as the stage hover above: on hover of the "N rejected" control, or locked
-   by a click, the stages that had rejections come forward, the rest (and the headline) blur back, and a dashed outline of a
-   mini cube per role leaves its stage's top face and settles on the floor beneath it, on the same curve and stagger as
-   the names floating off a pile. Shape + words, never hue. The fill is opaque so a heap doesn't show through itself. */
-.cl-stage--tall { aspect-ratio: 960 / 500; }
-.cl-ghost { opacity: 0; translate: var(--fx) var(--fy); pointer-events: none; cursor: pointer;
-            transition: translate .32s var(--ease), opacity .2s ease, filter .2s var(--ease); }
-.cl-ghost polygon { fill: color-mix(in oklch, var(--surf) 78%, var(--bg)); stroke: var(--ink); stroke-width: 1.3;
-                    stroke-dasharray: 3 2.5; stroke-linejoin: round; }
-.cl-ghost:hover { filter: brightness(1.5); }
-.cl-fall-lab { opacity: 0; transition: opacity .15s ease; }
-.cl-stage:is([data-locked], :has(.cl-endbtn:is(:hover, :focus-visible))) {
-  & .cl-ghost { opacity: 1; translate: 0 0; pointer-events: auto;
-                transition: translate .6s var(--ease) calc(min(var(--n), 16) * 28ms), opacity .3s ease calc(min(var(--n), 16) * 28ms), filter .2s var(--ease); }
-  & .cl-fall-lab { opacity: 1; transition: opacity .3s ease calc(260ms + min(var(--n, 0), 16) * 28ms); }
-  & .cl-step[data-ends] { scale: 1.04; }
-  & .cl-svg :is(.cl-step, .cl-peak):not([data-ends]) { filter: opacity(.12) blur(2.5px) saturate(.4); }
-  & .cl-head { opacity: .15; filter: blur(2px); }
-}
+/* The world (Climb + Graveyard): head, stairs and graveyard are one drawing, 960x730, of which 430 is in shot. "View
+   graveyard" (ClimbStage, data-view="grave") pans it up 290, so the camera drops to the graves and the stairs slide up
+   and mostly out. Graves (and the rating card) can't be tabbed to while out of shot; they go only once the pan back is over. */
+.cl-world { position: absolute; inset: 0 0 auto 0; aspect-ratio: 960 / 730; transition: translate 1.1s cubic-bezier(.65, 0, .35, 1); }
+.cl-stage[data-view="grave"] .cl-world { translate: 0 calc(-290 / 730 * 100%); }
+.cl-stage:not([data-view="grave"]) .gy-rate, .cl-stage:not([data-view]) .gy-grave { visibility: hidden; transition: visibility 0s 1.1s; }
+.cl-stage { transition: aspect-ratio 1.1s cubic-bezier(.65, 0, .35, 1); }
 
-/* the control: one quiet line, bottom right */
-.cl-endbtn { position: absolute; right: 26px; bottom: 20px; display: inline-flex; align-items: center; gap: 7px; padding: 3px 1px;
+/* the replay (ClimbReplay): the card grows to the whole world (stairs and graveyard), the real piles, counts and graves
+   step aside, and the replay layer's own cubes, counts, date and timeline take over; nothing is hoverable meanwhile */
+.cl-stage .rp { display: none; pointer-events: none; }   /* scoped: the role page's <main> is also .rp */
+.cl-stage[data-view="all"] { aspect-ratio: 960 / 730; }
+.cl-stage[data-view="all"] .rp { display: inline; }
+.cl-stage[data-view="all"] .cl-svg { pointer-events: none; }
+.cl-stage[data-view="all"] :is(.cl-head, .gy-rate) { opacity: 0; visibility: hidden; }
+.cl-stage[data-view="all"] :is(.cl-mini, .cl-n:not(.rp-n), .cl-sub, .cl-glow, .cl-more) { visibility: hidden; }
+.rp-k { transition: opacity .35s ease; }
+.rp-k:not([data-on]) { opacity: .4; }
+.gy-grave { transition: opacity .4s ease; }
+.gy-grave[data-pending] { opacity: 0; }
+.rp-cube { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.rp-cube .cl-t { fill: color-mix(in oklch, var(--st) 78%, white); }
+.rp-cube .cl-l { fill: var(--st); }
+.rp-cube .cl-r { fill: color-mix(in oklch, var(--st) 60%, black); }
+.rp-cube polygon { stroke: color-mix(in oklch, var(--st) 45%, black); stroke-width: .6; stroke-linejoin: round; }
+/* a rejected cube on its way down: the graveyard's colour and a glow, so the eye can follow it */
+.rp-cube[data-fall] { --st: var(--gy); filter: drop-shadow(0 0 5px color-mix(in oklch, var(--gy) 80%, transparent)); }
+.rp-eye { font-size: 13px; font-weight: 700; fill: var(--ink-2); }
+.rp-big { font-size: 64px; font-weight: 700; letter-spacing: -0.055em; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.rp-big-l { font-size: 17px; font-weight: 600; fill: var(--ink-2); }
+/* the date as a tear-off calendar (ClimbReplay's `calendar`): the front page folds up over its binding, the blank back
+   swings up and away, the next day's page is already underneath. Paper stays light and the strip mid-grey: no hue carries meaning */
+.rp-cal { filter: drop-shadow(0 8px 12px rgb(0 0 0 / .5)); }
+.rp-pg { transform-box: fill-box; transform-origin: 50% 0; }
+.rp-pg[data-pg="back"] { transform: scaleY(0); opacity: 0; }
+.rp-paper { fill: var(--ink); }
+.rp-strip { fill: var(--ink-3); }
+.rp-pad { fill: color-mix(in oklch, var(--ink) 62%, var(--bg)); }
+.rp-pad-2 { fill: color-mix(in oklch, var(--ink) 40%, var(--bg)); }
+.rp-back { fill: color-mix(in oklch, var(--ink) 80%, var(--bg)); }
+.rp-shade { fill: var(--bg); opacity: 0; }
+.rp-mon { font-size: 12px; font-weight: 700; letter-spacing: .1em; fill: var(--bg); }
+.rp-day { font-size: 52px; font-weight: 700; letter-spacing: -0.05em; fill: var(--bg); font-variant-numeric: tabular-nums; }
+.rp-wd { font-size: 12px; font-weight: 600; fill: var(--surf-2); }
+.rp-ring { fill: var(--bg); stroke: var(--ink-3); stroke-width: 1.4; }
+.rp-line { font-size: 15px; font-weight: 500; fill: var(--ink-3); }
+/* a number rolling over (ClimbReplay's Roll): the old slides out, the new in; up for more, down for fewer */
+.roll-in { animation: roll-in .5s var(--ease) both; }
+.roll-out { animation: roll-out .5s var(--ease) both; }
+.roll[data-dir="down"] .roll-in { animation-name: roll-in-d; }
+.roll[data-dir="down"] .roll-out { animation-name: roll-out-d; }
+@keyframes roll-in { from { translate: 0 .6em; opacity: 0; } }
+@keyframes roll-out { to { translate: 0 -.6em; opacity: 0; } }
+@keyframes roll-in-d { from { translate: 0 -.6em; opacity: 0; } }
+@keyframes roll-out-d { to { translate: 0 .6em; opacity: 0; } }
+.rp-b { font-weight: 700; fill: var(--ink); }
+.rp-track { stroke: var(--line); stroke-width: 2; stroke-linecap: round; }
+.rp-done { stroke: var(--ink); stroke-width: 2; stroke-linecap: round; }
+.rp-tick { stroke: var(--ink-2); stroke-width: 1.2; stroke-linecap: round; }
+.rp-x { fill: none; stroke: var(--ink-2); stroke-width: 1.2; stroke-linecap: round; }
+.rp-end { font-size: 11px; fill: var(--ink-3); }
+
+/* the graveyard (Graveyard.tsx): one column of graves straight down from each stage, drawn like the stairs (bright
+   edges, colour mixed into dark faces) but in one blue-violet, --gy, so the dead read apart from the live stages. No
+   ground line or colour change: the same ground as the climb, a soft --gy light coming up from below. A grave = a
+   headstone facing south-west, engraved RIP, and against its foot a lid (lighter, opaque) over a hole a climb cube fits in.
+   Hover or focus: the lid slides away under the ground (quick), showing the dark hole, then the cube's ghost rises out of
+   it (translucent, glowing, wavy skirt, hollow eyes) with the company's name; leaving reverses it, ghost first, then the
+   lid. data-open holds the lid open while a cube falls in. Lightness and shape carry the meaning, never hue alone. */
+.cl { --gy: oklch(0.70 0.14 285); }
+.gy-under-0 { stop-color: var(--gy); stop-opacity: .16; }
+.gy-under-1 { stop-color: var(--gy); stop-opacity: 0; }
+.gy-under { pointer-events: none; }
+/* the floor far below the floating stairs: a faint grid, and each cube's shadow straight under it */
+.gy-grid { fill: none; stroke: color-mix(in oklch, var(--gy) 30%, var(--ink-3)); stroke-opacity: .16; stroke-width: .8; pointer-events: none; }
+.gy-cast { fill: black; opacity: .5; pointer-events: none; }
+/* a falling cube's shadow on its grave's lid: small and faint while it's high, full and dark as it lands (data-falling;
+   --fall = the fall's length, set by ClimbReplay / ClimbReveal) */
+.gy-shade { fill: black; opacity: 0; scale: .35; transform-box: fill-box; transform-origin: center; pointer-events: none;
+            transition: opacity .2s ease, scale .2s ease; }
+.gy-grave[data-falling] .gy-shade { opacity: .55; scale: 1; transition: opacity var(--fall, 1s) ease-in, scale var(--fall, 1s) ease-in; }
+.gy-grave { cursor: pointer; outline: none; }
+.gy-hit { fill: transparent; }
+.gy-face { fill: color-mix(in oklch, var(--gy) 30%, var(--surf)); stroke: color-mix(in oklch, var(--gy) 70%, white); stroke-width: .8; stroke-linejoin: round; }
+.gy-back { fill: color-mix(in oklch, var(--gy) 17%, var(--bg)); stroke: color-mix(in oklch, var(--gy) 55%, transparent); stroke-width: .8; stroke-linejoin: round; }
+.gy-rip { font-size: 4.6px; font-weight: 800; letter-spacing: .2px; fill: color-mix(in oklch, var(--gy) 50%, white); }
+.gy-pit { fill: color-mix(in oklch, black 75%, var(--bg)); }
+.gy-wall { fill: color-mix(in oklch, var(--gy) 12%, black); }
+.gy-wall--l { fill: color-mix(in oklch, var(--gy) 22%, black); }
+.gy-lid { fill: color-mix(in oklch, var(--gy) 48%, var(--surf-2)); stroke: color-mix(in oklch, var(--gy) 75%, white); stroke-width: .7;
+          transition: translate .22s cubic-bezier(.4, 0, .2, 1) .22s; }
+.gy-rim { fill: none; stroke: color-mix(in oklch, var(--gy) 70%, white); stroke-width: .8; stroke-linejoin: round; pointer-events: none; }
+.gy-glow { fill: color-mix(in oklch, white 50%, var(--gy)); opacity: 0; transition: opacity .3s ease; pointer-events: none; }
+.gy-ghost { opacity: 0; translate: 0 26px; pointer-events: none; transition: opacity .18s ease, translate .22s ease-in;
+            filter: drop-shadow(0 0 5px color-mix(in oklch, var(--gy) 70%, transparent)); }
+.gy-gt { fill: color-mix(in oklch, white 72%, transparent); }
+.gy-gl { fill: color-mix(in oklch, color-mix(in oklch, white 80%, var(--gy)) 55%, transparent); }
+.gy-gr { fill: color-mix(in oklch, color-mix(in oklch, white 70%, var(--gy)) 38%, transparent); }
+.gy-eyes ellipse { fill: color-mix(in oklch, black 80%, var(--bg)); }
+.gy-name { font-size: 11px; font-weight: 700; fill: var(--ink); paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round;
+           opacity: 0; pointer-events: none; transition: opacity .15s ease; }
+.gy-more { font-size: 11px; font-weight: 600; fill: var(--ink-3); }
+.gy-grave:is(:hover, :focus-visible, [data-open]) .gy-lid { translate: var(--sx) var(--sy); transition-delay: 0s; }
+.gy-grave:is(:hover, :focus-visible) .gy-glow { opacity: .35; }
+.gy-grave:is(:hover, :focus-visible) .gy-ghost {
+  opacity: .9; translate: 0 0; animation: gy-bob 2.2s ease-in-out .8s infinite;
+  transition: opacity .3s ease .16s, translate .5s cubic-bezier(.34, 1.4, .64, 1) .16s; }
+.gy-grave:is(:hover, :focus-visible) .gy-name { opacity: 1; transition: opacity .3s ease .35s; }
+.gy-grave:is(:hover, :focus-visible) .gy-face { fill: color-mix(in oklch, var(--gy) 42%, var(--surf)); }
+@keyframes gy-bob { 50% { translate: 0 -4px; } }
+.gy-stone { transition: translate .45s var(--ease), opacity .45s ease; }
+/* a rejection not seen yet: the stone stays down until its cube is in the hole (ClimbReveal sets data-risen) */
+.gy-grave[data-bury]:not([data-risen]) .gy-stone, .gy-grave[data-dig] .gy-stone { translate: 0 8px; opacity: 0; }
+.cl-mini[data-fall][data-gone] { visibility: hidden; }
+
+/* the rating card beside the graves (GraveRate) */
+.gy-rate { position: absolute; right: 22px; top: calc(452 / 730 * 100%); width: 300px; display: grid; gap: 12px;
+           padding: 14px 16px; border-radius: 14px; background: var(--surf); border: 1px solid var(--line-soft); }
+.gy-rate-h { display: grid; gap: 2px; font-size: 13.5px; }
+.gy-rate-h b { color: var(--ink); }
+.gy-rate-h span { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gy-rate-foot { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; color: var(--ink-3); }
+.gy-rate-later { border: 0; border-bottom: 1px dashed var(--line); background: none; padding: 1px 0; font: inherit; color: var(--ink-3); cursor: pointer; }
+.gy-rate-later:hover { color: var(--ink); }
+
+/* one 1-5 question (components/Rate.tsx): numbered squares between two end words, the picked one filled in */
+.rate { display: grid; gap: 6px; }
+.rate-q { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+.rate-row { display: flex; align-items: center; gap: 5px; }
+.rate-end { font-size: 11px; color: var(--ink-3); }
+.rate-n { width: 26px; height: 26px; border-radius: 6px; border: 1px solid var(--line); background: none; color: var(--ink-2);
+          font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; transition: border-color .15s var(--ease), color .15s var(--ease); }
+.rate-n:hover { border-color: var(--ink-2); color: var(--ink); }
+.rate-n[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.rate-skip { margin-left: 10px; border: 0; border-bottom: 1px dashed var(--line); background: none; padding: 1px 0;
+             font: inherit; font-size: 12px; color: var(--ink-3); cursor: pointer; }
+.rate-skip:hover { color: var(--ink); }
+.trk .rate { flex-basis: 100%; margin-top: 10px; }
+
+/* the control: one quiet line, bottom right (View graveyard / Back to the climb) */
+.cl-ctl { position: absolute; right: 26px; bottom: 20px; display: flex; gap: 22px; }
+.cl-endbtn { display: inline-flex; align-items: center; gap: 7px; padding: 3px 1px;
              border: 0; border-bottom: 1px dashed var(--line); background: none; cursor: pointer; font: inherit; font-size: 12.5px;
              font-weight: 500; color: var(--ink-2); transition: color .15s var(--ease), border-color .15s var(--ease); }
 .cl-endbtn b { font-weight: 700; color: var(--ink); }
 .cl-endbtn em { font-style: normal; color: var(--ink-3); }
-.cl-endbtn svg polygon { fill: none; stroke: currentColor; stroke-width: 1; stroke-dasharray: 2 1.6; stroke-linejoin: round; }
+.cl-endbtn svg path { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; stroke-linecap: round; }
 .cl-endbtn:hover, .cl-endbtn:focus-visible, .cl-endbtn[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--ink-2); }
-.cl-endbtn[aria-pressed="true"] { border-bottom-style: solid; }
 
 /* entrance: the stairs rise in order, the roles drop onto them, the lights come up */
 .cl-step, .cl-peak { animation: cl-rise .9s var(--ease) both; animation-delay: calc(var(--i) * 85ms); }
@@ -1432,7 +1558,9 @@ h3.sub-h { font-size: 12px; font-weight: 600; color: var(--ink-3); margin: 22px 
   .cl-step, .cl-peak, .cl-mini, .cl-glow, .cl-flag { animation: none; }
   .cl-mini:hover, [data-pile]:is(:hover, :focus-within) .cl-mini:hover { translate: none; }
   /* the list still opens, without the travel */
-  .cl-step, .cl-peak, .cl-cube, .cl-name, .cl-head, .cl-endbtn, .cl-ghost, .cl-fall-lab { transition: none !important; }
+  .cl-step, .cl-peak, .cl-cube, .cl-name, .cl-head, .cl-ctl, .cl-world, .cl-stage, .gy-stone, .gy-lid, .gy-ghost, .gy-name { transition: none !important; }
+  .gy-grave:is(:hover, :focus-visible) .gy-ghost, .roll-in, .roll-out { animation: none; }
+  .roll-out { opacity: 0; }
   [data-pile]:is(:hover, :focus-within) { scale: none; }
 }
 @media (max-width: 640px) {
@@ -1463,6 +1591,7 @@ h3.sub-h { font-size: 12px; font-weight: 600; color: var(--ink-3); margin: 22px 
 .tile-meta .sec { min-width: 0; }
 .tile-meta .pay { min-width: 0; font-size: 12px; color: var(--ink-2); }
 .tile-meta .stamp { margin-left: 0; vertical-align: 0; }
+.tile-size { font-size: 12px; color: var(--ink-2); white-space: nowrap; }
 .band .tiles { margin-top: 2px; }
 .band { margin-top: 36px; }
 
@@ -2254,6 +2383,7 @@ button.kx-card-front { font: inherit; color: inherit; text-align: left; cursor: 
 .pp-link { margin: 12px 0 0 48px; font: inherit; font-size: 16px; background: none; border: 0; padding: 0; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .pp-chain { margin: 12px 0 0 48px; padding: 14px 16px; background: var(--surf-2); border-radius: var(--r); }
 .pp-chain ol { margin: 0; padding-left: 22px; display: grid; gap: 8px; font-size: 17px; line-height: 1.5; }
+.pp-chain .pp-sub { margin: 6px 0 0; padding-left: 20px; list-style: disc; display: grid; gap: 4px; font-size: 16px; color: var(--ink-2); }
 .pp-ev, .pp-gap { margin: 12px 0 0; font-size: 16px; color: var(--ink-2); }
 .pp-gap { color: var(--ink); border-left: 3px solid var(--warm); padding-left: 12px; }
 .pp-drill { padding: 20px 22px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surf); max-width: 520px; display: grid; gap: 14px; font-size: 17px; }
@@ -2273,3 +2403,10 @@ button.kx-card-front { font: inherit; color: inherit; text-align: left; cursor: 
   .pp-q-act { grid-column: 2; }
   .pp-done, .pp-link, .pp-chain { margin-left: 0; }
 }
+
+/* tile foot (2026-11-10): the facts you decide on (pay, company size) get their own ruled row at the bottom, apart from the
+   flags above it. Pay is the headline; the row is absent when a role states neither, so the tile doesn't grow. */
+.tile-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+             padding-top: 10px; border-top: 1px solid var(--line-soft); }
+.tile-pay { font-size: 16px; font-weight: 650; letter-spacing: -.01em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.tile-foot .tile-size { font-size: 12.5px; }

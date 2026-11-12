@@ -3,8 +3,8 @@
  * providers"). A Claude session (Sonnet subagents, in batches) reads each posting against Jonno's preferences and the
  * rubric in docs/automation/evaluate-roles.md, and writes a JSON file; `npm run evaluate -- import` validates it here.
  *
- * Scoring (RUBRIC_VERSION 2), from the ranking Q&A with Jonno on 2026-11-04 (v1: 2026-09-24):
- *   work fit 35 · realistic chance 20 · company type 15 · career path 20 · sector 10  → 0–100
+ * Scoring (RUBRIC_VERSION 2 scores, v3 maths 2026-11-09; v2 from the 2026-11-04 ranking Q&A, v1 2026-09-24):
+ *   work fit 44 · company type 19 · career path 25 · sector 12  → 0–100, then × chance multiplier (below)
  * Each part is 1–5 and maps linearly to 0–weight. Pay is still judged and shown but weighs 0: only ~1 in 5 postings
  * state a salary, so scoring it made two roles on the same salary differ by up to 5 points (Jonno: drop it).
  * A dealbreaker (heavy hours, mostly outside London, old-fashioned employer) subtracts 50 so the role sinks, visibly.
@@ -17,8 +17,17 @@ import type { EvalScores } from "@/lib/db/schema";
 export const RUBRIC_VERSION = 2;
 
 export const WEIGHTS: Record<keyof EvalScores, number> = {
-  workFit: 35, chance: 20, companyType: 15, careerPath: 20, sector: 10, pay: 0,
+  workFit: 44, chance: 0, companyType: 19, careerPath: 25, sector: 12, pay: 0,
 };
+/**
+ * Rubric v3 (2026-11-09, Jonno: Sierra's £150k Strategist role, needing founder experience and a CS degree, ranked 80).
+ * Chance used to be 20 additive points, so a 1/5 role could still reach 80. It is now a multiplier on the four fit
+ * parts (which sum to 100), i.e. rank ≈ how good the role is × how likely he is to get it. Judgement, not calibrated:
+ * only ~60 outcomes exist and most are undecided. Compressed from raw hit rates (≈2/8/20/35/50%) so a stretch role
+ * still ranks, just below the roles he can land.
+ */
+export const CHANCE_MULTIPLIER: Record<number, number> = { 1: 0.4, 2: 0.65, 3: 0.85, 4: 0.95, 5: 1 };
+export const chanceMultiplier = (chance: number | null | undefined) => CHANCE_MULTIPLIER[chance ?? 3] ?? 0.85;
 export const DEALBREAKER_PENALTY = -50;
 /** `outside_london` is Claude's read of a vague or multi-site posting: heavy only when London is not a listed office
  *  (Jonno 2026-10-27: unclear locations must not be ruled out). A London-listed role keeps the flag as a note only. */

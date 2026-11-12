@@ -88,11 +88,21 @@ export function HireVueDeck({ questions }: { questions: Question[] }) {
                   )}
                 </div>
               </div>
-              {live?.phase === "done" ? <p className="pp-done">Time. Now check your chain below, and say the learning line out loud.</p> : null}
-              <button type="button" className="pp-link" aria-expanded={shown} onClick={() => toggle(i)}>{shown ? "Hide my chain" : "Show my chain"}</button>
+              {live?.phase === "done" ? <p className="pp-done">Time. Now check your bullets below, and say the learning line out loud.</p> : null}
+              <button type="button" className="pp-link" aria-expanded={shown} onClick={() => toggle(i)}>{shown ? "Hide my bullets" : "Show my bullets"}</button>
               {shown ? (
                 <div className="pp-chain">
-                  <ol>{q.chain.map((c) => <li key={c}>{c}</li>)}</ol>
+                  <ol>
+                    {q.chain.map((c) => {
+                      const b = typeof c === "string" ? { point: c, sub: [] as string[] } : { point: c.point, sub: c.sub ?? [] };
+                      return (
+                        <li key={b.point}>
+                          {b.point}
+                          {b.sub.length ? <ul className="pp-sub">{b.sub.map((s) => <li key={s}>{s}</li>)}</ul> : null}
+                        </li>
+                      );
+                    })}
+                  </ol>
                   <p className="pp-ev"><b>Evidence:</b> {q.evidence}</p>
                   {q.gap ? <p className="pp-gap"><b>Gap, yours to fill:</b> {q.gap}</p> : null}
                 </div>

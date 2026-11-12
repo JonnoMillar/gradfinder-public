@@ -265,6 +265,12 @@ export const applications = sqliteTable("applications", {
    *  tell same-company roles apart (one employer's form and confirmation named different tracks). Set by a run. */
   formUrl: text("form_url"),
   employerTitle: text("employer_title"),
+  /** Jonno's own 1-5 ratings (2026-11-10): how much he wanted it when he sent it, how much once it ended (the grave),
+   *  and how much effort it took. null = not asked yet, 0 = he chose Skip. Wanted at Sent vs Claude's rank score is
+   *  meant to tune the rubric once there are enough of them; the end rating sizes the headstone. */
+  wantedSent: integer("wanted_sent"),
+  wantedEnd: integer("wanted_end"),
+  effort: integer("effort"),
   updatedAt: text("updated_at").notNull().default(now),
 });
 

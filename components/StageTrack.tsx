@@ -11,7 +11,9 @@
 import { useEffect, useOptimistic, useState, useSyncExternalStore, useTransition } from "react";
 import { APPLICATION_STATUS_LABEL } from "@/lib/ui/format";
 import { dismiss, setStatus, type ActionResult } from "@/app/actions";
+import { SUBMITTED } from "@/lib/tracker/attention";
 import { emitMoved } from "./motion";
+import { Rate } from "./Rate";
 
 const UNDO_MS = 10_000;
 
@@ -107,10 +109,23 @@ export function UndoToast() {
   );
 }
 
-export function StageTrack({ jobId, status, company }: { jobId: number; status: string; company: string }) {
+/**
+ * Roles just sent from a track on this page: they get "how much do you want this one?" under the track. Module-level,
+ * because the move usually remounts the row in another group (the same reason the Undo toast lives outside the row).
+ */
+const justSent = new Set<number>();
+
+export function StageTrack({ jobId, status, company, wantedSent, askWanted = false }: {
+  jobId: number; status: string; company: string;
+  /** how much Jonno wanted it when sent (1-5, 0 = skipped, null = not asked) */
+  wantedSent?: number | null;
+  /** ask for that rating whenever it's missing on a sent role (the role page), not only right after a move here */
+  askWanted?: boolean;
+}) {
   const [pending, start] = useTransition();
   const [shown, setShown] = useOptimistic(status);
   const [err, setErr] = useState<string | null>(null);
+  const [rated, setRated] = useState(false);
 
   const move = (to: string) => {
     if (to === shown) return;
@@ -122,6 +137,7 @@ export function StageTrack({ jobId, status, company }: { jobId: number; status: 
       if (!r.ok) { setErr(r.error); return; }
       emit({ jobId, company, from, to, n: ++seq });
       emitMoved({ jobId, company, from, to });
+      if (SUBMITTED.includes(to) && !SUBMITTED.includes(from)) justSent.add(jobId);
     });
   };
 
@@ -165,6 +181,10 @@ export function StageTrack({ jobId, status, company }: { jobId: number; status: 
         ))}
       </div>
       {err ? <span className="tmsg" data-err="1" role="status">{err}</span> : null}
+      {wantedSent == null && !rated && SUBMITTED.includes(shown) && (askWanted || justSent.has(jobId)) ? (
+        <Rate jobId={jobId} field="wantedSent" question="How much do you want this one?" low="A little" high="Badly"
+              onDone={() => { justSent.delete(jobId); setRated(true); }} />
+      ) : null}
     </div>
   );
 }

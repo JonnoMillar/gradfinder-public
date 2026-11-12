@@ -78,6 +78,12 @@ describe("liveness", () => {
     expect(await checkUrl(shell, fakeGet({ [shell]: { body: para("Graduate Analyst 2027. Applications close on 30 November 2026.") } }).get)).toMatchObject({ status: "open", mentionsIntake: true });
   });
 
+  it("Bright Network eBay: 'Applications for this job are now closed' is a closure, though the page still loads", async () => {
+    const url = "https://www.brightnetwork.co.uk/graduate-jobs/ebay/2027-commercial-graduate-rotation-program-uk";
+    const { get } = fakeGet({ [url]: { body: para("2027 Commercial Graduate Rotation Program | UK. Deadline: 4th Nov 2026. eBay. Applications for this job are now closed. 24 Months | Full-Time") } });
+    expect(await checkUrl(url, get)).toMatchObject({ status: "closed", via: "page" });
+  });
+
   it("a board's own '2027' nav never confirms the intake", async () => {
     const url = "https://targetjobs.co.uk/jobs/operations-graduate-associate-235743";
     const { get } = fakeGet({ [url]: { body: para("Graduate jobs & schemes 2027. Operations Graduate Associate at Attio.") } });

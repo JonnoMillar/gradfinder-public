@@ -40,7 +40,7 @@ import {
   rankLines, REQ_FIELDS, reqState, reqWord, sectorColor, sectorLabel,
 } from "@/lib/ui/format";
 import { activityFor, companyGlance, listEmailUpdates, factsFor, getEvaluation, getJob, liveness, researchFor } from "@/lib/queries";
-import { WEIGHTS } from "@/lib/evaluate";
+import { WEIGHTS, chanceMultiplier } from "@/lib/evaluate";
 import { intakeStatus } from "@/lib/pipeline/filter";
 
 export const dynamic = "force-dynamic";
@@ -183,7 +183,7 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
     if (ai) snippets.unshift({ label: "AI use", fact: { ...ai, value: job.aiForwardRationale } });
   }
 
-  const evRows = ev ? (Object.keys(WEIGHTS) as (keyof typeof WEIGHTS)[]).map((k) => ({ label: SCORE_LABEL[k], score: ev.scores[k] ?? null, reason: ev.reasons[k], weight: WEIGHTS[k] })) : [];
+  const evRows = ev ? (Object.keys(WEIGHTS) as (keyof typeof WEIGHTS)[]).map((k) => ({ label: SCORE_LABEL[k], score: ev.scores[k] ?? null, reason: ev.reasons[k], weight: k === "chance" ? `discounts the rest ×${chanceMultiplier(ev.scores.chance)}` : WEIGHTS[k] })) : [];
 
   return (
     <PageSlide>
@@ -222,7 +222,7 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
           </div>
         </div>
         <div className="rp-trk">
-          <StageTrack jobId={job.id} status={job.status ?? "discovered"} company={job.company} />
+          <StageTrack jobId={job.id} status={job.status ?? "discovered"} company={job.company} wantedSent={job.wantedSent} askWanted />
         </div>
         {job.status && !["discovered", "closed", "rejected", "dismissed"].includes(job.status) ? (
           <div className="rp-next">

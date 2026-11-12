@@ -41,6 +41,8 @@ export interface JobListRow {
   domain: string | null;
   sector: string | null;
   aiForward: number | null;
+  /** headcount band from lib/ui/size.ts (global staff, usually); null = no sourced figure */
+  sizeBand: string | null;
   status: string | null;
   sources: string[];
   /** 1-based position among every kept role by rank score; null for a filtered-out or closed role */
@@ -66,7 +68,7 @@ const LIST_COLS = `
   j.id, j.title, j.kind, j.rank_score, j.deadline, j.deadline_text, j.salary_text,
   j.location_raw, j.work_mode, j.excluded_reason, j.intake_status, j.first_seen,
   c.id as company_id, c.name as company, c.slug as company_slug, c.logo_url, c.domain,
-  c.sector, c.ai_forward, a.status,
+  c.sector, c.ai_forward, c.size_band, a.status,
   (select group_concat(s.source) from (select distinct source from job_sources where job_id = j.id) s) as sources,
   case when ${KEPT("j", "a")} then (select pos from rank_pos where rank_pos.id = j.id) end as rank_pos,
   (c.sector = 'sport' or lower(c.name) in (${SPORT_NAMES})
@@ -93,6 +95,7 @@ const toListRow = (r: Record<string, unknown>): JobListRow => ({
   domain: (r.domain as string) ?? null,
   sector: (r.sector as string) ?? null,
   aiForward: r.ai_forward == null ? null : Number(r.ai_forward),
+  sizeBand: (r.size_band as string) ?? null,
   status: (r.status as string) ?? null,
   sources: String(r.sources ?? "").split(",").filter(Boolean),
   rankPos: r.rank_pos == null ? null : Number(r.rank_pos),
@@ -346,6 +349,8 @@ export interface JobDetail extends JobListRow {
   nextActionDue: string | null;
   notes: string | null;
   appliedAt: string | null;
+  /** how much Jonno wanted it when he sent it (1-5; 0 = skipped, null = not asked yet) */
+  wantedSent: number | null;
   applicationId: number | null;
 }
 
@@ -357,7 +362,7 @@ export function getJob(id: number): JobDetail | null {
            j.apply_url, j.canonical_url, j.eligibility, j.application_requirements, j.process_stages,
            j.rank_breakdown, j.extraction_meta,
            c.summary as company_summary, c.ai_forward_rationale, c.research_updated_at,
-           a.id as application_id, a.next_action, a.next_action_due, a.notes, a.applied_at
+           a.id as application_id, a.next_action, a.next_action_due, a.notes, a.applied_at, a.wanted_sent
     from jobs j
     join companies c on c.id = j.company_id
     left join applications a on a.job_id = j.id
@@ -391,6 +396,7 @@ export function getJob(id: number): JobDetail | null {
     nextActionDue: (r.next_action_due as string) ?? null,
     notes: (r.notes as string) ?? null,
     appliedAt: (r.applied_at as string) ?? null,
+    wantedSent: r.wanted_sent == null ? null : Number(r.wanted_sent),
   };
 }
 
@@ -563,6 +569,8 @@ export interface ApplicationRow {
   domain: string | null;
   /** the liveness fact, when the check has run */
   live: { status: "open" | "closed" | "unknown"; evidence: string; checkedAt: string } | null;
+  /** Jonno's 1-5 ratings (null = not asked, 0 = skipped): wanted at Sent, wanted once it ended, effort */
+  wantedSent: number | null; wantedEnd: number | null; effort: number | null;
 }
 
 /**
@@ -572,7 +580,7 @@ export interface ApplicationRow {
 export function listApplications(): ApplicationRow[] {
   return (getSqlite().prepare(`
     select a.id, a.job_id, a.status, a.next_action, a.next_action_due, a.notes, a.applied_at,
-           a.dismissed_reason, a.updated_at,
+           a.dismissed_reason, a.updated_at, a.wanted_sent, a.wanted_end, a.effort,
            (select max(at) from activity_log l where l.application_id = a.id) as last_activity_at,
            j.title, j.deadline, j.is_active, j.excluded_reason,
            c.name as company, c.slug as company_slug, c.logo_url, c.domain,
@@ -593,8 +601,11 @@ export function listApplications(): ApplicationRow[] {
       company: String(r.company), companySlug: String(r.company_slug),
       logoUrl: (r.logo_url as string) ?? null, domain: (r.domain as string) ?? null,
       live: liveness(parse(r.liveness_json, null)),
+      wantedSent: num(r.wanted_sent), wantedEnd: num(r.wanted_end), effort: num(r.effort),
     }));
 }
+
+const num = (v: unknown) => (v == null ? null : Number(v));
 
 /**
  * Where each rejected or closed application stood when it ended: the status it moved FROM into its final one (the last
@@ -660,6 +671,13 @@ export function unseenMoves(): NewsMove[] {
       emailId: Number(r.id), applicationId: Number(r.application_id), jobId: Number(r.job_id), company: String(r.company),
       from: (r.status_from as string) ?? null, to: String(r.status_applied), receivedAt: String(r.received_at),
     }));
+}
+
+/** One stage move, for the Climb's replay: every activity_log row, oldest first. */
+export interface HistoryMove { appId: number; from: string | null; to: string; at: string }
+export function climbHistory(): HistoryMove[] {
+  return (getSqlite().prepare("select application_id, from_status, to_status, at from activity_log order by at, id").all() as Record<string, unknown>[])
+    .map((r) => ({ appId: Number(r.application_id), from: (r.from_status as string) ?? null, to: String(r.to_status), at: String(r.at) }));
 }
 
 export function activityFor(applicationId: number) {

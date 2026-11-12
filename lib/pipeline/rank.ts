@@ -1,8 +1,9 @@
 /**
  * Ranking v2 (2026-09-24). Two regimes, every term kept in `rank_breakdown` so the UI can show why:
  *
- * - **Evaluated by Claude** (lib/evaluate, a `role_evaluations` row): the six-part rubric, 0–100 —
- *   work fit 35 · realistic chance 20 · company type 15 · career path 20 · sector 10 (rubric v2; pay is shown, not scored) —
+ * - **Evaluated by Claude** (lib/evaluate, a `role_evaluations` row): work fit 44 · company type 19 · career path 25 ·
+ *   sector 12 (pay is shown, not scored), then discounted by realistic chance (×0.4 at 1/5 … ×1 at 5/5; CHANCE_MULTIPLIER,
+ *   2026-11-09), shown as a negative `chance` line —
  *   plus −50 for a dealbreaker (−25, or nothing when London is a listed office, for the vaguer `outside_london`), −5 for "register interest" (nothing to apply to yet), −30 for a role that demands a
  *   first (Jonno is predicted a 2:1). An unconfirmed 2027 intake is a note on the page, not a rank term (Jonno,
  *   2026-09-25: it shouldn't affect the ranking).
@@ -16,7 +17,7 @@ import { eq } from "drizzle-orm";
 import { SECTOR_WEIGHTS, SPORT_COMPANIES } from "@/config/criteria";
 import { getDb, schema } from "@/lib/db/client";
 import type { Eligibility, EvalScores, JobKind } from "@/lib/db/schema";
-import { dealbreakerPenalty, evaluationPoints } from "@/lib/evaluate";
+import { chanceMultiplier, dealbreakerPenalty, evaluationPoints } from "@/lib/evaluate";
 
 export interface RankInput {
   sector: string | null;
@@ -58,8 +59,12 @@ export function scoreJob(j: RankInput, today = new Date()): { score: number; bre
 function evaluatedBreakdown(j: RankInput, e: NonNullable<RankInput["evaluation"]>): RankBreakdown {
   const p = evaluationPoints(e.scores);
   const b: RankBreakdown = {
-    work_fit: p.workFit, chance: p.chance, company_type: p.companyType, career_path: p.careerPath, sector: p.sector,
+    work_fit: p.workFit, company_type: p.companyType, career_path: p.careerPath, sector: p.sector,
   };
+  // chance discounts the four fit parts (a negative line in the ledger); none at 5/5
+  const fit = p.workFit + p.companyType + p.careerPath + p.sector;
+  const discount = Math.round(fit * (chanceMultiplier(e.scores.chance) - 1) * 10) / 10;
+  if (discount) b.chance = discount;
   if (j.sport && j.tech) b.sport_tech = SPORT_TECH_BONUS;
   // no key when the penalty is 0: the Apply now query skips any role with a `dealbreaker` term
   const penalty = dealbreakerPenalty(e.dealbreakers.map((d) => d.kind), !!j.londonListed);

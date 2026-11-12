@@ -27,7 +27,7 @@ type Get = (url: string, opts: { source: string; noSnapshot?: boolean; retries?:
 
 // Civil Service adverts say "Once this job has closed, the job advert will no longer be available" on every open
 // posting (HM Treasury, HM Land Registry via LinkedIn) — a conditional is not a closure, hence the lookbehind.
-const CLOSED = /(?<!\b(once|when|if|after|until|before|by the time)\b[^.]{0,20})(no longer (active|accepting applications|available|open|advertised|live)|job (not found|has expired|is no longer|has been (filled|removed|closed))|position (has been filled|is (now )?closed|is no longer)|(this|the) (vacancy|role|job|position|posting|advert) (has|is) (now )?(closed|expired)|applications (are|have) (now )?closed|this job has expired|job you('re| are) looking for (is|was|can'?t|no longer))/i;
+const CLOSED = /(?<!\b(once|when|if|after|until|before|by the time)\b[^.]{0,20})(no longer (active|accepting applications|available|open|advertised|live)|job (not found|has expired|is no longer|has been (filled|removed|closed))|position (has been filled|is (now )?closed|is no longer)|(this|the) (vacancy|role|job|position|posting|advert) (has|is) (now )?(closed|expired)|applications (are|have) (now )?closed|applications? for this (job|role|vacancy|position|opportunity|programme|scheme) (are|is|have been) (now )?closed|this job has expired|job you('re| are) looking for (is|was|can'?t|no longer))/i;
 const intakeRe = () => new RegExp(`\\b${INTAKE_YEAR}\\b|\\b${INTAKE_YEAR - 1}\\s*[/–-]\\s*(20)?${String(INTAKE_YEAR).slice(2)}\\b`);
 
 const status = (e: unknown) => (e instanceof FetchError ? e.status : undefined);

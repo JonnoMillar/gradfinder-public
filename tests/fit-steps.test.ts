@@ -37,3 +37,16 @@ describe("defaultStep", () => {
     for (const s of ["closed", "rejected", "dismissed", "discovered"]) expect(defaultStep(s)).toBeNull();
   });
 });
+
+describe("shortPay", () => {
+  it("reads plain, ranged and K-suffixed pay", async () => {
+    const { shortPay } = await import("@/lib/ui/format");
+    expect(shortPay("£37,000")).toBe("£37k");
+    expect(shortPay("£35K – £55K • Offers Equity")).toBe("£35–55k");
+    expect(shortPay("£150K – £245K • Offers Equity")).toBe("£150–245k");
+    expect(shortPay("£35-55k")).toBe("£35–55k");
+    expect(shortPay("£30,000 - £40,000 per year")).toBe("£30–40k");
+    expect(shortPay("£40,000 base salary plus discretionary profit")).toBe("£40k");
+    expect(shortPay("Competitive")).toBeNull();
+  });
+});

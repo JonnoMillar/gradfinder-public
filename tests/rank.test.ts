@@ -18,11 +18,23 @@ describe("scoreJob — evaluated by Claude", () => {
     expect(scoreJob({ ...base, evaluation: evaluated(5) }, today).score).toBe(100);
     expect(scoreJob({ ...base, evaluation: evaluated(1) }, today).score).toBe(0);
   });
-  it("weights the parts 35/20/15/20/10 (rubric v2)", () => {
-    expect(evaluationPoints({ workFit: 5, chance: 1, companyType: 1, careerPath: 1, sector: 1, pay: 1 }).workFit).toBe(35);
-    expect(evaluationPoints({ workFit: 1, chance: 1, companyType: 1, careerPath: 5, sector: 1, pay: 1 }).careerPath).toBe(20);
-    expect(evaluationPoints({ workFit: 1, chance: 5, companyType: 1, careerPath: 1, sector: 1, pay: 1 }).chance).toBe(20);
-    expect(evaluationPoints(scores(3)).companyType).toBe(7.5);
+  it("weights the four fit parts 44/19/25/12; chance carries no points of its own (rubric v3)", () => {
+    expect(evaluationPoints({ workFit: 5, chance: 1, companyType: 1, careerPath: 1, sector: 1, pay: 1 }).workFit).toBe(44);
+    expect(evaluationPoints({ workFit: 1, chance: 1, companyType: 1, careerPath: 5, sector: 1, pay: 1 }).careerPath).toBe(25);
+    expect(evaluationPoints({ workFit: 1, chance: 5, companyType: 1, careerPath: 1, sector: 1, pay: 1 }).chance).toBe(0);
+    expect(evaluationPoints(scores(3)).companyType).toBe(9.5);
+  });
+  it("chance multiplies the fit: a perfect role scores 100 / 85 / 40 at chance 5 / 3 / 1, with a negative chance line", () => {
+    const at = (chance: number) => scoreJob({ ...base, evaluation: { scores: { ...scores(5), chance }, dealbreakers: [] } }, today);
+    expect(at(5).score).toBe(100);
+    expect(at(5).breakdown.chance).toBeUndefined();
+    expect(at(3).score).toBe(85);
+    expect(at(1).score).toBe(40);
+    expect(at(1).breakdown.chance).toBe(-60);
+  });
+  it("Sierra (everything 5, chance 1) can't reach the 50 'apply now' bar; a perfect chance-2 role can", () => {
+    expect(scoreJob({ ...base, evaluation: { scores: { ...scores(5), chance: 1 }, dealbreakers: [] } }, today).score).toBeLessThan(50);
+    expect(scoreJob({ ...base, evaluation: { scores: { ...scores(5), chance: 2 }, dealbreakers: [] } }, today).score).toBeGreaterThanOrEqual(50);
   });
   it("sport and tech compound: a sports-tech role gets +4 on top of the sector score, sport alone or tech alone gets nothing", () => {
     expect(scoreJob({ ...base, sport: true, tech: true, evaluation: evaluated(3) }, today).breakdown.sport_tech).toBe(4);

@@ -79,8 +79,14 @@ export function JobRow({ job, fresh }: { job: JobListRow; fresh?: boolean }) {
               <IconPin width={12} height={12} />{job.locationRaw ? "Not London" : "Where?"}
             </span>
           ) : null}
-          {pay ? <span className="pay">{pay}</span> : null}
         </span>
+
+        {pay || job.sizeBand ? (
+          <span className="tile-foot" data-slide>
+            {pay ? <b className="tile-pay" title={job.salaryText ?? undefined}>{pay}</b> : <span />}
+            {job.sizeBand ? <span className="tile-size" title="Company size: employees, usually worldwide">{job.sizeBand} staff</span> : null}
+          </span>
+        ) : null}
       </Link>
       {/* a sibling of the link, not inside it: a button in an <a> is invalid and would open the role */}
       {job.status === "dismissed" ? null : <NotInterested jobId={job.id} company={job.company} status={job.status} />}

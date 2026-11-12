@@ -248,13 +248,13 @@ export function CommuteBars({ commutes }: { commutes: CommuteRow[] }) {
 
 // ---------- scores ----------
 
-export function ScoreBars({ rows }: { rows: { label: string; score: number | null; reason: string; weight: number }[] }) {
+export function ScoreBars({ rows }: { rows: { label: string; score: number | null; reason: string; weight: number | string }[] }) {
   return (
     <div className="sb">
       {rows.map((r) => (
         <div key={r.label} className="sb-i">
           <div className="sb-h">
-            <span>{r.label} <small>{r.weight ? `×${r.weight}` : "shown, not scored"}</small></span>
+            <span>{r.label} <small>{typeof r.weight === "string" ? r.weight : r.weight ? `×${r.weight}` : "shown, not scored"}</small></span>
             <span className="sb-pips" role="img" aria-label={`${r.score ?? "unknown"} of 5`}>
               {[1, 2, 3, 4, 5].map((n) => <i key={n} className={r.score != null && n <= r.score ? "on" : undefined} />)}
             </span>

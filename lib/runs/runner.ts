@@ -28,6 +28,8 @@ export function explainExit(tail: string, code: number | null): string {
   if (/OAuth|authenticate|not logged in|please run \/?login/i.test(tail)) {
     return "Claude CLI is not logged in. Run `claude login` in a terminal, then press Apply again.";
   }
+  const cap = tail.match(/Reached maximum budget \(\$([\d.]+)\)/);
+  if (cap) return `Stopped at the $${cap[1]} spending cap for one pass (RUN_BUDGET_USD).`;
   return `Ended without a result (exit ${code}). ${tail}`.slice(0, 480);
 }
 

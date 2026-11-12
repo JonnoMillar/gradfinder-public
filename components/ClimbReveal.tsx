@@ -21,8 +21,13 @@
  * `data-cell="u,v,layer"` (its place on the pile); this only animates. The minis keep a platinum tint until the page is
  * left. Reduced motion: no travel, no sound, the toasts still come in turn.
  *
- * It also writes the one quiet line for rejections in the Climb's head ("Since you last looked: X said no."), and holds
- * on to the moves it opened with: the revalidate after markMovesSeen sends an empty list, which must not wipe the line.
+ * Rejections (Jonno 2026-11-10: "watch an application fall off into a grave"), after the forward moves: the camera
+ * starts down to the graveyard (components/ClimbStage.tsx), the rejected cube (`data-fall`, waiting on the stage it had
+ * reached) teeters, hops to the stage's front edge and tumbles off it into its grave: the lid slides open (`data-open`),
+ * the cube drops into the hole and sinks, the lid closes and the headstone rises (`data-bury` until then). The view stays in the graveyard, where the rating card asks about it.
+ *
+ * It also writes the line for rejections in the Climb's head ("Since you last looked: X said no. Next up: Y"), and
+ * holds on to the moves it opened with: the revalidate after markMovesSeen sends an empty list, which must not wipe it.
  */
 import { useEffect, useState } from "react";
 import { markMovesSeen } from "@/app/actions";
@@ -31,6 +36,8 @@ import { hopTrack, scatter, toKeyframes, type Pose, type Way } from "@/lib/ui/bo
 import { cube } from "@/lib/ui/cubes";
 import { thump } from "@/lib/ui/sound";
 import { emitMoved, reducedMotion } from "./motion";
+import { showGraveyard } from "./ClimbStage";
+import { GRAVE_DEPTH } from "./Graveyard";
 
 const AFTER_ENTRANCE = 1500;
 const BETWEEN = 3000;   // after one cube has come to rest, before the next sets off (the toast's words need a moment too)
@@ -62,7 +69,7 @@ function surface(stage: Element) {
   return { x: t.x + t.width / 2, y: t.y + t.height / 2 };
 }
 
-export function ClimbReveal({ moves: fresh }: { moves: NewsMove[] }) {
+export function ClimbReveal({ moves: fresh, nextUp = null }: { moves: NewsMove[]; nextUp?: { jobId: number; company: string } | null }) {
   // what was news when the page opened; new news (a refresh after the tab regains focus) replaces it, an empty list doesn't
   const [moves, setMoves] = useState(fresh);
   if (fresh.length && idsOf(fresh) !== idsOf(moves)) setMoves(fresh);
@@ -162,6 +169,59 @@ export function ClimbReveal({ moves: fresh }: { moves: NewsMove[] }) {
       later(() => dest.removeAttribute("data-news"), 2600);
     }
 
+    const falls = [...new Set(moves.filter((m) => m.to === "rejected").map((m) => m.applicationId))];
+    const faller = (id: number) => document.querySelector<SVGAElement>(`.cl-mini[data-fall="${id}"]`);
+    const grave = (id: number) => document.querySelector<SVGAElement>(`.gy-grave[data-grave="${id}"]`);
+    // in place at once: the cube gone from its stage, the headstone up (attributes React doesn't manage, see above)
+    const settle = (id: number) => { faller(id)?.setAttribute("data-gone", "1"); grave(id)?.setAttribute("data-risen", "1"); };
+    // a remount (React's dev double-run, or new news) starts the burials over: undo what a cleanup settled
+    if (!calm) falls.slice(0, FULL).forEach((id) => { faller(id)?.removeAttribute("data-gone"); grave(id)?.removeAttribute("data-risen"); });
+
+    async function bury(id: number, first: boolean) {
+      const el = faller(id), g = grave(id);
+      if (calm || !el || !g) { settle(id); if (g) showGraveyard(true); return; }
+      const body = cubeOf(el), rest = footOf(el);
+      const stage = el.closest(".cl-step")!;
+      const top = stage.querySelector<SVGGraphicsElement>(":scope > .cl-t")!.getBBox();
+      const edge = { x: top.x + top.width / 2 - rest.x, y: top.y + top.height - rest.y };   // the top face's front corner
+      // the hole's centre on the ground (the graves sit untransformed in the same drawing, so these are its units)
+      const spot = { x: Number(g.dataset.hx), y: Number(g.dataset.hy) };
+
+      // the camera sets off first (it has furthest to go), while the cube teeters on the brink
+      if (first) showGraveyard(true);
+      const rock = body.animate([{ rotate: "0deg" }, { rotate: "-9deg" }, { rotate: "7deg" }, { rotate: "-4deg" }, { rotate: "0deg" }],
+        { duration: 700, easing: "ease-in-out" });
+      anims.push(rock);
+      await rock.finished.catch(() => {});
+      if (!live) return;
+
+      const track = hopTrack([{ x: 0, y: 0 }, { ...edge, lift: 12 }, { x: spot.x - rest.x, y: spot.y - rest.y, lift: 8, spin: 1 }], { pace: 0.85 });
+      later(() => g.setAttribute("data-open", "1"), Math.max(0, track.duration * 1000 - 450));   // the lid slides away as it comes down
+      const fall = body.animate(toKeyframes(track.frames, track.duration), { duration: track.duration * 1000, easing: "linear", fill: "forwards" });
+      anims.push(fall);
+      later(() => thump(150, 0.06), track.landings[0].t * 1000);
+      // off the edge: its shadow grows on the lid as it comes down
+      later(() => {
+        g.style.setProperty("--fall", `${Math.round((track.duration - track.landings[0].t) * 1000)}ms`);
+        g.setAttribute("data-falling", "1");
+      }, track.landings[0].t * 1000);
+      await fall.finished.catch(() => {});
+      g.removeAttribute("data-falling");
+      if (!live) return;
+      thump(70, 0.22);
+      // it sinks into the hole, the lid slides shut over it, and the headstone comes up
+      const end = track.frames[track.frames.length - 1];
+      const sink = body.animate([
+        { transform: `translate(${end.x}px, ${end.y}px)`, opacity: 1 },
+        { transform: `translate(${end.x}px, ${end.y + GRAVE_DEPTH}px)`, opacity: 0 },
+      ], { duration: 420, easing: "ease-in", fill: "forwards" });
+      anims.push(sink);
+      await sink.finished.catch(() => {});
+      el.setAttribute("data-gone", "1");
+      g.removeAttribute("data-open");
+      g.setAttribute("data-risen", "1");
+    }
+
     (async () => {
       await wait(AFTER_ENTRANCE);
       for (const [n, m] of forward.entries()) {
@@ -173,6 +233,13 @@ export function ClimbReveal({ moves: fresh }: { moves: NewsMove[] }) {
         emitMoved({ jobId: m.jobId, company: m.company, from: m.from ?? "discovered", to: m.to, replay: true });
         if (n < Math.min(forward.length, FULL) - 1) await wait(BETWEEN);
       }
+      if (forward.length && falls.length) await wait(BETWEEN);
+      for (const [n, id] of falls.entries()) {
+        if (!live) return;
+        if (n >= FULL) { settle(id); continue; }
+        await bury(id, n === 0);
+        if (n < Math.min(falls.length, FULL) - 1) await wait(900);
+      }
       if (live) await markMovesSeen({ ids: moves.map((m) => m.emailId) });
     })();
     return () => {
@@ -182,10 +249,17 @@ export function ClimbReveal({ moves: fresh }: { moves: NewsMove[] }) {
       document.querySelectorAll(".cl-svg").forEach((s) => s.removeAttribute("data-replay"));
       document.querySelectorAll("[data-lit], [data-from]").forEach((s) => { s.removeAttribute("data-lit"); s.removeAttribute("data-from"); });
       forward.forEach((m) => mini(m)?.removeAttribute("data-wait"));
+      falls.forEach((id) => { settle(id); grave(id)?.removeAttribute("data-open"); });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
   const saidNo = [...new Set(moves.filter((m) => m.to === "rejected").map((m) => m.company))];
-  return saidNo.length ? <p className="cl-said">Since you last looked: {saidNo.join(", ")} said no.</p> : null;
+  if (!saidNo.length) return null;
+  return (
+    <p className="cl-said">
+      Since you last looked: {saidNo.join(", ")} said no.
+      {nextUp ? <> Next up: <a href={`/jobs/${nextUp.jobId}`} className="link-mint">{nextUp.company} →</a></> : null}
+    </p>
+  );
 }

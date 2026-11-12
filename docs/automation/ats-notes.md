@@ -42,10 +42,36 @@ The user's facts live in the gitignored `profile/` store (see `profile/README.md
 ## Oracle Recruiting Cloud (WTW, eedu.fa.em3.oraclecloud.com) — filled by hand 2026-10-21, NOT yet a kit adapter
 - One long page (all sections), saved server-side per email login; `/apply/section/1` bounces to the job page until logged in.
 - Radio groups are `role=radiogroup`/`role=radio` buttons: click by option text via JS works. Text inputs need the native value setter + `input`/`change` events.
-- Dates are JET comboboxes: click, ctrl+a, type, click the single suggestion (list pops up above/below and the page scrolls: re-screenshot between steps; coordinate clicks misfire).
+- Dates are JET comboboxes. Run 29 (2026-11-09) filled them with `browser_type` on `input[name=endDate] >> nth=0` (month,
+  then `nth=1` year), then `browser_press_key` ArrowDown, then Enter. Chain the whole entry in ONE message and read it back
+  with one `browser_evaluate` (`[...document.querySelectorAll('input[name=endDate]')].map(e=>e.value)`). No screenshots
+  between steps: run 29 did one keystroke per turn and 108 turns, the most expensive pass so far. Coordinate clicks misfire.
 - Each education/experience entry is its own form. Education asks "highest level" per entry (US-style list: A-levels = Other > High School Graduate), plus Country > State (county list, e.g. London / Nottinghamshire) > City.
 - Pre-existing profile entries can disagree with facts.yaml: check dates against it. Entry cards show "Fields to fix: N" until complete.
-- JS tool blocks some reads ("Cookie/query string data"): read state with screenshots instead.
+- JS tool blocked some reads on 2026-10-21 ("Cookie/query string data"); in run 29 `browser_evaluate` reads of input
+  values worked. Try evaluate first; screenshot only if it is blocked.
+
+## Workday (`*.myworkdayjobs.com`, e.g. FTI Consulting) — run 31, 2026-11-10, first Haiku run; partly verified
+- Flow: job page > Apply > "Autofill with Resume" > My Information > My Experience > Application Questions (1-2 of N) >
+  Voluntary Disclosures > Review. Each step saves on "Save and Continue", so a resumed pass re-reads what is saved.
+  The form URL ends `/apply/autofillWithResume`; an account (the user's email) is needed, so a login wall is a `login` question.
+- **Never accept what the resume autofill put in My Experience without checking it against facts.** It matched
+  a secondary school to a similarly named art college, a different institution and a false claim. Fix or remove that entry.
+- "How Did You Hear About Us?" is a drill-down list (categories such as Direct Contact, Job Board, Our Website, then a
+  search box), not a plain select. Pick a category, then the entry inside it. Setting it threw "Something went wrong.
+  Please refresh the page" once; the tab was not reloaded (rule), the user answered "continue from open page".
+- **Searchable prompts (field of study, gender, school, language) do not list options as you type.** Run 31: searches for
+  the degree subject, shortened forms of it, and the gender box all showed nothing, and Haiku asked twice. **What worked (Jonno
+  by hand, 2026-11-11):** click the list icon on the right of the text box, then tick an option in the dropdown. Do that
+  first, read the options, then pick (nearest Economics or Business entry for Field of Study). Pressing Enter was a guess
+  and was never tested. Only ask if the dropdown has no sane entry, and put its options on the card.
+- Language "Overall" scale topped out at "3 - Fluent": pick that for a native speaker. Ethnicity "White (e.g., any White/European
+  background) (United Kingdom)" is the nearest to White British.
+- **The school list tells you the level (Jonno 2026-11-11).** Run 31's list showed an art college but not the user's
+  secondary school: it only holds universities and colleges, so the section wants university-level education. Enter the
+  degree only (the university), delete the autofilled school entry, and do not use a "School Not Listed" option to force a
+  secondary school or A levels in. Say what was left out in the ready note.
+- "Overall" language proficiency: facts.yaml `english_proficiency` (native), top level of whatever scale the form shows.
 
 ## ByteDance (jobs.bytedance.com) — run 17, 2026-10-28
 - **Never click "Parse the resume and overwrite text" (`[data-test=parseResume]`).** It reloads the page behind a

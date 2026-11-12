@@ -47,3 +47,30 @@ export const STAIRS = [
 /** which stage a status sits on: 0..4 on the stairs, 5 = the summit (offer), -1 = not on the climb (discovered, an ending) */
 export const stageOf = (status: string | null | undefined) =>
   status === "offer" ? 5 : STAIRS.findIndex((s) => (s.statuses as readonly string[]).includes(status ?? ""));
+
+// ------------------------------------------------------------------------------------------- the Climb's layout
+// Shared by the server drawing (components/Climb.tsx) and the client replay (components/ClimbReplay.tsx).
+export const STEP = cube(42);
+export const MINI = cube(9.5);
+export const PEAK = cube(62);
+export const X0 = 70, DX = 142, Y0 = 290, DY = 28;
+export const PEAK_X = 826;
+/** a pile's first layer fills from the middle out, so a few roles look like a heap and not a row */
+export const CELLS = [[1, 1], [0, 1], [1, 0], [2, 1], [1, 2], [0, 0], [2, 2], [0, 2], [2, 0]] as const;
+/** on the summit the back cell holds the flag */
+export const PEAK_CELLS = CELLS.filter(([u, v]) => u + v > 0);
+
+/** stage i's cube (0..4 the stairs, 5 the summit): its top vertex, size and pile cells */
+export function stageTop(i: number) {
+  if (i >= 5) return { x: PEAK_X, y: Y0 - 5 * DY + (2 * STEP.h + STEP.H) - (2 * PEAK.h + PEAK.H), c: PEAK, cells: PEAK_CELLS };
+  return { x: X0 + i * DX, y: Y0 - i * DY, c: STEP, cells: CELLS };
+}
+
+/** the n-th mini on a pile whose cube's top vertex is (x, y): the mini's top vertex, its layer and its depth in the layer */
+export function pileSpot(x: number, y: number, c: Cube, cells: readonly (readonly [number, number])[], n: number) {
+  const layer = Math.floor(n / cells.length);
+  const [u, v] = cells[n % cells.length];
+  const cx = x + ((u + 0.5) / 3) * c.a - ((v + 0.5) / 3) * c.a;
+  const cy = y + ((u + 0.5) / 3) * c.h + ((v + 0.5) / 3) * c.h - layer * MINI.H;
+  return { x: cx, y: cy - MINI.h - MINI.H, layer, depth: u + v, cell: `${u},${v},${layer}` };
+}

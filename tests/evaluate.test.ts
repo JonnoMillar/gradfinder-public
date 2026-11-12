@@ -68,7 +68,8 @@ describe("verdict and rank", () => {
   it("rerank scores the evaluated role on the rubric", () => {
     rankAll();
     const row = db().prepare("select rank_score s, rank_breakdown b from jobs where id = ?").get(grad) as { s: number; b: string };
-    expect(JSON.parse(row.b)).toMatchObject({ work_fit: 35, chance: 15, career_path: 20 });
+    expect(JSON.parse(row.b)).toMatchObject({ work_fit: 44, career_path: 25 });
+    expect(JSON.parse(row.b).chance).toBeLessThan(0);   // chance 4/5 = a small discount, not points
     expect(JSON.parse(row.b).pay).toBeUndefined();
     expect(row.s).toBeGreaterThan(0);
   });

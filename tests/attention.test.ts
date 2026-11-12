@@ -10,6 +10,7 @@ function app(over: Partial<ApplicationRow>): ApplicationRow {
     id: 1, jobId: 100, status: "interested", nextAction: null, nextActionDue: null, notes: null, appliedAt: null,
     dismissedReason: null, updatedAt: "2026-09-20T00:00:00Z", lastActivityAt: null, title: "Grad role", deadline: null,
     jobActive: true, excludedReason: null, company: "Acme", companySlug: "acme", logoUrl: null, domain: null, live: null,
+    wantedSent: null, wantedEnd: null, effort: null,
     ...over,
   };
 }

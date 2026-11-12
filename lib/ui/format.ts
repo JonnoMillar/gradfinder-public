@@ -104,8 +104,14 @@ export const ALL_SECTORS = Object.keys(SECTOR_WEIGHTS);
 /** "£30,000 to £35,000" → "£30–35k". The full string always stays on the factfile. */
 export function shortPay(text: string | null | undefined): string | null {
   if (!text) return null;
-  const nums = [...text.matchAll(/£\s?([\d,]+)/g)]
-    .map((m) => Number(m[1].replace(/,/g, "")))
+  // "£37,000", "£35K – £55K", "£35–55k": a "k" after the number (or after a range's second figure) means thousands
+  const nums = [...text.matchAll(/£\s?(\d[\d,]*(?:\.\d+)?)\s?(k\b)?(?:\s?[–-]\s?£?\s?(\d[\d,]*(?:\.\d+)?)\s?(k\b)?)?/gi)]
+    .flatMap((m) => {
+      const hi = m[3] != null;
+      const kk = (flag: string | undefined, other?: string) => (flag || (hi && other) ? 1000 : 1);
+      const a = Number(m[1].replace(/,/g, "")) * kk(m[2], m[4]);
+      return hi ? [a, Number(m[3].replace(/,/g, "")) * kk(m[4], m[2])] : [a];
+    })
     .filter((n) => n >= 1000);
   if (!nums.length) return null;
   const k = (n: number) => `${Math.round(n / 1000)}k`;
@@ -152,11 +158,11 @@ export const reqWord = (s: ReqState) => (s === "yes" ? "Required" : s === "no" ?
 /** rank.ts applies these in this order; the factfile shows them as a ledger that sums to rank_score. */
 export const RANK_LABELS: Record<string, string> = {
   // v2: Claude's evaluation (lib/evaluate), max 100
-  work_fit: "Work fit (of 35)",
-  chance: "Realistic chance (of 20)",
-  company_type: "Company type (of 15)",
-  career_path: "Career path (of 20)",
-  sector: "Sector (of 10)",
+  work_fit: "Work fit (of 44)",
+  company_type: "Company type (of 19)",
+  career_path: "Career path (of 25)",
+  sector: "Sector (of 12)",
+  chance: "Realistic chance (discount)",
   sport_tech: "Sport and tech together",
   dealbreaker: "Dealbreaker",
   register_interest: "Register interest only",
