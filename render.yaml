@@ -1,0 +1,17 @@
+# Fallback host for the public demo while Vercel is paused (Hobby limit hit 2026-11-12).
+# Render Blueprint: New > Blueprint > pick this repo and branch. Free plan, no card.
+# Verified locally: `npm run demo:build` then `next start` serves / with 200 and seeds the demo DB on start.
+services:
+  - type: web
+    name: gradfinder-demo
+    runtime: node
+    plan: free
+    # tsx is a devDependency and demo:build needs it, so install dev deps explicitly
+    buildCommand: npm ci --include=dev && npm run demo:build
+    # package.json's "start" binds 127.0.0.1, which Render can't reach: bind 0.0.0.0 on $PORT
+    startCommand: node node_modules/next/dist/bin/next start -H 0.0.0.0 -p $PORT
+    healthCheckPath: /robots.txt
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 24
